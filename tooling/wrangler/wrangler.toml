@@ -1,0 +1,60 @@
+name = "tawjih-api"
+main = "../../apps/api/src/index.ts"
+compatibility_date = "2024-05-12"
+compatibility_flags = ["nodejs_compat"]
+account_id = "b1b56dcea807e48c9d3bc918bf1266ec"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "tawjih-db"
+database_id = "1feec91b-4557-4114-a100-66e6661bc2eb"
+migrations_dir = "../../tooling/drizzle/migrations"
+
+# KV Namespaces
+[[kv_namespaces]]
+binding = "CACHE"
+id = "1ebee9722746460c97c8609318079e45"
+
+# Vectorize
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "tawjih-universities"
+
+# Durable Objects
+[[durable_objects.bindings]]
+name = "LEAD_STREAM"
+class_name = "LeadStreamDO"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["LeadStreamDO"]
+
+# Environment variables (non-sensitive)
+[vars]
+TURNSTILE_SITE_KEY = "1x00000000000000000000AA"
+ENVIRONMENT = "development"
+
+# Production environment
+[env.production]
+name = "tawjih-api"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "tawjih-db-prod"
+database_id = "tawjih-db-prod-id"
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "tawjih-cache-prod"
+
+[[env.production.vectorize]]
+binding = "VECTORIZE"
+index_name = "tawjih-universities-prod"
+
+[[env.production.durable_objects.bindings]]
+name = "LEAD_STREAM"
+class_name = "LeadStreamDO"
+
+[env.production.vars]
+ENVIRONMENT = "production"

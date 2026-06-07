@@ -1,0 +1,45 @@
+import { Routes, Route } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import { AnimatePresence } from "framer-motion";
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
+import SlimaneChat from "./components/slimane/SlimaneChat";
+import { LevelUpModal, BadgeNotification } from "./components/gamification/XPBar";
+
+const Home = lazy(() => import("./routes/Home"));
+const Orientation = lazy(() => import("./routes/Orientation"));
+const Results = lazy(() => import("./routes/Results"));
+const Privacy = lazy(() => import("./routes/Privacy"));
+
+function App() {
+  return (
+    <div className="flex flex-col min-h-screen bg-cream">
+      <Navbar />
+      <main className="flex-1">
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-gold-200 border-t-gold-500 rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-navy-400 font-medium">Chargement...</p>
+            </div>
+          </div>
+        }>
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/orientation" element={<Orientation />} />
+              <Route path="/results/:uuid" element={<Results />} />
+              <Route path="/privacy" element={<Privacy />} />
+            </Routes>
+          </AnimatePresence>
+        </Suspense>
+      </main>
+      <Footer />
+      <SlimaneChat />
+      <LevelUpModal />
+      <BadgeNotification />
+    </div>
+  );
+}
+
+export default App;

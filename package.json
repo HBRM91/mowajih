@@ -1,0 +1,38 @@
+{
+  "name": "tawjih-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TAWJIH.AI — Elite AI Student Recruitment Engine for Morocco",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:api": "npm run dev -w apps/api",
+    "dev:web": "npm run dev -w apps/web",
+    "dev:admin": "npm run dev -w apps/admin",
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "db:generate": "drizzle-kit generate --config tooling/drizzle/drizzle.config.ts",
+    "db:migrate": "wrangler d1 migrations apply tawjih-db --local",
+    "db:seed": "tsx tooling/drizzle/seed.ts",
+    "db:studio": "drizzle-kit studio --config tooling/drizzle/drizzle.config.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0",
+    "@cloudflare/workers-types": "^4.20240512.0",
+    "drizzle-kit": "^0.21.4",
+    "drizzle-orm": "^0.30.10",
+    "tsx": "^4.10.5",
+    "better-sqlite3": "^9.6.0",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

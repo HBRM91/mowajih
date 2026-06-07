@@ -1,0 +1,27 @@
+{
+  "name": "@tawjih/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --config ../../tooling/wrangler/wrangler.toml",
+    "deploy": "wrangler deploy --config ../../tooling/wrangler/wrangler.toml",
+    "build": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "hono": "^4.3.6",
+    "@hono/zod-validator": "^0.2.1",
+    "drizzle-orm": "^0.30.10",
+    "zod": "^3.23.8",
+    "@tawjih/shared": "^1.0.0",
+    "@tawjih/ai": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "wrangler": "^3.55.0",
+    "@cloudflare/workers-types": "^4.20240512.0",
+    "vitest": "^1.6.0"
+  }
+}
