@@ -1,7 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../stores/authStore";
 
 export default function TopBar() {
   const [notifications] = useState(3);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <header className="h-16 bg-white border-b border-gold-100/50 flex items-center justify-between px-4 md:px-8">
@@ -19,6 +29,35 @@ export default function TopBar() {
             </span>
           )}
         </button>
+
+        {/* Logout */}
+        {showLogoutConfirm ? (
+          <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-1.5">
+            <span className="text-xs text-red-700 font-medium">Déconnexion ?</span>
+            <button
+              onClick={handleLogout}
+              className="text-xs bg-red-600 text-white px-2 py-1 rounded-lg font-bold hover:bg-red-700 transition"
+            >
+              Oui
+            </button>
+            <button
+              onClick={() => setShowLogoutConfirm(false)}
+              className="text-xs text-red-500 px-1 py-1 font-medium hover:text-red-700 transition"
+            >
+              Non
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            className="p-2.5 text-navy-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition"
+            title="Se déconnecter"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
+        )}
       </div>
     </header>
   );

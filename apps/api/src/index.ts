@@ -11,6 +11,8 @@ import analytics from "./routes/admin/analytics";
 import assistant from "./routes/admin/assistant";
 import communications from "./routes/admin/communications";
 import live from "./routes/admin/live";
+import adminAuthRoute from "./routes/admin/auth";
+import { adminAuth } from "./middleware/adminAuth";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -50,6 +52,13 @@ app.use(async (c, next) => {
 app.route("/health", health);
 app.route("/api/evaluate", evaluate);
 app.route("/api/leads", leads);
+// Admin auth (public — issues JWT)
+app.route("/api/admin/auth", adminAuthRoute);
+// Admin routes protected by JWT
+app.use("/api/admin/analytics/*", adminAuth());
+app.use("/api/admin/assistant/*", adminAuth());
+app.use("/api/admin/communications/*", adminAuth());
+app.use("/api/admin/live/*", adminAuth());
 app.route("/api/admin/analytics", analytics);
 app.route("/api/admin/assistant", assistant);
 app.route("/api/admin/communications", communications);

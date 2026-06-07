@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import ProbabilityRing from "./ProbabilityRing";
 import OptInModal from "./OptInModal";
 import { useGameStore } from "../../stores/gameStore";
-import { getSchoolBySlug, TIER_COLORS, TIER_LABELS, TYPE_LABELS } from "../../data/schools";
+import { getSchoolBySlug, TIER_COLORS, TIER_LABELS, TYPE_LABELS, ADMISSION_LABELS, ADMISSION_COLORS } from "../../data/schools";
 
 interface Match {
   university_slug: string;
@@ -40,6 +40,9 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
   const highlights = school?.highlights?.slice(0, 2) ?? [];
 
   const tierStyle = TIER_COLORS[tier] || TIER_COLORS.standard;
+  const admissionMode = school?.admission;
+  const admissionStyle = admissionMode ? ADMISSION_COLORS[admissionMode] : null;
+  const admissionLabel = admissionMode ? ADMISSION_LABELS[admissionMode] : null;
 
   const handleOptIn = () => {
     addXp(25, "Opted in to university");
@@ -99,6 +102,11 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
             }`}>
               {access === "public" ? "Public" : access === "semi-public" ? "Semi-pub." : "Privé"}
             </span>
+            {admissionLabel && admissionStyle && (
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${admissionStyle.bg} ${admissionStyle.text} ${admissionStyle.border}`}>
+                {admissionLabel}
+              </span>
+            )}
           </div>
         </div>
 

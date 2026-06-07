@@ -1,21 +1,18 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+
+// Token stored in memory only — not localStorage/sessionStorage (XSS protection).
+// This means re-login is required on page refresh, which is appropriate for admin.
 
 interface AuthState {
-  universityId: number | null;
-  email: string | null;
-  setAuth: (universityId: number, email: string) => void;
+  token: string | null;
+  isAuthenticated: boolean;
+  setToken: (token: string) => void;
   clearAuth: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      universityId: null,
-      email: null,
-      setAuth: (universityId, email) => set({ universityId, email }),
-      clearAuth: () => set({ universityId: null, email: null }),
-    }),
-    { name: "tawjih-admin-auth" }
-  )
-);
+export const useAuthStore = create<AuthState>()((set) => ({
+  token: null,
+  isAuthenticated: false,
+  setToken: (token: string) => set({ token, isAuthenticated: true }),
+  clearAuth: () => set({ token: null, isAuthenticated: false }),
+}));

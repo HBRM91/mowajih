@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useFormStore } from "../../stores/formStore";
-import { getSchoolsByTrack } from "../../data/schools";
+import {} from "../../data/schools";
 
 interface Message {
   role: "user" | "slimane";
@@ -46,11 +46,9 @@ function generateSlimaneReply(userText: string): { text: string; quickReplies?: 
 
   // Bac SM
   if (/(bac sm|sciences math|maths|mathematiques)/.test(lower)) {
-    const schools = getSchoolsByTrack("SM").filter((s) => s.tier === "elite" || s.tier === "premium");
-    const names = schools.slice(0, 4).map((s) => s.shortName).join(", ");
     return {
-      text: `Bac SM, excellent choix ! 🧮 C'est la filière reine au Maroc. Avec un bon dossier, tu peux viser : ${names}. Le seuil minimum varie entre 13/20 (ENSA) et 16+/20 (EMI/EHTP). Tu as quelle mention ?`,
-      quickReplies: ["J'ai une mention Bien (14-16)", "J'ai une mention TB (16+)", "Je suis sous la moyenne (< 12)", "Quels concours passer ?"],
+      text: "Bac SM, la filière reine au Maroc ! 🧮 Voici les deux grandes voies :\n\n**Voie CPGE (recommandée pour ingénierie) :**\nBac SM → CPGE 2 ans (MP/PSI) → Concours CNC → EMI, EHTP, ENSIAS, INPT, ENSA\nSeuil CPGE : mention AB (12/20) minimum, mention B/TB pour les tops.\n\n**Voie directe bac :**\n→ ISCAE (seuil 17.97/20), UM6P (dossier), UIR (dossier), HEM, ENCG TAFEM (12/20)\n→ Universités publiques : FSJES, FS (inscription libre)\n\nTu as quelle mention au bac ?",
+      quickReplies: ["Je veux faire ingénierie (CPGE)", "Je veux faire business (ISCAE/ENCG)", "Mention TB 16+", "Mention AB 12-14"],
     };
   }
 
@@ -89,7 +87,7 @@ function generateSlimaneReply(userText: string): { text: string; quickReplies?: 
   // Médecine
   if (/(medecine|docteur|chirurgie|pharmacy|pharmacie|dentaire|fmp|chu|urgences)/.test(lower)) {
     return {
-      text: "La médecine au Maroc, c'est 7 ans d'études très intenses mais une carrière noble et stable ! 🏥\n\n**Publique (gratuit):** FMP Rabat, Casablanca, Fès, Marrakech, Oujda, Agadir — concours national très sélectif, note ≥ 16/20 en SVT requise.\n\n**Privée:** UPF Fès, UPM Marrakech, UPCI Casablanca — plus accessible mais 80K-150K MAD/an.\n\nQuelle ville tu préfères ?",
+      text: "La médecine au Maroc, c'est 7 ans intenses mais une carrière noble et stable ! 🏥\n\n**Publique (quasi gratuit) :** FMP Rabat, Casablanca, Fès, Marrakech, Oujda — concours national sélectif.\n• Seuil d'accès : **13/20** (formule : 75% note nationale + 25% note régionale)\n• Épreuve : 2h écrit (SVT, Physique, Chimie, Maths)\n• Bacs requis : SVT ou PC obligatoire\n\n**Privée :** UPF Fès, UPM Marrakech, UPCI Casablanca — admission sur dossier, 80K-150K MAD/an.\n\nQuelle ville tu préfères ?",
       quickReplies: ["FMP Rabat ou Casablanca ?", "Médecine privée coûts", "Préparer le concours FMP", "Pharmacie vs Médecine"],
     };
   }
@@ -97,16 +95,16 @@ function generateSlimaneReply(userText: string): { text: string; quickReplies?: 
   // EMI specifically
   if (/(emi|mohammadia|ecole mohammadia)/.test(lower)) {
     return {
-      text: "EMI — École Mohammadia d'Ingénieurs 🏆 La plus grande et plus prestigieuse école d'ingénieurs publique du Maroc !\n\n• Filières : GC, GE, GI, GM, GP (6 spécialités)\n• Accès : Concours national (CNC) après CPGE ou directement avec Bac SM/PC mention TB+\n• Note minimum : 16+/20\n• Coût : Quasi gratuit (frais symboliques)\n• Alumni : OCP, CDG, ONEE, BMCE...\n\nTu as quelle note en SM ?",
-      quickReplies: ["Comment préparer le concours EMI ?", "EMI vs EHTP", "EMI vs ENSIAS", "Salaires alumni EMI"],
+      text: "EMI — École Mohammadia d'Ingénieurs 🏆 La plus grande et prestigieuse école d'ingénieurs publique du Maroc !\n\n• Filières : GC, GE, GI, GM, GP, Génie des Procédés\n• Accès : **UNIQUEMENT** via 2 ans CPGE (MP/PSI/TSI) + Concours National CNC. Il n'y a pas d'accès direct bac.\n• Parcours : Bac SM/PC/STI → CPGE 2 ans → CNC → EMI\n• 548 places ouvertes chaque année\n• Coût : Quasi gratuit (frais symboliques)\n• Alumni : OCP, CDG, ONEE, BMCE...\n\nTu es en quelle année scolaire ?",
+      quickReplies: ["C'est quoi la CPGE ?", "EMI vs EHTP", "EMI vs ENSIAS", "Quel classement CNC pour EMI ?"],
     };
   }
 
   // EHTP
   if (/(ehtp|hassania|travaux publics)/.test(lower)) {
     return {
-      text: "EHTP — École Hassania des Travaux Publics 🏗️ Sous tutelle du Ministère du Transport, c'est l'école d'excellence pour l'infrastructure marocaine !\n\n• Accès : Concours CNC après CPGE + Bac SM/PC mention TB\n• Spécialités : GC, GE, GInfo, Transport\n• Coût : 5000-15000 MAD/an\n• Partenariats : Maroc Autoroutes, ONCF, ADM\n• Double diplôme France possible\n\nTu es en CPGE ou Bac direct ?",
-      quickReplies: ["EHTP vs EMI", "Accès EHTP sans CPGE ?", "Spécialités EHTP", "Frais EHTP exacts"],
+      text: "EHTP — École Hassania des Travaux Publics 🏗️ Sous tutelle du Ministère du Transport, excellence pour l'infrastructure marocaine !\n\n• Accès : **Uniquement via CPGE 2 ans (MP/PSI) + CNC.** Pas d'entrée directe bac.\n• Parcours : Bac SM/PC → CPGE (Moulay Youssef, Louis Massignon...) → CNC → EHTP\n• 300 places\n• Spécialités : GC, GE, Informatique, Transport & Logistique\n• Coût : 5000-15000 MAD/an\n• Double diplôme France possible\n\nTu vises CPGE quelle filière ?",
+      quickReplies: ["EHTP vs EMI", "CPGE pour EHTP", "Spécialités EHTP", "Frais EHTP exacts"],
     };
   }
 
@@ -127,10 +125,18 @@ function generateSlimaneReply(userText: string): { text: string; quickReplies?: 
   }
 
   // ENCG
-  if (/(encg|nationale de commerce|ecole commerce|gestion)/.test(lower)) {
+  if (/(encg|nationale de commerce|ecole commerce|tafem|cursussup)/.test(lower)) {
     return {
-      text: "Les ENCG — Écoles Nationales de Commerce et de Gestion 📊 11 campus à travers tout le Maroc, quasi gratuit !\n\n• Villes : Casablanca, Agadir, Tanger, Fès, Marrakech, Oujda, Settat, Kénitra, El Jadida, Dakhla, Taza\n• Seuil : 11-13/20 selon le campus\n• Coût : 5K-12K MAD/an (le moins cher du secteur privé/public)\n• Accès : Concours national ou dossier\n• Bacs acceptés : SE, SH, SM, PC, L\n\nQuelle ville tu préfères pour l'ENCG ?",
-      quickReplies: ["ENCG Casablanca seuil ?", "ENCG vs HEM", "ENCG Agadir vs Tanger", "Inscription ENCG"],
+      text: "Les ENCG — Écoles Nationales de Commerce et de Gestion 📊 11 campus au Maroc, quasi gratuit !\n\n• Villes : Casablanca, Agadir, Tanger, Fès, Marrakech, Oujda, Settat, Kénitra...\n• **Accès TAFEM :** pré-sélection bac (12/20 minimum en SE/SM, ou 14/20 en PC/SVT) puis épreuve QCM écrite\n• Coût : 5K-12K MAD/an\n• Inscription sur **cursussup.gov.ma**\n• Bacs : SE, SH, SM, PC, L\n\nLes ENCG sont une excellente option publique à coût réduit. Quelle ville tu vises ?",
+      quickReplies: ["Seuil ENCG Casablanca", "ENCG vs HEM", "ENCG Agadir vs Tanger", "Inscription sur cursussup ?"],
+    };
+  }
+
+  // ISCAE
+  if (/(iscae|commerce administration|grande ecole commerce publique)/.test(lower)) {
+    return {
+      text: "ISCAE — Institut Supérieur de Commerce et d'Administration des Entreprises 📊 La grande école de commerce publique du Maroc !\n\n• Seuils très élevés par filière bac :\n  - SE : **17.44/20** min | SM : **17.97/20** | SGC : **17.42/20**\n  - SVT : **18.23/20** | STI : **18.82/20** | PC : **18.67/20**\n• Âge : maximum 21 ans au 31/12 de l'année d'inscription\n• Formule : 75% note nationale + 25% note régionale\n• Coût : Quasi gratuit\n• 2 campus : Casablanca + Rabat\n\nC'est l'une des admissions les plus sélectives du Maroc. Tu as quelle mention ?",
+      quickReplies: ["ISCAE vs ENCG", "Mon profil pour ISCAE", "ISCAE programmes MBA", "Chances avec 17/20 ?"],
     };
   }
 
@@ -145,8 +151,8 @@ function generateSlimaneReply(userText: string): { text: string; quickReplies?: 
   // ENSA
   if (/(ensa|sciences appliquees|nationale sciences appliquees)/.test(lower)) {
     return {
-      text: "Les ENSA — Écoles Nationales des Sciences Appliquées 🏛️ Un réseau de 11 écoles d'ingénieurs publiques, gratuites, dans toutes les régions du Maroc !\n\n• Villes : Agadir, Fès, Casablanca, Marrakech, Kénitra, Tanger, Oujda, Béni Mellal, El Jadida, Berrechid, Tétouan\n• Accès : Concours national CNC (après Bac ou 2 ans prépa)\n• Seuil : 12-14/20 selon le campus\n• Coût : GRATUIT !\n• Bacs : SM, PC, STI principalement\n\nQuelle ville d'ENSA t'intéresse ?",
-      quickReplies: ["ENSA Casablanca vs Rabat", "Comment passer le CNC ?", "ENSA Agadir (Souss)", "ENSA vs EMSI ?"],
+      text: "Les ENSA — Écoles Nationales des Sciences Appliquées 🏛️ Réseau de 11 écoles d'ingénieurs publiques et gratuites au Maroc !\n\n• Villes : Agadir, Fès, Casablanca, Marrakech, Kénitra, Tanger, Oujda, Béni Mellal, El Jadida, Berrechid, Tétouan\n• Accès : **Uniquement via 2 ans CPGE (MP/PSI/TSI) + Concours CNC.** Il n'y a pas d'accès direct bac.\n• Parcours : Bac SM/PC/STI → CPGE 2 ans → CNC → ENSA\n• Coût : **GRATUIT** + bourse CNOUS possible\n\nLes ENSA sont accessibles à tous les bacheliers scientifiques capables d'intégrer une CPGE. Quelle ville t'intéresse ?",
+      quickReplies: ["ENSA Casablanca vs Fès", "Comment intégrer une CPGE ?", "ENSA Agadir (Souss)", "ENSA vs EMSI sans CPGE ?"],
     };
   }
 
