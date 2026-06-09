@@ -104,10 +104,10 @@ auth.post("/login", async (c) => {
     return c.json({ error: "Trop de tentatives. Réessayez dans 15 minutes." }, 429);
   }
 
-  // Validate request body
-  let body: { password?: string } = {};
+  // Validate request body — accept both {password} and {email, password}
+  let body: { email?: string; password?: string } = {};
   try {
-    body = await c.req.json() as { password?: string };
+    body = await c.req.json() as { email?: string; password?: string };
   } catch {
     return c.json({ error: "Corps de requête invalide." }, 400);
   }
@@ -120,14 +120,26 @@ auth.post("/login", async (c) => {
     return c.json({ error: "Admin auth non configuré." }, 503);
   }
 
+  // If email provided, validate it against allowed admin email
+  if (body.email !== undefined) {
+    const adminEmail = c.env.ADMIN_EMAIL ?? "admin@jad2advisory.com";
+    if (!constantTimeEqual(body.email.toLowerCase().trim(), adminEmail.toLowerCase())) {
+      return c.json({ error: "Identifiants incorrects." }, 401);
+    }
+  }
+
   // Derive key from submitted password and compare
   const derived = await deriveKey(body.password, c.env.ADMIN_PASSWORD_SALT);
   if (!constantTimeEqual(derived, c.env.ADMIN_PASSWORD_HASH)) {
-    return c.json({ error: "Mot de passe incorrect." }, 401);
+    return c.json({ error: "Identifiants incorrects." }, 401);
   }
 
-  // Issue 8-hour JWT
-  const token = await signJWT({ role: "admin", sub: "admin" }, c.env.JWT_SECRET, 28800);
+  // Clear rate limit counter on successful login
+  await c.env.CACHE.delete(`ratelimit:admin:login:${ip}`);
+
+  // Issue 8-hour JWT with email embedded
+  const adminEmail = c.env.ADMIN_EMAIL ?? "admin@jad2advisory.com";
+  const token = await signJWT({ role: "admin", sub: "admin", email: adminEmail }, c.env.JWT_SECRET, 28800);
   return c.json({ token, expiresIn: 28800 });
 });
 

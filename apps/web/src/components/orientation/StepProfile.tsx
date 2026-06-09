@@ -5,12 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { MOROCCAN_CITIES_BY_REGION } from "../../data/schools";
 
-const financialBrackets = [
-  { key: "<<3000", label: "Moins de 3 000 MAD/mois", icon: "💚", desc: "Universités publiques & OFPPT gratuits" },
-  { key: "3000-8000", label: "3 000 – 8 000 MAD/mois", icon: "💛", desc: "ENCG, ENSA, EMSI accessibles" },
-  { key: "8000-15000", label: "8 000 – 15 000 MAD/mois", icon: "🧡", desc: "UIR, Mundiapolis, HEM possibles" },
-  { key: ">15000", label: "Plus de 15 000 MAD/mois", icon: "💎", desc: "UM6P, Al Akhawayn, toutes options" },
-];
+const FINANCIAL_ICONS: Record<string, string> = {
+  "<<3000": "💚",
+  "3000-8000": "💛",
+  "8000-15000": "🧡",
+  ">15000": "💎",
+};
 
 export default function StepProfile() {
   const { t } = useTranslation();
@@ -47,23 +47,22 @@ export default function StepProfile() {
       >
         <span className="inline-flex items-center gap-1.5 text-gold-600 text-sm font-bold uppercase tracking-widest">
           <span className="w-2 h-2 bg-gold-500 rounded-full" />
-          Étape 3 / 4
+          {t("step.progress", { current: 3 })}
         </span>
         <h2 className="font-heading text-3xl font-bold text-navy-800 mt-2">{t("step.profile")}</h2>
-        <p className="text-navy-400 mt-2 text-sm">Ta région, ta ville et le budget de ta famille.</p>
+        <p className="text-navy-400 mt-2 text-sm">{t("region.label")} · {t("city.label")} · {t("financial.label")}</p>
       </motion.div>
 
       <div className="space-y-5">
 
         {/* Region selector */}
         <div className="bg-white p-5 rounded-2xl border border-gold-100/60 shadow-sm">
-          <label className="block text-sm font-bold text-navy-700 mb-3">
-            🗺️ Ta région
-          </label>
+          <label className="block text-sm font-bold text-navy-700 mb-3">🗺️ {t("region.label")}</label>
           <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1 scrollbar-thin">
             {regions.map((r) => (
               <motion.button
                 key={r}
+                type="button"
                 whileTap={{ scale: 0.97 }}
                 onClick={() => handleRegionSelect(r)}
                 className={`text-left px-3 py-2.5 rounded-xl text-xs font-semibold transition-all border ${
@@ -87,13 +86,12 @@ export default function StepProfile() {
               exit={{ opacity: 0, height: 0 }}
               className="bg-white p-5 rounded-2xl border border-gold-100/60 shadow-sm overflow-hidden"
             >
-              <label className="block text-sm font-bold text-navy-700 mb-3">
-                📍 Ta ville *
-              </label>
+              <label className="block text-sm font-bold text-navy-700 mb-3">📍 {t("city.label")} *</label>
               <div className="flex flex-wrap gap-2">
                 {citiesInRegion.map((c) => (
                   <motion.button
                     key={c}
+                    type="button"
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleCitySelect(c)}
                     className={`px-4 py-2 rounded-full text-xs font-semibold transition-all border ${
@@ -107,15 +105,11 @@ export default function StepProfile() {
                 ))}
               </div>
               {city && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="mt-3 flex items-center gap-2 text-xs text-emerald-600 font-medium"
-                >
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 flex items-center gap-2 text-xs text-emerald-600 font-medium">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  Ville sélectionnée : {city}
+                  {t("step.profile.city_selected", { city })}
                 </motion.div>
               )}
             </motion.div>
@@ -124,40 +118,36 @@ export default function StepProfile() {
 
         {!selectedRegion && (
           <div className="bg-white/60 p-4 rounded-2xl border border-dashed border-gold-200 text-center text-xs text-navy-400">
-            👆 Sélectionne d'abord ta région pour choisir ta ville
+            👆 {t("step.profile.region_hint")}
           </div>
         )}
 
         {/* Financial bracket */}
         <div className="bg-white p-5 rounded-2xl border border-gold-100/60 shadow-sm">
           <label className="block text-sm font-bold text-navy-700 mb-3">
-            💰 Budget familial mensuel *
-            <span className="text-[11px] text-navy-400 font-normal ml-2">(aide à filtrer les écoles accessibles)</span>
+            💰 {t("financial.label")} *
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {financialBrackets.map((fb) => (
+            {(["<<3000", "3000-8000", "8000-15000", ">15000"] as const).map((key) => (
               <motion.button
-                key={fb.key}
+                key={key}
+                type="button"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setField("financialBracket", fb.key)}
+                onClick={() => setField("financialBracket", key)}
                 className={`flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all touch-target ${
-                  financialBracket === fb.key
+                  financialBracket === key
                     ? "border-gold-400 bg-gradient-to-br from-gold-50 to-gold-100/40 shadow-md"
                     : "border-parchment hover:border-gold-200 bg-cream"
                 }`}
               >
-                <span className="text-xl flex-shrink-0">{fb.icon}</span>
+                <span className="text-xl flex-shrink-0">{FINANCIAL_ICONS[key]}</span>
                 <div>
-                  <div className="font-bold text-sm text-navy-700 leading-tight">{fb.label}</div>
-                  <div className="text-[11px] text-navy-400 mt-0.5">{fb.desc}</div>
+                  <div className="font-bold text-sm text-navy-700 leading-tight">{t(`financial.${key}`)}</div>
+                  <div className="text-[11px] text-navy-400 mt-0.5">{t(`financial.${key}.desc`)}</div>
                 </div>
-                {financialBracket === fb.key && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="ml-auto w-5 h-5 bg-gold-500 rounded-full flex items-center justify-center flex-shrink-0"
-                  >
+                {financialBracket === key && (
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="ml-auto w-5 h-5 bg-gold-500 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-3 h-3 text-navy-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
@@ -171,23 +161,25 @@ export default function StepProfile() {
         {/* XP hint */}
         <div className="flex items-center gap-2 text-xs text-gold-600 bg-gold-50 border border-gold-200 rounded-xl px-4 py-2.5">
           <span className="text-base">🎯</span>
-          <span>Cette étape te rapporte <strong>+15 XP</strong> — plus que la moitié du chemin !</span>
+          <span>{t("step.profile.xp_hint")}</span>
         </div>
       </div>
 
       <div className="flex gap-3 mt-8">
         <button
+          type="button"
           onClick={prevStep}
           className="flex-1 py-3.5 rounded-xl border-2 border-parchment text-navy-600 font-semibold hover:border-gold-200 hover:bg-gold-50/50 touch-target transition"
         >
-          ← Retour
+          {t("common.back")}
         </button>
         <button
+          type="button"
           onClick={handleNext}
           disabled={!isValid}
           className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-navy-700 to-navy-800 text-gold-200 font-bold hover:from-navy-800 hover:to-navy-900 disabled:opacity-40 disabled:cursor-not-allowed touch-target transition shadow-lg shadow-navy-900/10"
         >
-          Suivant →
+          {t("common.next")}
         </button>
       </div>
     </div>

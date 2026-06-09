@@ -14,17 +14,27 @@ export default function Orientation() {
   const evaluate = useEvaluate();
   const navigate = useNavigate();
 
-  const handleSubmit = async (turnstileToken?: string) => {
+  const handleSubmit = async () => {
+    const parseGrade = (v: string) => (v && v.trim() !== "" ? parseFloat(v) : undefined);
     const payload = {
       bacTrack: form.bacTrack,
-      mathGrade: form.mathGrade ? parseFloat(form.mathGrade) : undefined,
-      physicsGrade: form.physicsGrade ? parseFloat(form.physicsGrade) : undefined,
       generalGrade: parseFloat(form.generalGrade),
+      mathGrade: parseGrade(form.mathGrade),
+      physicsGrade: parseGrade(form.physicsGrade),
+      frenchGrade: parseGrade(form.frenchGrade),
+      arabicGrade: parseGrade(form.arabicGrade),
+      philosophyGrade: parseGrade(form.philosophyGrade),
+      biologyGrade: parseGrade(form.biologyGrade),
+      economicsGrade: parseGrade(form.economicsGrade),
+      historyGrade: parseGrade(form.historyGrade),
+      techGrade: parseGrade(form.techGrade),
+      englishGrade: parseGrade(form.englishGrade),
       city: form.city,
       region: form.region,
       financialBracket: form.financialBracket,
-      turnstileToken: turnstileToken ?? "",
-      consent: form.consent as true,
+      firstName: form.firstName || undefined,
+      lastName: form.lastName || undefined,
+      emailContact: form.emailContact || undefined,
     };
 
     const result = await evaluate.mutateAsync(payload);
@@ -58,7 +68,7 @@ export default function Orientation() {
           )}
           {step === 4 && (
             <motion.div key="step4" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }}>
-              <StepConsent onSubmit={handleSubmit} isLoading={evaluate.isPending} />
+              <StepConsent onSubmit={() => handleSubmit()} isLoading={evaluate.isPending} />
             </motion.div>
           )}
         </AnimatePresence>

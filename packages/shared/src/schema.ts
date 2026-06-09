@@ -13,6 +13,25 @@ export const students = sqliteTable("students", {
   region: text("region").notNull(),
   financialBracket: text("financial_bracket", { enum: ["<<3000","3000-8000","8000-15000",">15000"] }).notNull(),
   interestsVector: blob("interests_vector", { mode: "json" }),
+  // Extended subject grades (added in migration 0001)
+  frenchGrade: real("french_grade"),
+  arabicGrade: real("arabic_grade"),
+  philosophyGrade: real("philosophy_grade"),
+  biologyGrade: real("biology_grade"),
+  economicsGrade: real("economics_grade"),
+  historyGrade: real("history_grade"),
+  techGrade: real("tech_grade"),
+  englishGrade: real("english_grade"),
+  // Optional contact info — only stored with explicit consent for dossier generation
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  emailContact: text("email_contact"),
+  // AI simulation results as JSON
+  aiResults: text("ai_results", { mode: "json" }).$type<{
+    matches: Array<{ university_slug: string; probability: number; confidence: string; rationale: string; estimated_annual_cost_mad: number }>;
+    alternatives: Array<{ name: string; type: string; reason: string }>;
+    suggested_tracks: string[];
+  }>(),
   cndpAnonymizedSummary: text("cndp_anonymized_summary").notNull(),
   retentionExpiry: integer("retention_expiry", { mode: "timestamp" }).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),

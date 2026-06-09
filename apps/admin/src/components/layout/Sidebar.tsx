@@ -3,6 +3,8 @@ import { useState } from "react";
 
 const nav = [
   { path: "/", label: "Tableau de bord", icon: "📊" },
+  { path: "/profiles", label: "Profils Étudiants", icon: "👤" },
+  { path: "/seuils", label: "Seuils & Frais", icon: "🎚️" },
   { path: "/pipeline", label: "Pipeline", icon: "🎯" },
   { path: "/analytics", label: "Analytiques", icon: "📈" },
   { path: "/communications", label: "Communications", icon: "✉️" },
@@ -16,6 +18,8 @@ export default function Sidebar() {
   return (
     <>
       <button
+        type="button"
+        title="Ouvrir le menu"
         onClick={() => setMobileOpen(!mobileOpen)}
         className="md:hidden fixed top-3 left-3 z-50 p-2 bg-white rounded-xl shadow border border-gold-100"
       >

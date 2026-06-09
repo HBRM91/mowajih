@@ -11,6 +11,7 @@ export interface Env {
   ENVIRONMENT: "development" | "production";
   // Admin password auth (set these in Cloudflare Workers secrets)
   JWT_SECRET: string;
-  ADMIN_PASSWORD_HASH: string;  // PBKDF2-SHA256 hash of admin password, base64
+  ADMIN_PASSWORD_HASH: string;  // PBKDF2-SHA256 hash of admin password, base64url
   ADMIN_PASSWORD_SALT: string;  // Random salt used during hashing
+  ADMIN_EMAIL: string;          // Admin login email (default: admin@jad2advisory.com)
 }

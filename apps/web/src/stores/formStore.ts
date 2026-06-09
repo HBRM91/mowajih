@@ -4,12 +4,27 @@ import { persist } from "zustand/middleware";
 interface FormState {
   step: number;
   bacTrack: string;
+  // Core grades
+  generalGrade: string;
   mathGrade: string;
   physicsGrade: string;
-  generalGrade: string;
+  // Subject-specific grades
+  frenchGrade: string;
+  arabicGrade: string;
+  philosophyGrade: string;
+  biologyGrade: string;
+  economicsGrade: string;
+  historyGrade: string;
+  techGrade: string;
+  englishGrade: string;
+  // Profile
   city: string;
   region: string;
   financialBracket: string;
+  // Optional contact info for dossier generation
+  firstName: string;
+  lastName: string;
+  emailContact: string;
   consent: boolean;
   slimaneMode: boolean;
   setField: (field: keyof Omit<FormState, "setField" | "nextStep" | "prevStep" | "reset" | "setSlimaneMode">, value: any) => void;
@@ -22,12 +37,23 @@ interface FormState {
 const initialState = {
   step: 1,
   bacTrack: "",
+  generalGrade: "",
   mathGrade: "",
   physicsGrade: "",
-  generalGrade: "",
+  frenchGrade: "",
+  arabicGrade: "",
+  philosophyGrade: "",
+  biologyGrade: "",
+  economicsGrade: "",
+  historyGrade: "",
+  techGrade: "",
+  englishGrade: "",
   city: "",
   region: "",
   financialBracket: "",
+  firstName: "",
+  lastName: "",
+  emailContact: "",
   consent: false,
   slimaneMode: false,
 };

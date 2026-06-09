@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import ProbabilityRing from "./ProbabilityRing";
 import OptInModal from "./OptInModal";
 import { useGameStore } from "../../stores/gameStore";
@@ -23,6 +24,7 @@ const LEGACY_SCHOOLS: Record<string, { name: string; shortName: string; city: st
 
 export default function MatchCard({ match, rank }: { match: Match; rank?: number }) {
   const [showModal, setShowModal] = useState(false);
+  const { t } = useTranslation();
   const addXp = useGameStore((s) => s.addXp);
   const awardBadge = useGameStore((s) => s.awardBadge);
 
@@ -38,6 +40,7 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
   const access = school?.access ?? "private";
   const programs = school?.programs?.slice(0, 3) ?? [];
   const highlights = school?.highlights?.slice(0, 2) ?? [];
+  const website = school?.website;
 
   const tierStyle = TIER_COLORS[tier] || TIER_COLORS.standard;
   const admissionMode = school?.admission;
@@ -145,10 +148,10 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
 
           {/* Cost */}
           <div className="flex items-center justify-between p-3 bg-navy-50/60 rounded-xl mb-4">
-            <div className="text-xs text-navy-400 font-medium uppercase tracking-wide">Coût annuel estimé</div>
+            <div className="text-xs text-navy-400 font-medium uppercase tracking-wide">{t("match.cost")}</div>
             <div className="font-heading font-bold text-navy-800 text-sm">
               {match.estimated_annual_cost_mad === 0
-                ? <span className="text-emerald-600">Gratuit 🎉</span>
+                ? <span className="text-emerald-600">{t("match.cost.free")}</span>
                 : <>{match.estimated_annual_cost_mad.toLocaleString()} <span className="text-navy-400 font-normal">MAD</span></>
               }
             </div>
@@ -156,24 +159,45 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
 
           {/* Confidence */}
           <div className="flex items-center gap-2 mb-4">
-            <div className="text-xs text-navy-400">Confiance IA :</div>
+            <div className="text-xs text-navy-400">{t("match.confidence.label")} :</div>
             <div className={`text-xs font-bold px-2 py-0.5 rounded-full ${
               match.confidence === "high" ? "bg-emerald-100 text-emerald-700" :
               match.confidence === "medium" ? "bg-amber-100 text-amber-700" :
               "bg-slate-100 text-slate-600"
             }`}>
-              {match.confidence === "high" ? "Élevée ✓" : match.confidence === "medium" ? "Moyenne" : "Faible"}
+              {match.confidence === "high" ? t("match.confidence.high") : match.confidence === "medium" ? t("match.confidence.medium") : t("match.confidence.low")}
             </div>
           </div>
 
-          {/* CTA */}
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={handleOptIn}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-navy-700 to-navy-800 text-gold-200 text-sm font-bold hover:from-navy-800 hover:to-navy-900 transition-all shadow-md shadow-navy-900/15 touch-target"
-          >
-            📋 Transmettre mon dossier
-          </motion.button>
+          {/* CTAs */}
+          <div className="flex flex-col gap-2">
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.98 }}
+              onClick={handleOptIn}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-navy-700 to-navy-800 text-gold-200 text-sm font-bold hover:from-navy-800 hover:to-navy-900 transition-all shadow-md shadow-navy-900/15 touch-target flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {access === "private" || access === "semi-public"
+                ? t("match.request_info")
+                : t("match.submit_dossier")}
+            </motion.button>
+            {website && (
+              <a
+                href={website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2 rounded-xl border border-navy-200 text-navy-500 text-xs font-medium hover:bg-navy-50 transition-all flex items-center justify-center gap-1.5 touch-target"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                Site officiel
+              </a>
+            )}
+          </div>
         </div>
       </motion.div>
 

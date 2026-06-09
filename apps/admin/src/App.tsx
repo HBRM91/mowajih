@@ -6,6 +6,9 @@ import { useAuthStore } from "./stores/authStore";
 
 const Login = lazy(() => import("./routes/Login"));
 const Dashboard = lazy(() => import("./routes/Dashboard"));
+const Profiles = lazy(() => import("./routes/Profiles"));
+const StudentDetail = lazy(() => import("./routes/StudentDetail"));
+const Seuils = lazy(() => import("./routes/Seuils"));
 const Pipeline = lazy(() => import("./routes/Pipeline"));
 const Analytics = lazy(() => import("./routes/Analytics"));
 const Communications = lazy(() => import("./routes/Communications"));
@@ -36,6 +39,9 @@ function App() {
           }
         >
           <Route path="/" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+          <Route path="/profiles" element={<ErrorBoundary><Profiles /></ErrorBoundary>} />
+          <Route path="/profiles/:uuid" element={<ErrorBoundary><StudentDetail /></ErrorBoundary>} />
+          <Route path="/seuils" element={<ErrorBoundary><Seuils /></ErrorBoundary>} />
           <Route path="/pipeline" element={<ErrorBoundary><Pipeline /></ErrorBoundary>} />
           <Route path="/analytics" element={<ErrorBoundary><Analytics /></ErrorBoundary>} />
           <Route path="/communications" element={<ErrorBoundary><Communications /></ErrorBoundary>} />

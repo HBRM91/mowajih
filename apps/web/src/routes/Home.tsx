@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useGameStore } from "../stores/gameStore";
+import { useFormStore } from "../stores/formStore";
 import { useState, useRef } from "react";
 import { SCHOOLS, getTopSchoolsByTrack, TIER_LABELS, TIER_COLORS } from "../data/schools";
 
@@ -15,10 +16,10 @@ const BAC_TRACKS = [
 ];
 
 const STATS = [
-  { value: "15K+", label: "Bacheliers orientés", icon: "🎓" },
-  { value: "50+", label: "Établissements partenaires", icon: "🏛️" },
+  { value: `${SCHOOLS.length}+`, label: "Établissements référencés", icon: "🏛️" },
   { value: "12", label: "Régions du Maroc", icon: "🇲🇦" },
-  { value: "94%", label: "Taux de satisfaction", icon: "⭐" },
+  { value: "7", label: "Filières Bac couvertes", icon: "🎓" },
+  { value: "100%", label: "Gratuit & indépendant", icon: "✅" },
 ];
 
 const SCHOOL_TYPE_FILTERS = [
@@ -113,15 +114,20 @@ export default function Home() {
 
         <div className="relative max-w-6xl mx-auto px-4 pt-32 pb-20 text-center">
 
-          {/* Badge */}
+          {/* Urgency badge — tawjihi season */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gold-500/10 border border-gold-500/25 rounded-full text-gold-300 text-sm font-medium mb-8"
+            className="flex flex-wrap items-center justify-center gap-3 mb-8"
           >
-            <span className="w-2 h-2 bg-gold-400 rounded-full animate-pulse" />
-            JAD2 Advisory · Division Orientation — Powered by AI
+            <span className="inline-flex items-center gap-2 px-4 py-2 bg-gold-500/10 border border-gold-500/25 rounded-full text-gold-300 text-sm font-medium">
+              <span className="w-2 h-2 bg-gold-400 rounded-full animate-pulse" />
+              JAD2 Advisory · Division Orientation
+            </span>
+            <span className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/25 rounded-full text-emerald-300 text-sm font-bold">
+              🎓 Résultats Tawjihi 2026 — Commence ton orientation maintenant
+            </span>
           </motion.div>
 
           {/* Main headline */}
@@ -144,7 +150,7 @@ export default function Home() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-lg md:text-xl text-navy-200 max-w-2xl mx-auto mb-3 leading-relaxed"
           >
-            Slimane, ton conseiller IA, analyse ton profil Bac et te propose les meilleures écoles — ENSA, ENCG, ISCAE, UIR, UM6P et 50+ autres.
+            Slimane, ton conseiller IA, analyse ton profil Bac et te propose les meilleures écoles — ENSA, ENCG, ISCAE, UIR, UM6P et {SCHOOLS.length}+ autres.
           </motion.p>
 
           <motion.p
@@ -156,7 +162,7 @@ export default function Home() {
             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />100% Gratuit</span>
             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />Conforme CNDP</span>
             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />Anonyme</span>
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse" />15K+ bacheliers orientés</span>
+            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse" />Outil indépendant &amp; non affilié</span>
           </motion.p>
 
           {/* CTAs */}
@@ -168,7 +174,7 @@ export default function Home() {
           >
             <Link
               to="/orientation"
-              onClick={() => checkStreak()}
+              onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
               className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-base shadow-lg shadow-gold-500/25 hover:shadow-gold-500/50 hover:scale-105 transition-all duration-300 touch-target"
             >
               <span>Découvrir mes écoles</span>
@@ -219,7 +225,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-lg">🎓</span>
-                <span>Conseillers académiques certifiés</span>
+                <span>Données officielles Tawjihi & cursussup</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-lg">🇲🇦</span>
@@ -305,7 +311,7 @@ export default function Home() {
           <div className="text-center mt-10">
             <Link
               to="/orientation"
-              onClick={() => checkStreak()}
+              onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-navy-700 to-navy-800 text-gold-200 rounded-full font-bold hover:from-navy-800 hover:to-navy-900 transition-all shadow-lg shadow-navy-900/15 hover:shadow-navy-900/30 touch-target"
             >
               Commencer maintenant — Gratuit
@@ -493,7 +499,7 @@ export default function Home() {
           <div className="text-center mt-10">
             <Link
               to="/orientation"
-              onClick={() => checkStreak()}
+              onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold hover:shadow-lg hover:shadow-gold-500/25 hover:scale-105 transition-all duration-300 touch-target shadow-md"
             >
               Voir toutes mes écoles personnalisées
@@ -530,7 +536,7 @@ export default function Home() {
               <div className="space-y-4 mb-8">
                 {[
                   { icon: "🎯", text: "Analyse ton profil Bac en temps réel" },
-                  { icon: "🏛️", text: "Connaît 50+ établissements marocains" },
+                  { icon: "🏛️", text: `Connaît ${SCHOOLS.length}+ établissements marocains` },
                   { icon: "💬", text: "Répond à toutes tes questions en FR/AR/EN" },
                   { icon: "🗺️", text: "Guide selon ta ville et ton budget" },
                 ].map((item) => (
@@ -543,7 +549,7 @@ export default function Home() {
               <div className="flex gap-3">
                 <Link
                   to="/orientation"
-                  onClick={() => checkStreak()}
+                  onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-sm hover:shadow-lg hover:shadow-gold-500/25 transition-all touch-target"
                 >
                   Parler à Slimane
@@ -738,7 +744,7 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gold-500/10 border border-gold-500/20 rounded-full text-gold-300 text-sm font-medium mb-8">
-              🚀 Rejoint 15 000+ bacheliers marocains
+              ✦ Outil d'orientation 100% indépendant · Gratuit
             </div>
             <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Prêt à découvrir
@@ -748,12 +754,12 @@ export default function Home() {
               </span>
             </h2>
             <p className="text-navy-200 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-              Gratuit, anonyme, et ça prend 2 minutes. Slimane est prêt à t'aider à trouver ta voie parmi les 50+ établissements du Maroc.
+              Gratuit, anonyme, et ça prend 2 minutes. Slimane est prêt à t'aider à trouver ta voie parmi les {SCHOOLS.length}+ établissements du Maroc.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 to="/orientation"
-                onClick={() => checkStreak()}
+                onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
                 className="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-lg shadow-xl shadow-gold-500/20 hover:shadow-gold-500/40 hover:scale-105 transition-all duration-300 touch-target"
               >
                 Commencer mon orientation

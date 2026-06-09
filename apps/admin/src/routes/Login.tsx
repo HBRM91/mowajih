@@ -10,6 +10,7 @@ export default function Login() {
   const setToken = useAuthStore((s) => s.setToken);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
+  const [email, setEmail] = useState("admin@jad2advisory.com");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,7 @@ export default function Login() {
       const res = await fetch(`${API_URL}/api/admin/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
         credentials: "omit",
       });
 
@@ -116,6 +117,21 @@ export default function Login() {
 
             {/* Form */}
             <form onSubmit={handleSubmit} noValidate autoComplete="off">
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-xs font-bold text-navy-600 uppercase tracking-widest mb-2">
+                  Adresse email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@jad2advisory.com"
+                  disabled={loading || isLocked}
+                  autoComplete="username"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-navy-100 bg-navy-50/50 text-navy-800 placeholder-navy-300 focus:outline-none focus:border-gold-400 focus:bg-white transition-all text-sm disabled:opacity-50"
+                />
+              </div>
               <div className="mb-5">
                 <label htmlFor="password" className="block text-xs font-bold text-navy-600 uppercase tracking-widest mb-2">
                   Mot de passe

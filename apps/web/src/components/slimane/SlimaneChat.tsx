@@ -151,8 +151,8 @@ function generateSlimaneReply(userText: string): { text: string; quickReplies?: 
   // ENSA
   if (/(ensa|sciences appliquees|nationale sciences appliquees)/.test(lower)) {
     return {
-      text: "Les ENSA — Écoles Nationales des Sciences Appliquées 🏛️ Réseau de 11 écoles d'ingénieurs publiques et gratuites au Maroc !\n\n• Villes : Agadir, Fès, Casablanca, Marrakech, Kénitra, Tanger, Oujda, Béni Mellal, El Jadida, Berrechid, Tétouan\n• Accès : **Uniquement via 2 ans CPGE (MP/PSI/TSI) + Concours CNC.** Il n'y a pas d'accès direct bac.\n• Parcours : Bac SM/PC/STI → CPGE 2 ans → CNC → ENSA\n• Coût : **GRATUIT** + bourse CNOUS possible\n\nLes ENSA sont accessibles à tous les bacheliers scientifiques capables d'intégrer une CPGE. Quelle ville t'intéresse ?",
-      quickReplies: ["ENSA Casablanca vs Fès", "Comment intégrer une CPGE ?", "ENSA Agadir (Souss)", "ENSA vs EMSI sans CPGE ?"],
+      text: "Les ENSA — Écoles Nationales des Sciences Appliquées 🏛️ Réseau de 11 écoles d'ingénieurs publiques et **gratuites** au Maroc !\n\n• Villes : Agadir, Fès, Casablanca, Marrakech, Kénitra, Tanger, Oujda, Béni Mellal, El Jadida, Berrechid, Tétouan\n• Accès : **Directement depuis le Bac via la plateforme Tawjihi** (formule 75%×nationale + 25%×régionale)\n• Seuils : SM 12/20 · PC 14/20 · STI 15–16.5/20 (varie par école)\n• Inscription sur **cursussup.gov.ma**\n• Coût : **GRATUIT** + bourse CNOUS possible\n\nAttention : les écoles d'élite comme EMI, EHTP, ENSIAS, INPT s'intègrent elles via CPGE + CNC. Les ENSA, c'est direct bac. Quelle ville t'intéresse ?",
+      quickReplies: ["ENSA Casablanca vs Fès", "Seuil SM pour ENSA ?", "ENSA vs EMI/EHTP", "Comment s'inscrire sur Tawjihi ?"],
     };
   }
 
@@ -244,7 +244,39 @@ function generateSlimaneReply(userText: string): { text: string; quickReplies?: 
     };
   }
 
-  // Default response with intelligent fallback
+  // Ingénierie (intent without specific school)
+  if (/(ingenierie|genie|ecole.ing|ingenieur)/.test(lower)) {
+    return {
+      text: "L'ingénierie au Maroc, un excellent choix ! 🔩 Deux grandes voies :\n\n**Voie élite (CPGE → CNC) :**\n→ EMI, EHTP, ENSIAS, INPT, ENIM, INSEA\n→ 2 ans de CPGE (MP/PSI/TSI) puis Concours CNC\n→ Gratuit + bourse CNOUS possible\n\n**Voie directe bac :**\n→ ENSA (11 campus, seuil SM 12/20 · PC 14/20, gratuit)\n→ ENSAM (seuil SM 12.9/20, gratuit)\n→ UIR, EMSI, ESIG (privé, sur dossier)\n\nTa filière Bac c'est laquelle ?",
+      quickReplies: ["Je suis Bac SM", "Je suis Bac PC", "Je suis Bac STI", "CPGE c'est quoi ?"],
+    };
+  }
+
+  // Business / management intent
+  if (/(business|management|commerce|marketing|finance|faire business)/.test(lower)) {
+    return {
+      text: "Business & management au Maroc — beaucoup d'options ! 📊\n\n**Public quasi gratuit :**\n• ENCG (11 campus) — Concours TAFEM, seuil 12/20 SM/SE\n• ISCAE Casablanca/Rabat — très sélectif (17+/20)\n• FSJES — accès libre\n\n**Privé premium :**\n• HEM Business School — accrédité AACSB, 35K-65K/an\n• UIR (Business, 40K-60K/an)\n• UM6P (bourse possible)\n\nTa filière Bac ?",
+      quickReplies: ["ENCG admission", "ISCAE seuils", "HEM vs ENCG", "Je suis Bac SE"],
+    };
+  }
+
+  // Help choosing / undecided
+  if (/(choisir|aide|perdu|oriente|orientation|quoi faire|je sais pas|sais pas|decide)/.test(lower)) {
+    return {
+      text: "Pas de panique ! 🌟 Je vais t'aider à trouver ton chemin.\n\nDis-moi juste :\n1️⃣ Ta filière Bac (SM, PC, SVT, SE, STI, SH, L)\n2️⃣ Ta note générale approximative (/20)\n3️⃣ Ce que tu aimes faire (tech, contact humain, chiffres, créativité...)\n\nAvec ça, je peux te proposer 3-4 parcours qui te correspondent vraiment.",
+      quickReplies: ["Je suis Bac SM", "Je suis Bac SE", "Je suis Bac SVT", "Lancer le questionnaire"],
+    };
+  }
+
+  // Architecture
+  if (/(architecture|architecte|design|urbanisme)/.test(lower)) {
+    return {
+      text: "Architecture au Maroc ! 🏗️\n\n**Écoles publiques :**\n• ENA (École Nationale d'Architecture) — Rabat, Casablanca, Marrakech, Fès, Tétouan\n• Seuil : ~14/20 + épreuve dessin/aptitude\n• Durée : 6 ans (Licence 3 + Master 3) — quasi gratuit\n\n**Privé :**\n• UM6P (Architecture, 50K+/an, bourses disponibles)\n• UIR Architecture\n• INAU Rabat\n\nBac requis : SM, STI ou toutes filières selon école. Tu as quel profil ?",
+      quickReplies: ["ENA Rabat admission", "UM6P Architecture", "Architecture privé coûts", "Débouchés architecte"],
+    };
+  }
+
+  // Greetings
   const greetings = ["salam", "bonjour", "salut", "hello", "hi", "slt", "bonsoir", "marhaba"];
   if (greetings.some((g) => lower.includes(g))) {
     return {
@@ -254,8 +286,8 @@ function generateSlimaneReply(userText: string): { text: string; quickReplies?: 
   }
 
   return {
-    text: `Bonne question ! Pour te donner les meilleures recommandations personnalisées, j'ai besoin de connaître ta filière Bac et ta ville. Autrement, dis-moi ce qui t'intéresse : ingénierie, médecine, business, architecture... et je te dresse la liste des écoles adaptées à ton profil.`,
-    quickReplies: ["Lancer le questionnaire (2 min)", "Je veux faire ingénierie", "Je veux faire business", "Aide-moi à choisir"],
+    text: "Je n'ai pas bien saisi — reformule ta question ou choisis un sujet ci-dessous. Je connais toutes les écoles marocaines : ingénierie, médecine, business, architecture et plus encore !",
+    quickReplies: ["Je veux faire ingénierie", "Je veux faire business", "Je veux faire médecine", "Aide-moi à choisir"],
   };
 }
 
@@ -416,41 +448,48 @@ export default function SlimaneChat() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scroll-smooth">
-              {messages.map((msg, idx) => (
-                <div key={idx} className={`flex gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  {msg.role === "slimane" && <SlimaneAvatar mood="happy" size="sm" />}
-                  <div className={`max-w-[86%] space-y-2`}>
-                    <div
-                      className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
-                        msg.role === "user"
-                          ? "bg-navy-700 text-white rounded-br-md shadow-sm"
-                          : "bg-white border border-gold-100 text-navy-800 rounded-bl-md shadow-sm"
-                      }`}
-                    >
-                      {msg.content}
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 scroll-smooth">
+              {messages.map((msg, idx) => {
+                const isLastSlimane =
+                  msg.role === "slimane" &&
+                  !isThinking &&
+                  idx === messages.map((m) => m.role).lastIndexOf("slimane");
+                return (
+                  <div key={idx} className={`flex gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                    {msg.role === "slimane" && <SlimaneAvatar mood="happy" size="sm" />}
+                    <div className="max-w-[82%] space-y-2">
+                      <div
+                        className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
+                          msg.role === "user"
+                            ? "bg-navy-700 text-white rounded-br-sm"
+                            : "bg-white border border-gold-100/80 text-navy-800 rounded-bl-sm shadow-sm"
+                        }`}
+                      >
+                        {msg.content}
+                      </div>
+                      {isLastSlimane && msg.quickReplies && (
+                        <div className="flex flex-wrap gap-1.5 pt-0.5">
+                          {msg.quickReplies.map((qr) => (
+                            <button
+                              type="button"
+                              key={qr}
+                              onClick={() => sendMessage(qr)}
+                              className="px-3 py-1.5 bg-navy-50 border border-navy-200/60 text-navy-700 text-xs rounded-full hover:bg-gold-50 hover:border-gold-300 hover:text-navy-800 transition-all font-medium"
+                            >
+                              {qr}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    {msg.quickReplies && msg.role === "slimane" && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {msg.quickReplies.map((qr) => (
-                          <button
-                            key={qr}
-                            onClick={() => sendMessage(qr)}
-                            className="px-3 py-1.5 bg-gold-50 border border-gold-200 text-navy-700 text-xs rounded-full hover:bg-gold-100 hover:border-gold-300 transition-all font-medium"
-                          >
-                            {qr}
-                          </button>
-                        ))}
+                    {msg.role === "user" && (
+                      <div className="w-7 h-7 bg-navy-600 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">
+                        Toi
                       </div>
                     )}
                   </div>
-                  {msg.role === "user" && (
-                    <div className="w-8 h-8 bg-navy-600 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                      Toi
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
 
               {/* Thinking indicator */}
               {isThinking && (

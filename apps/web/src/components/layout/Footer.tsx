@@ -36,7 +36,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-navy-300 text-sm leading-relaxed mb-5">
-              Orientation académique premium pour les bacheliers marocains. Propulsé par l'IA, guidé par l'expertise humaine.
+              Outil d'orientation indépendant pour les bacheliers marocains. Propulsé par l'IA, basé sur les données officielles Tawjihi et cursussup. Non affilié aux établissements présentés.
             </p>
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 text-xs text-navy-400">
@@ -130,9 +130,9 @@ export default function Footer() {
         <div className="border-t border-navy-800 pt-8 mb-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { value: SCHOOLS.length + "+", label: "Établissements" },
-              { value: "12", label: "Régions" },
-              { value: "15K+", label: "Bacheliers" },
+              { value: SCHOOLS.length + "+", label: "Établissements référencés" },
+              { value: "12", label: "Régions couvertes" },
+              { value: "7", label: "Filières Bac" },
               { value: "3", label: "Langues" },
             ].map((s) => (
               <div key={s.label}>
