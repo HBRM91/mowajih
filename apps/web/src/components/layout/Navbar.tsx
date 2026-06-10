@@ -78,14 +78,14 @@ export default function Navbar() {
                 className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-xs hover:shadow-lg hover:shadow-gold-500/25 hover:scale-105 transition-all duration-200"
               >
                 <span className="w-1.5 h-1.5 bg-navy-900/50 rounded-full" />
-                Commencer
+                {t("nav.start")}
               </Link>
             </div>
 
             <XPBar />
 
-            {/* Language selector */}
-            <div className="flex items-center gap-0.5 bg-navy-800/20 backdrop-blur-sm rounded-full p-0.5 border border-white/10">
+            {/* Language selector — always LTR so tab order stays FR→AR→EN */}
+            <div dir="ltr" className="flex items-center gap-0.5 bg-navy-800/20 backdrop-blur-sm rounded-full p-0.5 border border-white/10">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
@@ -160,7 +160,7 @@ export default function Navbar() {
                   className="flex items-center justify-center gap-2 py-3 px-6 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-xl font-bold text-sm"
                   onClick={() => setMenuOpen(false)}
                 >
-                  🚀 Commencer mon orientation
+                  🚀 {t("nav.start.mobile")}
                 </Link>
               </div>
             </div>
