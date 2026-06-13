@@ -71,14 +71,16 @@ function SimpleMarkdown({ text }: { text: string }) {
 
 // ── Slimane avatar ──────────────────────────────────────────────────────────
 const SlimaneAvatar = ({ mood = "happy", size = "md" }: { mood?: string; size?: "sm" | "md" }) => {
-  const sizeClass = size === "sm" ? "w-8 h-8 text-sm" : "w-12 h-12 text-lg";
+  const sizeClass = size === "sm" ? "w-8 h-8" : "w-12 h-12";
   return (
-    <div className={`relative ${sizeClass} rounded-full flex items-center justify-center font-bold shadow-lg transition-all flex-shrink-0 ${
-      mood === "thinking"
-        ? "bg-gradient-to-br from-gold-300 to-gold-400 animate-pulse"
-        : "bg-gradient-to-br from-gold-400 to-gold-600"
+    <div className={`relative ${sizeClass} rounded-full flex-shrink-0 shadow-lg transition-all ${
+      mood === "thinking" ? "animate-pulse ring-2 ring-amber-400/50" : "ring-2 ring-gold-400/40"
     }`}>
-      <span className="text-navy-900 font-heading">S</span>
+      <img
+        src="/images/slimane-avatar.jpeg"
+        alt="Slimane"
+        className="w-full h-full rounded-full object-cover object-top"
+      />
       {mood === "happy" && (
         <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-cream flex items-center justify-center">
           <span className="text-[7px] text-white font-bold">✓</span>
