@@ -87,7 +87,7 @@ app.post("/", rateLimit("evaluate"), validate("json", profileSchema), async (c) 
       historyGrade: body.historyGrade ?? null,
       techGrade: body.techGrade ?? null,
       englishGrade: body.englishGrade ?? null,
-      city: body.city as Parameters<typeof students.$inferInsert["city"]>[0],
+      city: body.city as "Casablanca" | "Rabat" | "Marrakech" | "Fès" | "Tanger" | "Agadir" | "Oujda" | "Tétouan" | "Salé" | "Meknès",
       region: body.region,
       financialBracket: body.financialBracket,
       firstName: body.firstName ?? null,

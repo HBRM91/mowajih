@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { drizzle } from "drizzle-orm/d1";
-import { eq, desc, count, like, or } from "drizzle-orm";
+import { eq, desc, count } from "drizzle-orm";
 import { students } from "@tawjih/shared";
 import { adminAuth } from "../../middleware/adminAuth";
 import type { Env } from "../../types/env";
@@ -12,8 +12,6 @@ app.get("/", adminAuth(), async (c) => {
   const db = drizzle(c.env.DB);
   const page = Math.max(1, parseInt(c.req.query("page") ?? "1", 10));
   const limit = Math.min(50, Math.max(10, parseInt(c.req.query("limit") ?? "20", 10)));
-  const search = c.req.query("search") ?? "";
-  const track = c.req.query("track") ?? "";
   const offset = (page - 1) * limit;
 
   let query = db

@@ -129,7 +129,7 @@ export default function Profiles() {
               </thead>
               <tbody className="divide-y divide-gold-50">
                 {profiles.map((p) => (
-                  <ProfileRow key={p.uuid} profile={p} token={token} />
+                  <ProfileRow key={p.uuid} profile={p} />
                 ))}
               </tbody>
             </table>
@@ -167,7 +167,7 @@ export default function Profiles() {
   );
 }
 
-function ProfileRow({ profile, token }: { profile: Profile; token: string | null }) {
+function ProfileRow({ profile }: { profile: Profile }) {
   const name = profile.firstName && profile.lastName
     ? `${profile.firstName} ${profile.lastName}`
     : null;

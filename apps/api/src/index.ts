@@ -17,6 +17,7 @@ import adminProfiles from "./routes/admin/profiles";
 import adminDossier from "./routes/admin/dossier";
 import adminSeuils from "./routes/admin/seuils";
 import adminAssets from "./routes/admin/assets";
+import adminLeads from "./routes/admin/leads";
 import { adminAuth } from "./middleware/adminAuth";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -77,6 +78,7 @@ app.use("/api/admin/live/*", adminAuth());
 app.use("/api/admin/profiles/*", adminAuth());
 app.use("/api/admin/dossier/*", adminAuth());
 app.use("/api/admin/seuils/*", adminAuth());
+app.use("/api/admin/leads/*", adminAuth());
 app.route("/api/admin/analytics", analytics);
 app.route("/api/admin/assistant", assistant);
 app.route("/api/admin/communications", communications);
@@ -84,6 +86,7 @@ app.route("/api/admin/live", live);
 app.route("/api/admin/profiles", adminProfiles);
 app.route("/api/admin/dossier", adminDossier);
 app.route("/api/admin/seuils", adminSeuils);
+app.route("/api/admin/leads", adminLeads);
 app.route("/api/admin/assets", adminAssets);
 // Public seuils overrides — read by web app on load
 app.get("/api/public/seuils", async (c) => {
