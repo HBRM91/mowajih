@@ -39,6 +39,7 @@ const HOW_IT_WORKS = [
   {
     step: "01",
     icon: "🎯",
+    image: "/images/step-01-choose.jpeg",
     title: "Choisis ta filière",
     desc: "Indique ton Bac, tes notes et ta ville. 2 minutes, top chrono.",
     color: "from-navy-700 to-navy-800",
@@ -47,6 +48,7 @@ const HOW_IT_WORKS = [
   {
     step: "02",
     icon: "🤖",
+    image: "/images/step-02-ai.jpeg",
     title: "Slimane t'analyse",
     desc: "Notre IA calcule ta probabilité d'admission dans chaque école de ta région.",
     color: "from-gold-600 to-gold-700",
@@ -55,6 +57,7 @@ const HOW_IT_WORKS = [
   {
     step: "03",
     icon: "🏆",
+    image: "/images/step-03-results.jpeg",
     title: "Découvre tes matchs",
     desc: "Tu reçois une liste personnalisée d'écoles avec les chances d'admission et les coûts.",
     color: "from-emerald-600 to-emerald-700",
@@ -196,12 +199,26 @@ export default function Home() {
             </button>
           </motion.div>
 
+          {/* Hero illustration */}
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="mt-12 max-w-2xl mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-navy-950/60 border border-white/10"
+          >
+            <img
+              src="/images/hero-illustration.jpeg"
+              alt="Étudiant marocain avec l'IA d'orientation JAD2"
+              className="w-full h-64 md:h-80 object-cover"
+            />
+          </motion.div>
+
           {/* Floating school tags */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 1 }}
-            className="mt-16 flex flex-wrap justify-center gap-2"
+            className="mt-8 flex flex-wrap justify-center gap-2"
           >
             {["EMI", "ENSIAS", "EHTP", "UM6P", "UIR", "ISCAE", "HEM", "INPT", "ENCG", "IAV", "ENSA"].map((school, i) => (
               <span
@@ -290,19 +307,26 @@ export default function Home() {
                 transition={{ delay: i * 0.2 }}
                 className="relative group"
               >
-                <div className="bg-white rounded-3xl border border-gold-100/60 p-8 hover:shadow-xl hover:shadow-navy-900/5 hover:border-gold-200 transition-all duration-300 h-full">
-                  {/* Step number */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white font-heading font-bold text-sm shadow-lg`}>
-                      {step.step}
+                <div className="bg-white rounded-3xl border border-gold-100/60 overflow-hidden hover:shadow-xl hover:shadow-navy-900/5 hover:border-gold-200 transition-all duration-300 h-full">
+                  {/* Step illustration */}
+                  <div className="relative h-40 overflow-hidden">
+                    <img src={step.image} alt={step.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-white/80 to-transparent" />
+                    <div className="absolute top-3 left-3">
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white font-heading font-bold text-sm shadow-lg`}>
+                        {step.step}
+                      </div>
                     </div>
-                    <span className="text-xs font-bold text-gold-600 bg-gold-50 border border-gold-200 px-2.5 py-1 rounded-full">
-                      {step.xp}
-                    </span>
+                    <div className="absolute top-3 right-3">
+                      <span className="text-xs font-bold text-gold-600 bg-white/90 border border-gold-200 px-2.5 py-1 rounded-full shadow-sm">
+                        {step.xp}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{step.icon}</div>
-                  <h3 className="font-heading text-xl font-bold text-navy-800 mb-3">{step.title}</h3>
-                  <p className="text-navy-400 text-sm leading-relaxed">{step.desc}</p>
+                  <div className="p-6">
+                    <h3 className="font-heading text-xl font-bold text-navy-800 mb-3">{step.title}</h3>
+                    <p className="text-navy-400 text-sm leading-relaxed">{step.desc}</p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -575,8 +599,8 @@ export default function Home() {
               <div className="bg-cream rounded-3xl shadow-2xl overflow-hidden border border-gold-200/20 max-w-sm mx-auto">
                 {/* Chat header */}
                 <div className="bg-gradient-to-r from-navy-800 to-navy-700 p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex items-center justify-center font-bold text-navy-900 shadow-lg">
-                    S
+                  <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg flex-shrink-0 border-2 border-gold-400">
+                    <img src="/images/slimane-avatar.jpeg" alt="Slimane" className="w-full h-full object-cover object-top" />
                   </div>
                   <div>
                     <div className="font-heading font-bold text-gold-300 text-sm">Slimane</div>
@@ -589,7 +613,7 @@ export default function Home() {
                 {/* Messages */}
                 <div className="p-4 space-y-3 bg-parchment/50">
                   <div className="flex gap-2">
-                    <div className="w-7 h-7 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-navy-900">S</div>
+                    <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border border-gold-400"><img src="/images/slimane-avatar.jpeg" alt="S" className="w-full h-full object-cover object-top" /></div>
                     <div className="bg-white border border-gold-100 rounded-2xl rounded-tl-md px-3 py-2 text-xs text-navy-700 shadow-sm max-w-[200px]">
                       Salam ! Je suis Slimane 👋 Quelle est ta filière Bac ?
                     </div>
@@ -600,7 +624,7 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <div className="w-7 h-7 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-navy-900">S</div>
+                    <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border border-gold-400"><img src="/images/slimane-avatar.jpeg" alt="S" className="w-full h-full object-cover object-top" /></div>
                     <div className="bg-white border border-gold-100 rounded-2xl rounded-tl-md px-3 py-2 text-xs text-navy-700 shadow-sm max-w-[210px]">
                       Excellent ! 🎯 Avec 14.7 en SM, tu as accès à ENSIAS, INPT, ENSA, ENCG... Dis-moi ta ville pour affiner !
                     </div>

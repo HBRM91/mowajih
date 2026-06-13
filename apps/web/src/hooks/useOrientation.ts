@@ -110,7 +110,7 @@ function generateRationale(school: School, generalGrade: number, bacTrack: strin
   return `Inscription ouverte sur présentation du bac validé. ${school.shortName} accueille tous les profils — démarrage rapide, insertion professionnelle directe en 2–3 ans.`;
 }
 
-function generateAlternatives(bacTrack: string, generalGrade: number): Array<{ name: string; type: string; reason: string }> {
+function generateAlternatives(bacTrack: string, _generalGrade: number): Array<{ name: string; type: string; reason: string }> {
   const alts: Array<{ name: string; type: string; reason: string }> = [];
 
   if (["SM", "PC", "STI"].includes(bacTrack)) {

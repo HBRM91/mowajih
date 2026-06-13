@@ -24,8 +24,10 @@ const MENTION_STARS: Record<string, string> = {
   passable: "★☆☆☆",
 };
 
+type FormDataKey = keyof Omit<ReturnType<typeof useFormStore.getState>, "setField" | "nextStep" | "prevStep" | "reset" | "setSlimaneMode">;
+
 interface GradeField {
-  key: keyof ReturnType<typeof useFormStore.getState>;
+  key: FormDataKey;
   label: string;
   required?: boolean;
   placeholder?: string;
