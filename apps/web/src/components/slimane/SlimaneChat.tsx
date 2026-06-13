@@ -109,15 +109,15 @@ function getInitialGreeting(lang: Lang): { text: string; quickReplies: string[] 
   return {
     text: tx(
       lang,
-      "Bonjour ! Je suis Slimane, conseiller académique IA spécialisé dans l'enseignement supérieur au Maroc. Je connais toutes les écoles — ENSA, ENCG, EMI, EHTP, UM6P, UIR, HEM, médecine et bien plus.\n\nPose-moi n'importe quelle question sur ton orientation ou lance le questionnaire pour un matching personnalisé.",
-      "مرحباً ! أنا سليمان، مستشار أكاديمي متخصص في التعليم العالي بالمغرب. أعرف جميع المؤسسات — ENSA، ENCG، EMI، EHTP، UM6P، UIR، HEM، كلية الطب وغيرها.\n\nاطرح علي أي سؤال حول توجيهك الدراسي، أو أجرِ الاستبيان للحصول على توصيات مخصصة.",
-      "Hello! I'm Slimane, an AI academic advisor specialising in higher education in Morocco. I know every institution — ENSA, ENCG, EMI, EHTP, UM6P, UIR, HEM, medicine and more.\n\nAsk me anything about your orientation, or take the questionnaire for a personalised match."
+      "Salut ! Je suis Slimane, ton conseiller académique. Dis-moi ta filière Bac, pose ta question directement — ou remplis le questionnaire pour un matching personnalisé. C'est toi qui choisis !",
+      "مرحباً ! أنا سليمان، مرشدك الأكاديمي. أخبرني بشعبتك في الباك، أو اطرح سؤالك مباشرة — أو املأ الاستبيان للحصول على توصيات مخصصة. الخيار لك !",
+      "Hey! I'm Slimane, your academic advisor. Tell me your Bac track, ask me anything directly — or take the questionnaire for a personalised match. Your call!"
     ),
     quickReplies: qx(
       lang,
-      ["Je suis Bac SM/PC", "Je veux faire médecine", "Écoles à Casablanca", "Passer le questionnaire"],
-      ["شعبة علوم رياضية / فيزيائية", "أريد دراسة الطب", "مدارس في الدار البيضاء", "إجراء الاستبيان"],
-      ["I'm Bac SM/PC", "I want to study medicine", "Schools in Casablanca", "Take the questionnaire"]
+      ["Je suis Bac SM/PC", "Business & économie", "Je veux faire médecine", "Passer le questionnaire"],
+      ["شعبة علوم رياضية / فيزيائية", "الأعمال والاقتصاد", "أريد دراسة الطب", "إجراء الاستبيان"],
+      ["I'm Bac SM/PC", "Business & economics", "I want to study medicine", "Take the questionnaire"]
     ),
   };
 }
@@ -196,8 +196,8 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
     };
   }
 
-  // Bac SE
-  if (/(bac se|sciences eco|economique|علوم اقتصادية|اقتصاد بكالوريا)/.test(lower + raw)) {
+  // Bac SE — also catches "pour eco", "en eco", "filiere eco", etc.
+  if (/(bac se|sciences eco|economique|eco\b|filiere eco|option eco|pour eco|علوم اقتصادية|اقتصاد بكالوريا)/.test(lower + raw)) {
     return {
       text: tx(lang,
         "Le Bac SE est idéal pour le business, l'économie et la gestion.\n\n**Public quasi gratuit :**\n→ ENCG (12 campus, seuil SE 12/20, 5K–12K MAD/an)\n→ ISCAE Casablanca/Rabat (seuil SE 17.24/20, très sélectif)\n→ FSJES dans toutes les universités publiques (accès libre)\n\n**Privé premium :**\n→ HEM Business School (35K–65K MAD/an, accrédité AACSB)\n→ UIR pôle Business (40K–60K MAD/an)\n→ UM6P (bourses disponibles jusqu'à 100%)\n\nInscriptions via **cursussup.gov.ma** pour le public.",
@@ -554,7 +554,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
   }
 
   // Business (generic)
-  if (/(business|management|commerce|marketing|finance|gestion|الأعمال|التسيير|التجارة|التمويل)/.test(lower + raw)) {
+  if (/(business|management|commerce|marketing|finance|gestion|economie|ecole.*commerce|ecole.*business|الأعمال|التسيير|التجارة|التمويل)/.test(lower + raw)) {
     return {
       text: tx(lang,
         "**Business & management au Maroc**\n\n**Public quasi gratuit :**\n→ ENCG (12 campus, TAFEM, seuil 12/20 SM/SE)\n→ ISCAE Casa/Rabat (17+/20, très sélectif)\n→ FSJES — accès libre, toutes universités publiques\n\n**Privé premium :**\n→ HEM Business School (AACSB, 35K–65K MAD/an)\n→ UIR Business (40K–60K MAD/an)\n→ UM6P (bourses jusqu'à 100%)",
@@ -605,7 +605,8 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
   }
 
   // Darija (Moroccan dialect) — catch common Darija patterns and route to AI
-  if (/(bghit|wach|chno|chkoun|shkoon|kidayr|kifash|mzyane|ghalya|rkhisa|bzzaf|msskin|weyn|mnin|3lash|dyal|dyali|kolchi|ghadir|nsskon|skn|ndir|nkml|ach|waش|واش|بغيت|كيفاش|مزيان|غالية|رخيصة|بزاف|ديال|كلشي|غادي)/.test(lower + raw)) {
+  // Includes spelling variants: miziana/mzyan/mzian/mzyane, achmen/achno, mdrassa/drasa, etc.
+  if (/(bghit|wach|chno|chkoun|shkoon|kidayr|kifash|mzyane|mzyan|mzian|miziana|mizyan|mziane|ghalya|rkhisa|bzzaf|msskin|weyn|mnin|3lash|dyal|dyali|kolchi|ghadir|nsskon|skn|ndir|nkml|achmen|achno|ach men|mdrassa|mdrasa|drassa|drasa|chhal|safi|walo|waldik|mhimch|had.*mdrasa|fin.*mdrasa|waش|واش|بغيت|كيفاش|مزيان|غالية|رخيصة|بزاف|ديال|كلشي|غادي|آش|كيداير)/.test(lower + raw)) {
     // Darija detected — signal to use AI (which understands Darija)
     return {
       text: tx(lang,
@@ -726,12 +727,17 @@ export default function SlimaneChat() {
           body: JSON.stringify({ messages: history, lang }),
         });
         const data = await res.json() as { reply: string | null };
+        const aiReply = data.reply?.trim() ?? null;
         setIsThinking(false);
         setMood("happy");
         setMessages((prev) => [...prev, {
           role: "slimane",
-          content: data.reply ?? quick.text,
-          quickReplies: data.reply ? undefined : quick.quickReplies,
+          content: aiReply ?? tx(lang,
+            "Hmm, laisse-moi reformuler — dis-moi ta filière Bac et ta question précise, je vais trouver la meilleure réponse pour toi.",
+            "دعني أعيد المحاولة — أخبرني بشعبتك وسؤالك بالتحديد وسأجد لك أفضل إجابة.",
+            "Let me try again — tell me your Bac track and your exact question, I'll find you the best answer."
+          ),
+          quickReplies: aiReply ? undefined : quick.quickReplies,
           timestamp: new Date(),
         }]);
       } catch {
@@ -739,7 +745,11 @@ export default function SlimaneChat() {
         setMood("happy");
         setMessages((prev) => [...prev, {
           role: "slimane",
-          content: quick.text,
+          content: tx(lang,
+            "Ma connexion est un peu lente là — reformule ta question et je te réponds tout de suite. Ou essaie l'un des sujets ci-dessous.",
+            "اتصالي بطيء قليلاً الآن — أعد صياغة سؤالك وسأجيبك فوراً. أو جرب أحد المواضيع أدناه.",
+            "My connection is a bit slow — rephrase your question and I'll answer right away. Or try one of the topics below."
+          ),
           quickReplies: quick.quickReplies,
           timestamp: new Date(),
         }]);
