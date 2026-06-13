@@ -92,28 +92,19 @@ export default function Home() {
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
       <section
         ref={heroRef}
-        className="relative min-h-screen flex flex-col justify-center bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 text-white overflow-hidden"
+        className="relative min-h-screen flex flex-col justify-center text-white overflow-hidden"
       >
-        {/* Animated background rings */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] border border-gold-500/8 rounded-full animate-[spin_60s_linear_infinite]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] border border-gold-500/10 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-gold-400/12 rounded-full animate-[spin_25s_linear_infinite]" />
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-gold-500/5 rounded-full blur-[80px]" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-navy-400/10 rounded-full blur-[80px]" />
-          {/* Floating stars */}
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-gold-400/30 rounded-full"
-              style={{
-                top: `${10 + (i * 17 % 80)}%`,
-                left: `${5 + (i * 23 % 90)}%`,
-                animation: `pulse ${2 + (i % 3)}s ease-in-out ${i * 0.3}s infinite`,
-              }}
-            />
-          ))}
-        </div>
+        {/* Full-bleed campus photo */}
+        <img
+          src="/images/hero-campus.jpeg"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          loading="eager"
+        />
+        {/* Navy gradient overlay — preserves text legibility while letting image breathe */}
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-950/82 via-navy-900/75 to-navy-950/92" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-navy-950/40 via-transparent to-gold-900/12" />
 
         <div className="relative max-w-6xl mx-auto px-4 pt-32 pb-20 text-center">
 
@@ -466,48 +457,55 @@ export default function Home() {
             {filteredSchools.slice(0, 9).map((school, i) => {
               const tierColors = TIER_COLORS[school.tier];
               return (
-                <motion.div
-                  key={school.slug}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  whileHover={{ y: -4 }}
-                  className="bg-white/6 border border-white/10 rounded-2xl p-5 hover:border-gold-500/30 hover:bg-white/10 transition-all duration-300 group"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-navy-800 rounded-xl flex items-center justify-center text-xl">
-                        {school.icon}
+                <Link key={school.slug} to={`/ecoles/${school.slug}`}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05 }}
+                    whileHover={{ y: -4 }}
+                    className="bg-white/6 border border-white/10 rounded-2xl p-5 hover:border-gold-500/30 hover:bg-white/10 transition-all duration-300 group cursor-pointer h-full"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-navy-800 rounded-xl flex items-center justify-center text-xl">
+                          {school.icon}
+                        </div>
+                        <div>
+                          <div className="text-white font-bold text-sm leading-tight group-hover:text-gold-300 transition-colors">{school.shortName}</div>
+                          <div className="text-navy-400 text-xs mt-0.5">{school.city}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-white font-bold text-sm leading-tight">{school.shortName}</div>
-                        <div className="text-navy-400 text-xs mt-0.5">{school.city}</div>
-                      </div>
-                    </div>
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${tierColors.bg} ${tierColors.text} ${tierColors.border}`}>
-                      {TIER_LABELS[school.tier]}
-                    </span>
-                  </div>
-
-                  <p className="text-navy-400 text-xs leading-relaxed mb-4 line-clamp-2">{school.description}</p>
-
-                  <div className="flex flex-wrap gap-1">
-                    {school.tracks.slice(0, 4).map((t) => (
-                      <span key={t} className="text-[10px] px-2 py-0.5 bg-navy-800/80 text-navy-300 rounded-full border border-navy-700/50">
-                        Bac {t}
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${tierColors.bg} ${tierColors.text} ${tierColors.border}`}>
+                        {TIER_LABELS[school.tier]}
                       </span>
-                    ))}
-                  </div>
-                </motion.div>
+                    </div>
+
+                    <p className="text-navy-400 text-xs leading-relaxed mb-4 line-clamp-2">{school.description}</p>
+
+                    <div className="flex flex-wrap gap-1">
+                      {school.tracks.slice(0, 4).map((t) => (
+                        <span key={t} className="text-[10px] px-2 py-0.5 bg-navy-800/80 text-navy-300 rounded-full border border-navy-700/50">
+                          Bac {t}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                </Link>
               );
             })}
           </div>
 
           <div className="text-center mt-8">
-            <p className="text-navy-400 text-sm">
-              + {SCHOOLS.length - filteredSchools.length} autres établissements analysés dans notre système
-            </p>
+            <Link
+              to="/ecoles"
+              className="inline-flex items-center gap-2 px-6 py-3 border border-white/20 text-white rounded-full text-sm font-semibold hover:bg-white/8 hover:border-gold-500/40 transition-all"
+            >
+              Voir les {SCHOOLS.length}+ établissements
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
@@ -564,54 +562,61 @@ export default function Home() {
               {trackSchools.map((school, i) => {
                 const tierColors = TIER_COLORS[school.tier];
                 return (
-                  <motion.div
-                    key={school.slug}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.08 }}
-                    className={`relative bg-white rounded-2xl border p-5 hover:shadow-lg transition-all duration-300 ${tierColors.border}`}
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${tierColors.bg}`}>
-                        {school.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-bold text-navy-800 text-sm leading-tight truncate">{school.shortName}</div>
-                        <div className="text-xs text-navy-400 mt-0.5 flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          </svg>
-                          {school.city}
+                  <Link key={school.slug} to={`/ecoles/${school.slug}`}>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.08 }}
+                      className={`relative bg-white rounded-2xl border p-5 hover:shadow-lg hover:border-gold-300 transition-all duration-300 group ${tierColors.border}`}
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${tierColors.bg}`}>
+                          {school.icon}
                         </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-navy-800 text-sm leading-tight truncate group-hover:text-gold-700 transition-colors">{school.shortName}</div>
+                          <div className="text-xs text-navy-400 mt-0.5 flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            </svg>
+                            {school.city}
+                          </div>
+                        </div>
+                        <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border flex-shrink-0 ${tierColors.bg} ${tierColors.text} ${tierColors.border}`}>
+                          {TIER_LABELS[school.tier]}
+                        </span>
                       </div>
-                      <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border flex-shrink-0 ${tierColors.bg} ${tierColors.text} ${tierColors.border}`}>
-                        {TIER_LABELS[school.tier]}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-navy-400">
-                        Note min: <strong className="text-navy-700">{school.minGrade}/20</strong>
-                      </span>
-                      <span className={`px-2 py-0.5 rounded-full ${school.access === "public" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
-                        {school.access === "public" ? "Public" : school.access === "semi-public" ? "Semi-pub." : "Privé"}
-                      </span>
-                    </div>
-                  </motion.div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-navy-400">
+                          Note min: <strong className="text-navy-700">{school.minGrade}/20</strong>
+                        </span>
+                        <span className={`px-2 py-0.5 rounded-full ${school.access === "public" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+                          {school.access === "public" ? "Public" : school.access === "semi-public" ? "Semi-pub." : "Privé"}
+                        </span>
+                      </div>
+                    </motion.div>
+                  </Link>
                 );
               })}
             </div>
           </motion.div>
 
-          <div className="text-center mt-10">
+          <div className="text-center mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/orientation"
-              onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
+              to="/ecoles"
               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold hover:shadow-lg hover:shadow-gold-500/25 hover:scale-105 transition-all duration-300 touch-target shadow-md"
             >
-              Voir toutes mes écoles personnalisées
+              Explorer toutes les écoles
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
+            </Link>
+            <Link
+              to="/orientation"
+              onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
+              className="inline-flex items-center gap-2 px-8 py-4 border border-gold-300 text-gold-700 rounded-full font-bold hover:bg-gold-50 transition-all duration-300 touch-target"
+            >
+              Voir mes recommandations IA
             </Link>
           </div>
         </div>

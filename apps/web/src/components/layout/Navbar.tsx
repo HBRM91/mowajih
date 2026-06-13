@@ -73,6 +73,9 @@ export default function Navbar() {
               <Link to="/orientation" className={`transition-colors duration-200 ${linkColor}`}>
                 {t("nav.orientation")}
               </Link>
+              <Link to="/ecoles" className={`transition-colors duration-200 ${linkColor}`}>
+                {t("nav.schools")}
+              </Link>
               <Link
                 to="/orientation"
                 className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-xs hover:shadow-lg hover:shadow-gold-500/25 hover:scale-105 transition-all duration-200"
@@ -80,6 +83,17 @@ export default function Navbar() {
                 <span className="w-1.5 h-1.5 bg-navy-900/50 rounded-full" />
                 {t("nav.start")}
               </Link>
+              <a
+                href="https://tawjih-admin.pages.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`opacity-40 hover:opacity-70 transition-opacity duration-200 ${linkColor}`}
+                title="Admin"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </a>
             </div>
 
             <XPBar />
@@ -143,6 +157,16 @@ export default function Navbar() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
                 {t("nav.orientation")}
+              </Link>
+              <Link
+                to="/ecoles"
+                className="flex items-center gap-3 py-3 px-4 text-white font-medium rounded-xl hover:bg-white/8 transition"
+                onClick={() => setMenuOpen(false)}
+              >
+                <svg className="w-4 h-4 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                {t("nav.schools")}
               </Link>
               <Link
                 to="/privacy"

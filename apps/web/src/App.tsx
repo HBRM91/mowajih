@@ -10,6 +10,8 @@ const Home = lazy(() => import("./routes/Home"));
 const Orientation = lazy(() => import("./routes/Orientation"));
 const Results = lazy(() => import("./routes/Results"));
 const Privacy = lazy(() => import("./routes/Privacy"));
+const Schools = lazy(() => import("./routes/Schools"));
+const SchoolDetail = lazy(() => import("./routes/SchoolDetail"));
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
               <Route path="/orientation" element={<Orientation />} />
               <Route path="/results/:uuid" element={<Results />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/ecoles" element={<Schools />} />
+              <Route path="/ecoles/:slug" element={<SchoolDetail />} />
             </Routes>
           </AnimatePresence>
         </Suspense>
