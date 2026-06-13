@@ -37,13 +37,14 @@ function getDomainFromUrl(url?: string): string | null {
   }
 }
 
-function SchoolLogo({ school }: { school: { shortName: string; website?: string; icon: string; tier: SchoolTier } }) {
-  const domain = getDomainFromUrl(school.website);
+function SchoolLogo({ school }: { school: { shortName: string; website?: string; icon: string; tier: SchoolTier; logoPath?: string } }) {
   const tierColors = TIER_COLORS[school.tier];
-  // 0 = try Clearbit, 1 = try Google favicon, 2 = show emoji
-  const [fallback, setFallback] = useState(domain ? 0 : 2);
+  // 0 = local logoPath, 1 = Clearbit, 2 = Google favicon, 3 = emoji
+  const domain = getDomainFromUrl(school.website);
+  const startLevel = school.logoPath ? 0 : domain ? 1 : 3;
+  const [level, setLevel] = useState(startLevel);
 
-  if (fallback >= 2 || !domain) {
+  if (level >= 3 || (!school.logoPath && !domain)) {
     return (
       <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${tierColors.bg}`}>
         {school.icon}
@@ -51,9 +52,10 @@ function SchoolLogo({ school }: { school: { shortName: string; website?: string;
     );
   }
 
-  const src = fallback === 0
-    ? `https://logo.clearbit.com/${domain}?size=64`
-    : `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  const src =
+    level === 0 ? school.logoPath! :
+    level === 1 ? `https://logo.clearbit.com/${domain}?size=64` :
+    `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 
   return (
     <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden bg-white border ${tierColors.border}`}>
@@ -61,7 +63,7 @@ function SchoolLogo({ school }: { school: { shortName: string; website?: string;
         src={src}
         alt={school.shortName}
         className="w-9 h-9 object-contain p-0.5"
-        onError={() => setFallback((f) => f + 1)}
+        onError={() => setLevel((l) => l + 1)}
       />
     </div>
   );
