@@ -6,6 +6,7 @@ import type { Env } from "./types/env";
 
 import health from "./routes/health";
 import evaluate from "./routes/evaluate";
+import chat from "./routes/chat";
 import leads from "./routes/leads";
 import profiles from "./routes/profiles";
 import analytics from "./routes/admin/analytics";
@@ -65,6 +66,7 @@ app.use(async (c, next) => {
 // Routes
 app.route("/health", health);
 app.route("/api/evaluate", evaluate);
+app.route("/api/chat", chat);
 app.route("/api/leads", leads);
 // Public — save student profile + simulation results (rate-limited)
 app.route("/api/profiles", profiles);

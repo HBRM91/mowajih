@@ -122,7 +122,9 @@ function getInitialGreeting(lang: Lang): { text: string; quickReplies: string[] 
   };
 }
 
-function generateSlimaneReply(userText: string, lang: Lang): { text: string; quickReplies?: string[] } {
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "https://tawjih-api.hamzaelbouhali.workers.dev";
+
+function generateSlimaneReply(userText: string, lang: Lang): { text: string; quickReplies?: string[]; matched: boolean } {
   const lower = userText.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const raw = userText; // for Arabic detection
 
@@ -139,6 +141,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["هيا نبدأ !", "كم من الوقت يستغرق ؟"],
         ["Let's go!", "How long does it take?"]
       ),
+      matched: true,
     };
   }
 
@@ -155,6 +158,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["أريد الهندسة عبر الأقسام التحضيرية", "أريد ISCAE أو ENCG", "ميزة جيد جداً 16+", "ميزة حسن 12-14"],
         ["I want engineering (CPGE)", "I want ISCAE or ENCG", "Mention TB 16+", "Mention AB 12-14"]
       ),
+      matched: true,
     };
   }
 
@@ -171,6 +175,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["الهندسة مع العلوم الفيزيائية", "الطب مع العلوم الفيزيائية", "ENCG أم HEM ؟"],
         ["Engineering with PC", "Medicine with PC", "ENCG or HEM?"]
       ),
+      matched: true,
     };
   }
 
@@ -187,6 +192,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["كيف التقدم لكلية الطب ؟", "علوم الحياة → الهندسة ممكن ؟", "الصيدلة مقابل الطب", "تكاليف الطب الخاص"],
         ["How to apply to FMP medicine?", "SVT → engineering possible?", "Pharmacy vs medicine", "Private medicine costs"]
       ),
+      matched: true,
     };
   }
 
@@ -203,6 +209,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["كيف أنتسب إلى ENCG ؟", "ISCAE مقابل HEM", "FSJES مجانية ؟", "منح UM6P"],
         ["How to get into ENCG?", "ISCAE vs HEM", "Is FSJES free?", "UM6P scholarships"]
       ),
+      matched: true,
     };
   }
 
@@ -219,6 +226,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["ما هي الأقسام التحضيرية TSI ؟", "ENSA مع العلوم التقنية", "BTS أم ENSA ؟"],
         ["What is CPGE TSI?", "ENSA with STI", "BTS or ENSA?"]
       ),
+      matched: true,
     };
   }
 
@@ -235,6 +243,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["FMP الرباط أم الدار البيضاء ؟", "التحضير لمباراة كلية الطب", "الصيدلة مقابل الطب", "ميزانية الطب الخاص"],
         ["FMP Rabat or Casablanca?", "Preparing the FMP exam", "Pharmacy vs medicine", "Private medicine budget"]
       ),
+      matched: true,
     };
   }
 
@@ -251,6 +260,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["ما هي الأقسام التحضيرية ؟", "EMI مقابل EHTP", "ترتيب CNC للدخول لـ EMI ؟"],
         ["What is CPGE?", "EMI vs EHTP", "CNC ranking needed for EMI?"]
       ),
+      matched: true,
     };
   }
 
@@ -267,6 +277,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["EHTP مقابل EMI", "الأقسام التحضيرية لـ EHTP", "مخرجات EHTP"],
         ["EHTP vs EMI", "CPGE for EHTP", "EHTP career prospects"]
       ),
+      matched: true,
     };
   }
 
@@ -283,6 +294,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["كيف التقدم لمنح UM6P ؟", "UM6P مقابل UIR", "الحياة في بن جرير ؟"],
         ["How to apply for UM6P scholarships?", "UM6P vs UIR", "Living in Ben Guerir?"]
       ),
+      matched: true,
     };
   }
 
@@ -299,6 +311,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["الطيران في UIR", "UIR مقابل مونديابوليس", "منح UIR"],
         ["Aeronautics at UIR", "UIR vs Mundiapolis", "UIR scholarships"]
       ),
+      matched: true,
     };
   }
 
@@ -315,6 +328,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["ENCG مقابل ISCAE", "أفضل حرم ENCG ؟", "كيف أتحضر لمباراة TAFEM ؟"],
         ["ENCG vs ISCAE", "Best ENCG campus?", "How to prepare for TAFEM?"]
       ),
+      matched: true,
     };
   }
 
@@ -331,6 +345,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["ISCAE مقابل ENCG", "فرصي مع 17/20 ؟", "برامج الماجستير في ISCAE"],
         ["ISCAE vs ENCG", "Chances with 17/20?", "ISCAE MBA programmes"]
       ),
+      matched: true,
     };
   }
 
@@ -347,6 +362,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["التمويل في HEM", "HEM مقابل ENCG", "منحة HEM ؟"],
         ["Finance at HEM", "HEM vs ENCG", "HEM scholarship?"]
       ),
+      matched: true,
     };
   }
 
@@ -363,6 +379,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["ENSA الدار البيضاء مقابل فاس", "ENSA مقابل EMI/EHTP", "كيف أسجل ؟"],
         ["ENSA Casablanca vs Fès", "ENSA vs EMI/EHTP", "How to apply?"]
       ),
+      matched: true,
     };
   }
 
@@ -379,6 +396,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["أقسام تحضيرية MP أم PC ؟", "كيف أدخل الأقسام التحضيرية ؟", "تحضيري بالمغرب أم فرنسا"],
         ["CPGE MP or PC?", "How to get into CPGE?", "CPGE Morocco vs France"]
       ),
+      matched: true,
     };
   }
 
@@ -395,6 +413,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["ميزانية أقل من 20K درهم", "كيف أحصل على منحة ؟", "أفضل الخيارات المجانية"],
         ["Budget under 20K MAD", "How to get a scholarship?", "Best free options"]
       ),
+      matched: true,
     };
   }
 
@@ -411,6 +430,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["الهندسة بالدار البيضاء", "الأعمال بالدار البيضاء", "تكلفة المعيشة بالدار البيضاء"],
         ["Engineering in Casablanca", "Business in Casablanca", "Cost of living in Casa"]
       ),
+      matched: true,
     };
   }
 
@@ -427,6 +447,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["القبول في EMI", "UIR أم ENSA الرباط ؟", "السكن بالرباط"],
         ["EMI admission", "UIR or ENSA Rabat?", "Accommodation in Rabat"]
       ),
+      matched: true,
     };
   }
 
@@ -443,6 +464,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["أنا في شعبة علوم رياضية", "أنا في شعبة علوم اقتصادية", "أنا في شعبة علوم الحياة", "إجراء الاستبيان"],
         ["I'm Bac SM", "I'm Bac SE", "I'm Bac SVT", "Take the questionnaire"]
       ),
+      matched: true,
     };
   }
 
@@ -459,6 +481,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["خيارات الجامعة العامة", "ما هو OFPPT ؟", "BTS أم ليسانس ؟"],
         ["Public university options", "What is OFPPT?", "BTS or Bachelor's?"]
       ),
+      matched: true,
     };
   }
 
@@ -475,6 +498,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["أكثر القطاعات توظيفاً ؟", "رواتب تقنية المعلومات بالمغرب", "العمل بالخارج بعد الشهادة ؟"],
         ["Which sectors hire most?", "IT salaries in Morocco", "Working abroad after graduation?"]
       ),
+      matched: true,
     };
   }
 
@@ -491,6 +515,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["الأقسام التحضيرية المغربية ← فرنسا كيف ؟", "كيف التسجيل في كندا ؟", "ميزانية الدراسة بفرنسا"],
         ["Moroccan CPGE → France, how?", "How to apply to Canada?", "Budget for studying in France"]
       ),
+      matched: true,
     };
   }
 
@@ -507,6 +532,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["قبول ENA الرباط", "UM6P الهندسة المعمارية", "مخرجات الهندسة المعمارية"],
         ["ENA Rabat admission", "UM6P Architecture", "Architecture career prospects"]
       ),
+      matched: true,
     };
   }
 
@@ -523,6 +549,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["أنا في شعبة علوم رياضية", "أنا في شعبة علوم فيزيائية", "ما هي الأقسام التحضيرية ؟", "تكلفة ENSAM ؟"],
         ["I'm Bac SM", "I'm Bac PC", "What is CPGE?", "ENSAM costs?"]
       ),
+      matched: true,
     };
   }
 
@@ -539,6 +566,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["قبول في ENCG", "عتبات ISCAE", "HEM مقابل ENCG"],
         ["ENCG admission", "ISCAE thresholds", "HEM vs ENCG"]
       ),
+      matched: true,
     };
   }
 
@@ -555,6 +583,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         ["أنا في علوم رياضية", "أنا في علوم اقتصادية", "أنا في علوم الحياة", "إجراء الاستبيان"],
         ["I'm Bac SM", "I'm Bac SE", "I'm Bac SVT", "Take the questionnaire"]
       ),
+      matched: true,
     };
   }
 
@@ -562,21 +591,22 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
   const greetings = ["salam", "bonjour", "salut", "hello", "hi", "slt", "bonsoir", "marhaba", "ahlan", "مرحبا", "السلام", "صباح", "مساء"];
   if (greetings.some((g) => lower.includes(g) || raw.includes(g))) {
     const greeting = getInitialGreeting(lang);
-    return { text: greeting.text, quickReplies: greeting.quickReplies };
+    return { text: greeting.text, quickReplies: greeting.quickReplies, matched: true };
   }
 
-  // Default fallback
+  // No keyword matched — signal the caller to use real AI instead
   return {
     text: tx(lang,
-      "Je n'ai pas bien saisi votre question. Reformulez-la ou choisissez un sujet ci-dessous — je connais toutes les écoles marocaines : ingénierie, médecine, business, architecture et plus encore.",
-      "لم أفهم سؤالك جيداً. يرجى إعادة صياغته أو اختيار موضوع من الأزرار أدناه — أعرف جميع المؤسسات المغربية : الهندسة، الطب، الأعمال، الهندسة المعمارية وغيرها.",
-      "I didn't quite catch that. Please rephrase your question or choose a topic below — I know all Moroccan institutions: engineering, medicine, business, architecture and more."
+      "Je cherche la meilleure réponse pour toi...",
+      "أبحث عن أفضل إجابة لك...",
+      "Let me find the best answer for you..."
     ),
     quickReplies: qx(lang,
       ["Ingénierie au Maroc", "Business au Maroc", "Médecine au Maroc", "Aide-moi à choisir"],
       ["الهندسة بالمغرب", "الأعمال بالمغرب", "الطب بالمغرب", "ساعدني في الاختيار"],
       ["Engineering in Morocco", "Business in Morocco", "Medicine in Morocco", "Help me choose"]
     ),
+    matched: false,
   };
 }
 
@@ -627,24 +657,61 @@ export default function SlimaneChat() {
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isThinking) return;
-    setMessages((prev) => [...prev, { role: "user", content: text, timestamp: new Date() }]);
+    const userMsg: Message = { role: "user", content: text, timestamp: new Date() };
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsThinking(true);
     setMood("thinking");
 
-    setTimeout(() => {
-      setIsThinking(false);
-      setMood("happy");
-      const reply = generateSlimaneReply(text, lang);
-      setMessages((prev) => [...prev, {
-        role: "slimane",
-        content: reply.text,
-        quickReplies: reply.quickReplies,
-        timestamp: new Date(),
-      }]);
+    const quick = generateSlimaneReply(text, lang);
+
+    if (quick.matched) {
+      // Keyword matched — instant local response
+      setTimeout(() => {
+        setIsThinking(false);
+        setMood("happy");
+        setMessages((prev) => [...prev, {
+          role: "slimane",
+          content: quick.text,
+          quickReplies: quick.quickReplies,
+          timestamp: new Date(),
+        }]);
+        if (!open) setUnread((n) => n + 1);
+      }, 500 + Math.random() * 400);
+    } else {
+      // No keyword match — call real AI with conversation history
+      try {
+        const history = [...messages, userMsg].slice(-10).map((m) => ({
+          role: m.role as "user" | "slimane",
+          content: m.content,
+        }));
+        const res = await fetch(`${API_BASE}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: history, lang }),
+        });
+        const data = await res.json() as { reply: string | null };
+        setIsThinking(false);
+        setMood("happy");
+        setMessages((prev) => [...prev, {
+          role: "slimane",
+          content: data.reply ?? quick.text,
+          quickReplies: data.reply ? undefined : quick.quickReplies,
+          timestamp: new Date(),
+        }]);
+      } catch {
+        setIsThinking(false);
+        setMood("happy");
+        setMessages((prev) => [...prev, {
+          role: "slimane",
+          content: quick.text,
+          quickReplies: quick.quickReplies,
+          timestamp: new Date(),
+        }]);
+      }
       if (!open) setUnread((n) => n + 1);
-    }, 900 + Math.random() * 800);
-  }, [isThinking, open, lang]);
+    }
+  }, [isThinking, open, lang, messages]);
 
   const posClass = isRtl ? "left-6 right-auto" : "right-6 left-auto";
 
