@@ -16,6 +16,7 @@ import adminAuthRoute from "./routes/admin/auth";
 import adminProfiles from "./routes/admin/profiles";
 import adminDossier from "./routes/admin/dossier";
 import adminSeuils from "./routes/admin/seuils";
+import adminAssets from "./routes/admin/assets";
 import { adminAuth } from "./middleware/adminAuth";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -83,6 +84,7 @@ app.route("/api/admin/live", live);
 app.route("/api/admin/profiles", adminProfiles);
 app.route("/api/admin/dossier", adminDossier);
 app.route("/api/admin/seuils", adminSeuils);
+app.route("/api/admin/assets", adminAssets);
 // Public seuils overrides — read by web app on load
 app.get("/api/public/seuils", async (c) => {
   const raw = await c.env.CACHE.get("school_seuils_overrides");

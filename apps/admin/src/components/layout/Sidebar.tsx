@@ -8,6 +8,7 @@ const nav = [
   { path: "/pipeline", label: "Pipeline", icon: "🎯" },
   { path: "/analytics", label: "Analytiques", icon: "📈" },
   { path: "/communications", label: "Communications", icon: "✉️" },
+  { path: "/assets", label: "Générateur d'Assets", icon: "🎨" },
   { path: "/settings", label: "Paramètres", icon: "⚙️" },
 ];
 
