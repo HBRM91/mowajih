@@ -12,6 +12,7 @@ import {
   getSchoolBySlug,
 } from "../data/schools";
 import { getSchoolCareers } from "../data/careers";
+import { getSchoolCampusInfo } from "../data/campusData";
 
 const TRACK_LABELS: Record<string, string> = {
   SM: "Sciences Mathématiques",
@@ -189,9 +190,151 @@ function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug>
   );
 }
 
+// ── Campus / Housing section ─────────────────────────────────────────────────
+function CampusSection({ slug, city, lang }: { slug: string; city: string; lang: string }) {
+  const { t } = useTranslation();
+  const { isIntegrated, integrated, cityHousing } = getSchoolCampusInfo(slug, city);
+
+  const tx = (obj: { fr: string; ar: string; en: string }) =>
+    lang === "ar" ? obj.ar : lang === "en" ? obj.en : obj.fr;
+
+  return (
+    <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+      <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4 flex items-center gap-2">
+        🏠 {t("campus.section.title")}
+        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+          isIntegrated ? "bg-emerald-100 text-emerald-700 border border-emerald-200" : "bg-blue-50 text-blue-700 border border-blue-200"
+        }`}>
+          {isIntegrated ? t("campus.integrated.badge") : city ? t("campus.urban.badge") : t("campus.regional.badge")}
+        </span>
+      </h2>
+
+      <div className="space-y-4">
+        {isIntegrated && integrated ? (
+          <>
+            {/* On-campus housing */}
+            {integrated.onCampus && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-emerald-600 font-bold text-sm">✅ {t("campus.oncampus.title")}</span>
+                  <span className="ml-auto font-heading font-bold text-emerald-700 text-sm">{integrated.onCampus.cost}</span>
+                </div>
+                {integrated.onCampus.girlsWing && (
+                  <div className="flex items-center gap-1.5 text-xs text-pink-700 bg-pink-50 border border-pink-200 rounded-lg px-3 py-1.5 mb-3 w-fit">
+                    <span>👩</span> {t("campus.oncampus.girls")}
+                  </div>
+                )}
+                <div className="space-y-1">
+                  {integrated.onCampus.facilities.map((f, i) => (
+                    <div key={i} className="flex items-start gap-2 text-sm text-emerald-800">
+                      <span className="text-emerald-500 mt-0.5 flex-shrink-0">→</span>
+                      <span>{tx(f)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Housing options */}
+            <div className="bg-white border border-parchment rounded-2xl p-5">
+              <div className="font-bold text-navy-700 text-sm uppercase tracking-wider mb-3">{t("campus.housing.title")}</div>
+              <div className="space-y-2">
+                {integrated.housing.map((h, i) => (
+                  <div key={i} className="flex items-center justify-between gap-4 text-sm py-2 border-b border-parchment last:border-0">
+                    <span className="text-navy-600">{tx(h.label)}</span>
+                    <span className="font-bold text-navy-800 text-right flex-shrink-0">{h.cost}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Scholarship note */}
+            {integrated.scholarshipNote && (
+              <div className="bg-gold-50 border border-gold-200 rounded-2xl p-5">
+                <div className="font-bold text-gold-800 text-sm mb-2">🎓 {t("campus.scholarship.title")}</div>
+                <p className="text-sm text-gold-900 leading-relaxed">{tx(integrated.scholarshipNote)}</p>
+              </div>
+            )}
+
+            {/* Safety */}
+            <div className="bg-pink-50 border border-pink-200 rounded-2xl p-5">
+              <div className="font-bold text-pink-800 text-sm mb-2">👩 {t("campus.safety.girls_note")}</div>
+              <p className="text-sm text-pink-900 leading-relaxed">{tx(integrated.safety)}</p>
+            </div>
+
+            {/* Transport */}
+            {integrated.transport && (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+                <div className="font-bold text-blue-800 text-sm mb-1">🚌 {t("campus.transport.title")}</div>
+                <p className="text-sm text-blue-900">{tx(integrated.transport)}</p>
+              </div>
+            )}
+          </>
+        ) : cityHousing ? (
+          <>
+            {/* State dorm note */}
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+              <div className="font-bold text-amber-800 text-sm mb-2">🏛️ {t("campus.statedorm.title")}</div>
+              <p className="text-sm text-amber-900 leading-relaxed">{tx(cityHousing.stateDormNote)}</p>
+            </div>
+
+            {/* Housing options */}
+            <div className="bg-white border border-parchment rounded-2xl p-5">
+              <div className="font-bold text-navy-700 text-sm uppercase tracking-wider mb-3">{t("campus.housing.title")}</div>
+              <div className="space-y-2">
+                {cityHousing.housing.map((h, i) => (
+                  <div key={i} className="flex items-center justify-between gap-4 text-sm py-2 border-b border-parchment last:border-0">
+                    <span className="text-navy-600">{tx(h.label)}</span>
+                    <span className="font-bold text-navy-800 text-right flex-shrink-0">{h.cost}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Private residences note */}
+            <div className="bg-navy-50 border border-navy-200 rounded-2xl p-4">
+              <div className="font-bold text-navy-700 text-sm mb-1">🏢 {t("campus.private_residence.label")}</div>
+              <p className="text-xs text-navy-600">{t("campus.private_residence.desc")}</p>
+            </div>
+
+            {/* Neighborhoods */}
+            {cityHousing.neighborhoods.length > 0 && (
+              <div className="bg-white border border-parchment rounded-2xl p-5">
+                <div className="font-bold text-navy-700 text-sm uppercase tracking-wider mb-3">📍 {t("campus.neighborhoods.title")}</div>
+                <div className="flex flex-wrap gap-2">
+                  {cityHousing.neighborhoods.map((n) => (
+                    <span key={n} className="px-3 py-1.5 bg-gold-50 border border-gold-200 text-navy-700 text-sm rounded-full font-medium">{n}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Safety */}
+            <div className="bg-pink-50 border border-pink-200 rounded-2xl p-5">
+              <div className="font-bold text-pink-800 text-sm mb-2">👩 {t("campus.safety.girls_note")}</div>
+              <p className="text-sm text-pink-900 leading-relaxed">{tx(cityHousing.safety)}</p>
+            </div>
+
+            {/* Transport */}
+            {cityHousing.transport && (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+                <div className="font-bold text-blue-800 text-sm mb-1">🚌 {t("campus.transport.title")}</div>
+                <p className="text-sm text-blue-900">{tx(cityHousing.transport)}</p>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-navy-400 text-sm italic">{t("campus.no_data")}</div>
+        )}
+      </div>
+    </motion.section>
+  );
+}
+
 export default function SchoolDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = (["fr", "ar", "en"].includes(i18n.language) ? i18n.language : "fr") as "fr" | "ar" | "en";
   const school = getSchoolBySlug(slug ?? "");
   const careers = getSchoolCareers(slug ?? "");
 
@@ -466,6 +609,9 @@ export default function SchoolDetail() {
                 </div>
               </motion.section>
             )}
+
+            {/* Campus & Housing */}
+            <CampusSection slug={school.slug} city={school.city} lang={lang} />
           </div>
 
           {/* Right sidebar */}

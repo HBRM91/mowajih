@@ -234,5 +234,22 @@
   "cpge.badge": "📐 2 ans de CPGE requis avant admission",
   "cpge.warning.title": "Accès indirect — Classes Préparatoires obligatoires",
   "cpge.warning.desc": "Cette école ne recrute pas directement les bacheliers. Tu dois d'abord intégrer une Classe Préparatoire (CPGE) pendant 2 ans (MP / PSI / TSI selon ta filière), puis réussir le Concours National Commun (CNC). Le bac seul ne suffit pas.",
-  "cpge.min_grade.label": "Note bac min. pour CPGE"
+  "cpge.min_grade.label": "Note bac min. pour CPGE",
+  "campus.section.title": "Vie étudiante & Logement",
+  "campus.integrated.badge": "Campus intégré",
+  "campus.urban.badge": "Logement en ville",
+  "campus.regional.badge": "Ville régionale",
+  "campus.oncampus.title": "Logement sur campus",
+  "campus.oncampus.facilities": "Équipements inclus",
+  "campus.oncampus.girls": "Résidence femmes séparée",
+  "campus.housing.title": "Options de logement",
+  "campus.neighborhoods.title": "Quartiers conseillés",
+  "campus.safety.title": "Sécurité & Vie étudiante",
+  "campus.safety.girls_note": "Conseils pour les étudiantes",
+  "campus.transport.title": "Transport",
+  "campus.statedorm.title": "Cité universitaire (ONOUSC)",
+  "campus.scholarship.title": "Bourses & Aides financières",
+  "campus.no_data": "Informations de logement à venir.",
+  "campus.private_residence.label": "Résidences privées gardiennées",
+  "campus.private_residence.desc": "Bayt Al Maarif, Résidences Universitaires (RU) — studios équipés, Wi-Fi, sécurité renforcée. Fortement recommandées pour les étudiantes seules."
 }

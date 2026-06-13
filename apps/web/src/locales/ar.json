@@ -234,5 +234,22 @@
   "cpge.badge": "📐 مطلوب سنتان في الأقسام التحضيرية قبل القبول",
   "cpge.warning.title": "قبول غير مباشر — الأقسام التحضيرية إلزامية",
   "cpge.warning.desc": "هذه المدرسة لا تقبل خريجي الباكالوريا مباشرة. يجب أولاً قضاء سنتين في الأقسام التحضيرية للمدارس العليا (CPGE — MP / PSI / TSI)، ثم النجاح في المباراة الوطنية المشتركة (CNC). شهادة الباكالوريا وحدها لا تكفي للترشح.",
-  "cpge.min_grade.label": "الحد الأدنى لدخول الأقسام التحضيرية"
+  "cpge.min_grade.label": "الحد الأدنى لدخول الأقسام التحضيرية",
+  "campus.section.title": "الحياة الطلابية والإسكان",
+  "campus.integrated.badge": "حرم جامعي متكامل",
+  "campus.urban.badge": "السكن في المدينة",
+  "campus.regional.badge": "مدينة إقليمية",
+  "campus.oncampus.title": "السكن داخل الحرم",
+  "campus.oncampus.facilities": "المرافق المشمولة",
+  "campus.oncampus.girls": "مسكن مستقل للطالبات",
+  "campus.housing.title": "خيارات السكن",
+  "campus.neighborhoods.title": "الأحياء المُنصَح بها",
+  "campus.safety.title": "الأمان والحياة الطلابية",
+  "campus.safety.girls_note": "نصائح للطالبات",
+  "campus.transport.title": "التنقل والمواصلات",
+  "campus.statedorm.title": "المدينة الجامعية (ONOUSC)",
+  "campus.scholarship.title": "المنح والمساعدات المالية",
+  "campus.no_data": "معلومات السكن قريباً.",
+  "campus.private_residence.label": "إقامات خاصة ذات حراسة",
+  "campus.private_residence.desc": "بيت المعارف، المساكن الجامعية (RU) — استوديوهات مفروشة، واي فاي، أمان مشدد. موصى بها بشدة للطالبات المقيمات وحدهن."
 }

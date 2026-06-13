@@ -587,6 +587,41 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
     };
   }
 
+  // Housing / accommodation / safety
+  if (/(logement|hebergement|chambre|colocation|residence|louer|loyer|habiter|vivre|securite|fille.*seule|seule.*fille|campus|dortoir|cite.universitaire|dar al talib|immeuble|quartier|maskan|nsskon|skn|سكن|إيجار|شقة|حي|أمان)/.test(lower + raw)) {
+    return {
+      text: tx(lang,
+        "Le logement est un aspect clé de ton orientation — voici ce que tu dois savoir.\n\n**Campuses avec dortoirs intégrés :**\n→ **UM6P** (Benguerir) : 1 900–2 300 MAD/mois, résidences filles séparées, campus ultra-sécurisé\n→ **UIR** (Sala Al Jadida) : 1 800–2 500 MAD/mois, aile filles, gardien 24h/24\n→ **AUI** (Ifrane) : 3 200–5 000 MAD/mois — Ifrane est la ville la plus sûre du Maroc\n→ **UM6SS** (Casablanca) : 2 000–3 500 MAD/mois\n\n**Universités publiques — colocation privée :**\n→ Rabat (Agdal/Irfane) : 1 800–3 000 MAD/pers\n→ Casablanca (Oasis/El Jadida) : 2 000–4 000 MAD/pers\n→ Agadir (Quartier Dakhla) : 1 000–2 500 MAD — très sûr pour les étudiantes\n→ Oujda / Meknès / Settat : 800–2 000 MAD — villes calmes et économiques\n\n**Conseil étudiantes :** résidences privées gardiennées (Bayt Al Maarif, RU) recommandées si tu n'as pas de logement sur campus.",
+        "السكن جانب مهم في توجهك — إليك ما يجب أن تعرفه.\n\n**حرمات بمساكن داخلية :**\n→ **UM6P** (بنجرير) : 1 900–2 300 درهم/شهر، مساكن منفصلة للطالبات، حرم آمن للغاية\n→ **UIR** (سلا الجديدة) : 1 800–2 500 درهم/شهر، جناح للطالبات، حراسة 24/24\n→ **AUI** (إفران) : 3 200–5 000 درهم/شهر — إفران الأكثر أماناً في المغرب\n→ **UM6SS** (الدار البيضاء) : 2 000–3 500 درهم/شهر\n\n**الجامعات العامة — مشاركة السكن الخاصة :**\n→ الرباط (أكدال/العرفان) : 1 800–3 000 درهم/شخص\n→ الدار البيضاء (واحة/الجديدة) : 2 000–4 000 درهم/شخص\n→ أكادير (حي الداخلة) : 1 000–2 500 درهم — آمن جداً للطالبات\n→ وجدة / مكناس / سطات : 800–2 000 درهم — مدن هادئة واقتصادية",
+        "Housing is a key factor in your orientation — here's what you need to know.\n\n**Campuses with integrated dorms:**\n→ **UM6P** (Benguerir): 1,900–2,300 MAD/month, separate girls' residences, ultra-secure campus\n→ **UIR** (Sala Al Jadida): 1,800–2,500 MAD/month, women's wing, 24/7 guard\n→ **AUI** (Ifrane): 3,200–5,000 MAD/month — Ifrane is Morocco's safest city\n→ **UM6SS** (Casablanca): 2,000–3,500 MAD/month\n\n**Public universities — private flat-share:**\n→ Rabat (Agdal/Irfane): 1,800–3,000 MAD/person\n→ Casablanca (Oasis/El Jadida): 2,000–4,000 MAD/person\n→ Agadir (Dakhla Quarter): 1,000–2,500 MAD — very safe for female students\n→ Oujda / Meknès / Settat: 800–2,000 MAD — calm and affordable cities"
+      ),
+      quickReplies: qx(lang,
+        ["Logement Rabat", "Logement Casablanca", "Campuses avec dortoirs", "Sécurité étudiantes"],
+        ["السكن بالرباط", "السكن بالدار البيضاء", "حرمات بمساكن داخلية", "أمان الطالبات"],
+        ["Housing in Rabat", "Housing in Casablanca", "Campuses with dorms", "Safety for female students"]
+      ),
+      matched: true,
+    };
+  }
+
+  // Darija (Moroccan dialect) — catch common Darija patterns and route to AI
+  if (/(bghit|wach|chno|chkoun|shkoon|kidayr|kifash|mzyane|ghalya|rkhisa|bzzaf|msskin|weyn|mnin|3lash|dyal|dyali|kolchi|ghadir|nsskon|skn|ndir|nkml|ach|waش|واش|بغيت|كيفاش|مزيان|غالية|رخيصة|بزاف|ديال|كلشي|غادي)/.test(lower + raw)) {
+    // Darija detected — signal to use AI (which understands Darija)
+    return {
+      text: tx(lang,
+        "Je cherche la meilleure réponse pour toi...",
+        "أبحث عن أفضل إجابة لك...",
+        "Let me find the best answer for you..."
+      ),
+      quickReplies: qx(lang,
+        ["Ingénierie au Maroc", "Business au Maroc", "Médecine au Maroc", "Aide-moi à choisir"],
+        ["الهندسة بالمغرب", "الأعمال بالمغرب", "الطب بالمغرب", "ساعدني في الاختيار"],
+        ["Engineering in Morocco", "Business in Morocco", "Medicine in Morocco", "Help me choose"]
+      ),
+      matched: false,
+    };
+  }
+
   // Greetings
   const greetings = ["salam", "bonjour", "salut", "hello", "hi", "slt", "bonsoir", "marhaba", "ahlan", "مرحبا", "السلام", "صباح", "مساء"];
   if (greetings.some((g) => lower.includes(g) || raw.includes(g))) {

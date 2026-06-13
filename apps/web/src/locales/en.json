@@ -234,5 +234,22 @@
   "cpge.badge": "📐 2 years CPGE required before admission",
   "cpge.warning.title": "Indirect admission — Preparatory Classes required",
   "cpge.warning.desc": "This school does not accept Baccalaureate holders directly. You must first complete 2 years of Preparatory Classes (CPGE — MP / PSI / TSI), then pass the National Common Examination (CNC). Your Bac alone is not enough to apply.",
-  "cpge.min_grade.label": "Min. Bac grade for CPGE entry"
+  "cpge.min_grade.label": "Min. Bac grade for CPGE entry",
+  "campus.section.title": "Student Life & Housing",
+  "campus.integrated.badge": "Integrated Campus",
+  "campus.urban.badge": "City Housing",
+  "campus.regional.badge": "Regional City",
+  "campus.oncampus.title": "On-Campus Housing",
+  "campus.oncampus.facilities": "Included facilities",
+  "campus.oncampus.girls": "Separate women's residence",
+  "campus.housing.title": "Housing Options",
+  "campus.neighborhoods.title": "Recommended Neighbourhoods",
+  "campus.safety.title": "Safety & Student Life",
+  "campus.safety.girls_note": "Advice for female students",
+  "campus.transport.title": "Transport",
+  "campus.statedorm.title": "State University Dormitory (ONOUSC)",
+  "campus.scholarship.title": "Scholarships & Financial Aid",
+  "campus.no_data": "Housing information coming soon.",
+  "campus.private_residence.label": "Guarded private residences",
+  "campus.private_residence.desc": "Bayt Al Maarif, Résidences Universitaires (RU) — furnished studios, Wi-Fi, reinforced security. Strongly recommended for female students living alone."
 }
