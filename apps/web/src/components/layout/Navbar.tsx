@@ -29,44 +29,36 @@ export default function Navbar() {
     document.documentElement.lang = code;
   };
 
-  // On home: transparent when at top, solid navy when scrolled
-  // On other pages: always solid cream
   const navBg = isHome
     ? scrolled
       ? "bg-navy-900/95 backdrop-blur-xl border-b border-white/8 shadow-lg shadow-navy-950/20"
-      : "bg-navy-950/60 backdrop-blur-md"
+      : "bg-navy-950/50 backdrop-blur-md"
     : "bg-cream/95 backdrop-blur-xl border-b border-gold-100/50 shadow-sm";
 
-  const logoTextColor = isHome ? "text-white" : "text-navy-800";
-  const logoSubColor = isHome ? "text-gold-300" : "text-gold-600";
-  const linkColor = isHome ? "text-white/80 hover:text-gold-300" : "text-navy-700 hover:text-gold-600";
+  const linkColor = isHome ? "text-white/85 hover:text-gold-300" : "text-navy-700 hover:text-gold-600";
 
   return (
     <>
-      <nav className={`sticky top-0 z-40 transition-all duration-500 ${navBg}`}>
+      {/* dir="ltr" forces left-to-right layout regardless of page RTL direction */}
+      <nav dir="ltr" className={`sticky top-0 z-40 transition-all duration-500 ${navBg}`}>
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
-            <div className="relative">
-              <img
-                src="/logo.png"
-                alt="JAD2 TAWJIH"
-                className="h-10 w-auto object-contain rounded-lg ring-1 ring-gold-400/30 group-hover:ring-gold-400/60 transition-all shadow-md"
-              />
-            </div>
-            <div className="hidden sm:block">
-              <div className={`font-heading font-bold text-lg leading-none transition-colors ${logoTextColor}`}>
-                JAD2
-              </div>
-              <div className={`text-[10px] uppercase tracking-[0.25em] font-bold leading-none transition-colors ${logoSubColor}`}>
-                TAWJIH
-              </div>
-            </div>
+
+          {/* Logo — always left, white filter on dark bg */}
+          <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
+            <img
+              src="/logo.png"
+              alt="JAD2 TAWJIH"
+              className={`h-9 w-auto object-contain rounded-lg transition-all shadow-md ${
+                isHome
+                  ? "brightness-0 invert ring-1 ring-white/20 group-hover:ring-gold-400/50"
+                  : "ring-1 ring-gold-400/30 group-hover:ring-gold-400/60"
+              }`}
+            />
           </Link>
 
-          {/* Desktop nav */}
-          <div className="flex items-center gap-5">
-            <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+          {/* Desktop nav — always LTR order */}
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-5 text-sm font-medium">
               <Link to="/" className={`transition-colors duration-200 ${linkColor}`}>
                 {t("nav.home")}
               </Link>
@@ -87,7 +79,7 @@ export default function Navbar() {
                 href="https://tawjih-admin.pages.dev"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`opacity-40 hover:opacity-70 transition-opacity duration-200 ${linkColor}`}
+                className={`opacity-35 hover:opacity-65 transition-opacity duration-200 ${linkColor}`}
                 title="Admin"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,8 +90,8 @@ export default function Navbar() {
 
             <XPBar />
 
-            {/* Language selector — always LTR so tab order stays FR→AR→EN */}
-            <div dir="ltr" className="flex items-center gap-0.5 bg-navy-800/20 backdrop-blur-sm rounded-full p-0.5 border border-white/10">
+            {/* Language selector — always LTR */}
+            <div dir="ltr" className="flex items-center gap-0.5 bg-navy-800/25 backdrop-blur-sm rounded-full p-0.5 border border-white/10">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
@@ -134,9 +126,9 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile menu — always LTR layout */}
         {menuOpen && (
-          <div className="md:hidden border-t border-white/10 bg-navy-900/98 backdrop-blur-xl">
+          <div dir="ltr" className="md:hidden border-t border-white/10 bg-navy-900/98 backdrop-blur-xl">
             <div className="max-w-6xl mx-auto px-4 py-4 space-y-1">
               <Link
                 to="/"

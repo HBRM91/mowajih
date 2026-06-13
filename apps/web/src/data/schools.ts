@@ -55,6 +55,7 @@ export const SCHOOLS: School[] = [
     admission: "cnc",
     cpgeFilières: ["MP", "PSI", "TSI"],
     highlights: ["CNC top classement requis", "Quasi gratuit", "Alumni top entreprises nationales"],
+    website: "http://www.emi.ac.ma",
   },
   {
     slug: "ehtp",
@@ -74,6 +75,7 @@ export const SCHOOLS: School[] = [
     admission: "cnc",
     cpgeFilières: ["MP", "PSI"],
     highlights: ["Infrastructure & BTP", "Réseau Ministère Transport", "Double diplôme France possible"],
+    website: "http://www.ehtp.ac.ma",
   },
   {
     slug: "ensias",
@@ -93,6 +95,7 @@ export const SCHOOLS: School[] = [
     admission: "cnc",
     cpgeFilières: ["MP", "PSI", "TSI"],
     highlights: ["#1 informatique Maroc", "Salaires 12K+ MAD départ", "Gratuit"],
+    website: "http://www.ensias.ma",
   },
   {
     slug: "inpt",
@@ -112,6 +115,7 @@ export const SCHOOLS: School[] = [
     admission: "cnc",
     cpgeFilières: ["MP", "PSI", "TSI"],
     highlights: ["Certifications Cisco, AWS", "Télécom marocain en essor", "Gratuit"],
+    website: "http://www.inpt.ac.ma",
   },
   {
     slug: "enim",
@@ -131,6 +135,7 @@ export const SCHOOLS: School[] = [
     admission: "cnc",
     cpgeFilières: ["MP", "PSI"],
     highlights: ["Partenariat OCP Group", "Industrie minière pilier national", "Gratuit"],
+    website: "http://www.enim.ac.ma",
   },
   {
     slug: "insea",
@@ -150,6 +155,7 @@ export const SCHOOLS: School[] = [
     admission: "cnc",
     cpgeFilières: ["MP", "PSI"],
     highlights: ["Débouchés banque & assurance", "Data Science très demandé", "Quasi gratuit"],
+    website: "http://www.insea.ac.ma",
   },
   {
     slug: "um6p",
@@ -169,6 +175,7 @@ export const SCHOOLS: School[] = [
     description: "Université de rang mondial adossée à l'OCP Group. Accès direct sur dossier + entretien. Bourses mérite couvrant 100% des frais. Campus de 150 ha à Ben Guerir.",
     admission: "dossier",
     highlights: ["Classement mondial", "Anglais + Français", "Bourse 100% possible", "Campus futuriste"],
+    website: "https://www.um6p.ma",
   },
 
   // ─── ENSAM NETWORK — Direct Bac admission via Tawjihi 75/25 ─────────────
@@ -190,6 +197,7 @@ export const SCHOOLS: School[] = [
     description: "Admission directe bac via plateforme Tawjihi (75%×nationale + 25%×régionale). Seuils 2025 — SM : 12.25/20 · PC/STI : 16.17/20. Cycle ingénieur 5 ans. Frais de scolarité ~50 000 MAD/an.",
     admission: "concours",
     highlights: ["Seuil SM 12.25/20", "Industrie automobile & aérospatiale", "~50 000 MAD/an"],
+    website: "http://www.ensam.ac.ma",
   },
   {
     slug: "ensam-meknes",
@@ -208,6 +216,7 @@ export const SCHOOLS: School[] = [
     description: "Admission directe bac via Tawjihi (75%×nat + 25%×rég). Seuils 2025 — SM : 12.25/20 · PC/STI : 16.17/20. Cycle ingénieur d'État 5 ans. Frais ~50 000 MAD/an.",
     admission: "concours",
     highlights: ["Seuil SM 12.25/20", "Région industrielle Meknès", "~50 000 MAD/an"],
+    website: "http://www.ensam.ac.ma",
   },
 
   // ─── ENSA NETWORK (11 campuses) — Direct Bac via Tawjihi 75/25 ──────────
@@ -413,6 +422,7 @@ export const SCHOOLS: School[] = [
     description: "La grande école de commerce publique du Maroc. Seuils bac 2025 : SE 17.24 · SGC 17.39 · SM 17.66 · SVT 18.14 · PC 18.59/20. Âge ≤ 21 ans. Frais ~30 000–45 000 MAD/an.",
     admission: "concours",
     highlights: ["Seuil SE 17.24/20", "Alumni PDG & DG grandes entreprises", "30-45K MAD/an"],
+    website: "http://www.iscae.ac.ma",
   },
 
   // ─── ELITE AGRICULTURE & VÉT ─────────────────────────────────────────────
@@ -433,6 +443,7 @@ export const SCHOOLS: School[] = [
     description: "Référence nationale en agronomie et vétérinaire. Accès via CPGE BCPST (2 ans) + concours APGE, ou concours direct pour certaines filières bac SVT/PC. Partenaire Plan Maroc Vert.",
     admission: "concours",
     highlights: ["Médecine vétérinaire unique", "Plan Maroc Vert", "Coopération FAO internationale"],
+    website: "http://www.iav.ac.ma",
   },
 
   // ─── ELITE ARCHITECTURE ──────────────────────────────────────────────────
@@ -454,6 +465,7 @@ export const SCHOOLS: School[] = [
     description: "Seule école nationale d'architecture du Maroc. Concours d'accès direct bac + épreuve graphique et test d'aptitude. Seuils 2025 : Rabat 16.04 · Marrakech 15.20 · Fès 15.22 · Agadir 15.27/20. Diplôme d'État DESA (5 ans).",
     admission: "concours",
     highlights: ["Seuil ~15-16/20 selon campus", "Épreuve graphique obligatoire", "Diplôme d'État DESA"],
+    website: "http://www.enarchitecture.ac.ma",
   },
 
   // ─── ELITE MEDICINE — Concours national ──────────────────────────────────
@@ -475,6 +487,7 @@ export const SCHOOLS: School[] = [
     description: "Faculté de médecine de référence nationale. Concours d'accès: seuil 12/20 en 2025 (75% note nationale + 25% note régionale). Épreuve de 2h (SVT, Physique, Chimie, Maths). 7 ans pour médecin.",
     admission: "concours",
     highlights: ["Seuil bac 12/20 (2025)", "Public quasi gratuit", "Résidanat CHU Rabat"],
+    website: "http://www.fmpr.ac.ma",
   },
   {
     slug: "fm-casablanca",
@@ -493,6 +506,7 @@ export const SCHOOLS: School[] = [
     description: "Faculté de médecine de Casablanca, adossée au CHU Ibn Rochd. Même concours national que Rabat (seuil 12/20 en 2025, épreuve 2h). Très compétitif en pratique.",
     admission: "concours",
     highlights: ["CHU Ibn Rochd", "Seuil 12/20 (2025)", "7 ans Médecine"],
+    website: "http://www.fmpc.ac.ma",
   },
   {
     slug: "fm-fes",
@@ -511,6 +525,7 @@ export const SCHOOLS: School[] = [
     description: "Faculté de médecine de Fès, hôpital universitaire Hassan II. Même concours national (seuil 12/20 en 2025). Légèrement moins saturée que Rabat ou Casablanca.",
     admission: "concours",
     highlights: ["CHU Hassan II", "Seuil 12/20 (2025)", "Moins saturé que Rabat"],
+    website: "http://www.fmf.ac.ma",
   },
   {
     slug: "fm-marrakech",
@@ -529,6 +544,7 @@ export const SCHOOLS: School[] = [
     description: "Faculté de médecine de Marrakech, campus récent et hôpital Mohammed VI. Concours national (seuil 12/20 en 2025). Places disponibles légèrement supérieures.",
     admission: "concours",
     highlights: ["Hôpital Mohammed VI", "Seuil 12/20 (2025)", "Campus récent"],
+    website: "http://www.fmpm.ac.ma",
   },
 
   // ─── ENCG NETWORK — TAFEM concours ───────────────────────────────────────
@@ -551,6 +567,7 @@ export const SCHOOLS: School[] = [
     description: "L'ENCG de Casablanca. Admission via présélection bac (12/20 SE/SM ou 14/20 PC/SVT) + épreuve TAFEM (QCM écrit). Inscription sur cursussup.gov.ma.",
     admission: "tafem",
     highlights: ["Hub business Casa", "Réseau entreprises", "Frais modérés"],
+    website: "http://www.encg-casa.ac.ma",
   },
   {
     slug: "encg-agadir",
@@ -569,6 +586,7 @@ export const SCHOOLS: School[] = [
     description: "ENCG Agadir avec spécialisation tourisme. Admission via TAFEM (12/20 SE/SM). Parfaite pour le pôle touristique Souss-Massa.",
     admission: "tafem",
     highlights: ["Tourisme & hôtellerie", "Agadir station balnéaire", "Frais réduits"],
+    website: "http://www.encg-agadir.ac.ma",
   },
   {
     slug: "encg-fes",
@@ -587,6 +605,7 @@ export const SCHOOLS: School[] = [
     description: "ENCG Fès dans la capitale intellectuelle du Maroc. Admission via TAFEM (12/20 SE/SM).",
     admission: "tafem",
     highlights: ["Ville étudiante", "Coût vie modéré", "Frais réduits"],
+    website: "http://www.encg-fes.ac.ma",
   },
   {
     slug: "encg-tanger",
@@ -812,6 +831,7 @@ export const SCHOOLS: School[] = [
     description: "L'unique école spécialisée dans l'industrie textile marocaine. Admission dossier + tests. 2ème exportateur mondial de vêtements — recrutement quasi garanti.",
     admission: "dossier",
     highlights: ["Secteur textile en croissance", "Partenaires H&M, Zara, Inditex", "Casa"],
+    website: "http://www.esith.ac.ma",
   },
 
   // ─── SELECTIVE — Privé ────────────────────────────────────────────────────
@@ -852,6 +872,7 @@ export const SCHOOLS: School[] = [
     description: "Présente dans 8 villes, EMSI forme 7000+ ingénieurs/an. Admission dossier. Idéale pour les bacheliers voulant intégrer une école d'ingénieurs sans passer par la CPGE.",
     admission: "dossier",
     highlights: ["8 campus Maroc", "7000 étudiants/an", "Direct bac sans CPGE"],
+    website: "https://www.emsi.ma",
   },
   {
     slug: "upf",

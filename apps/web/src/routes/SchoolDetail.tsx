@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   SCHOOLS,
@@ -9,6 +11,7 @@ import {
   TYPE_LABELS,
   getSchoolBySlug,
 } from "../data/schools";
+import { getSchoolCareers } from "../data/careers";
 
 const TRACK_LABELS: Record<string, string> = {
   SM: "Sciences Mathématiques",
@@ -19,6 +22,41 @@ const TRACK_LABELS: Record<string, string> = {
   STI: "Sciences Techniques",
   L: "Lettres",
 };
+
+function getDomainFromUrl(url?: string): string | null {
+  if (!url) return null;
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return null;
+  }
+}
+
+function SchoolLogoHero({ school }: { school: ReturnType<typeof getSchoolBySlug> }) {
+  const [imgError, setImgError] = useState(false);
+  if (!school) return null;
+  const domain = getDomainFromUrl(school.website);
+  const tierColors = TIER_COLORS[school.tier];
+
+  if (domain && !imgError) {
+    return (
+      <div className={`w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden ${tierColors.bg} border-2 ${tierColors.border} bg-white p-1.5`}>
+        <img
+          src={`https://www.google.com/s2/favicons?domain=${domain}&sz=128`}
+          alt={school.shortName}
+          className="w-full h-full object-contain"
+          onError={() => setImgError(true)}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl flex-shrink-0 ${tierColors.bg} border-2 ${tierColors.border}`}>
+      {school.icon}
+    </div>
+  );
+}
 
 function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug> }) {
   if (!school) return null;
@@ -146,16 +184,18 @@ function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug>
 
 export default function SchoolDetail() {
   const { slug } = useParams<{ slug: string }>();
+  const { t } = useTranslation();
   const school = getSchoolBySlug(slug ?? "");
+  const careers = getSchoolCareers(slug ?? "");
 
   if (!school) {
     return (
       <div className="min-h-screen bg-cream flex flex-col items-center justify-center gap-6">
         <div className="text-6xl">🏛️</div>
-        <h1 className="font-heading text-2xl font-bold text-navy-800">École introuvable</h1>
-        <p className="text-navy-400">L'identifiant "{slug}" ne correspond à aucun établissement référencé.</p>
+        <h1 className="font-heading text-2xl font-bold text-navy-800">{t("school.not_found.title")}</h1>
+        <p className="text-navy-400">{t("school.not_found.text", { slug })}</p>
         <Link to="/ecoles" className="px-6 py-3 bg-navy-800 text-white rounded-full font-bold hover:bg-navy-700 transition-colors">
-          Retour aux écoles
+          {t("school.not_found.btn")}
         </Link>
       </div>
     );
@@ -165,7 +205,7 @@ export default function SchoolDetail() {
   const admColors = ADMISSION_COLORS[school.admission];
   const isFree = school.annualCostMAD[0] === 0 && school.annualCostMAD[1] <= 3000;
   const costText = isFree
-    ? "Gratuit"
+    ? t("school.cost.free")
     : `${school.annualCostMAD[0].toLocaleString("fr-FR")} – ${school.annualCostMAD[1].toLocaleString("fr-FR")} MAD/an`;
 
   const similarSchools = SCHOOLS.filter(
@@ -181,19 +221,16 @@ export default function SchoolDetail() {
         <div className="relative max-w-5xl mx-auto px-4">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-navy-400 mb-8">
-            <Link to="/" className="hover:text-gold-300 transition-colors">Accueil</Link>
+            <Link to="/" className="hover:text-gold-300 transition-colors">{t("nav.home")}</Link>
             <span>/</span>
-            <Link to="/ecoles" className="hover:text-gold-300 transition-colors">Écoles</Link>
+            <Link to="/ecoles" className="hover:text-gold-300 transition-colors">{t("school.breadcrumb.schools")}</Link>
             <span>/</span>
             <span className="text-navy-200">{school.shortName}</span>
           </nav>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex flex-col md:flex-row md:items-start gap-6">
-              {/* Icon */}
-              <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl flex-shrink-0 ${tierColors.bg} border-2 ${tierColors.border}`}>
-                {school.icon}
-              </div>
+              <SchoolLogoHero school={school} />
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${tierColors.bg} ${tierColors.text} ${tierColors.border}`}>
@@ -203,7 +240,7 @@ export default function SchoolDetail() {
                     {ADMISSION_LABELS[school.admission]}
                   </span>
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${school.access === "public" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
-                    {school.access === "public" ? "Public" : school.access === "semi-public" ? "Semi-public" : "Privé"}
+                    {t(`access.${school.access}`)}
                   </span>
                 </div>
                 <h1 className="font-heading text-3xl md:text-4xl font-bold text-white mb-1">{school.name}</h1>
@@ -225,7 +262,7 @@ export default function SchoolDetail() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
-                  Site officiel
+                  {t("school.official.site")}
                 </a>
               )}
             </div>
@@ -238,21 +275,27 @@ export default function SchoolDetail() {
         <div className="max-w-5xl mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-navy-400">Note min.</span>
+              <span className="text-navy-400">{t("school.quick.min_grade")}</span>
               <strong className="text-navy-800">{school.minGrade}/20</strong>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-navy-400">Coût annuel</span>
+              <span className="text-navy-400">{t("school.quick.cost")}</span>
               <strong className={isFree ? "text-emerald-600" : "text-navy-800"}>{costText}</strong>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-navy-400">Domaine</span>
+              <span className="text-navy-400">{t("school.quick.domain")}</span>
               <strong className="text-navy-800">{TYPE_LABELS[school.type]}</strong>
             </div>
             {school.enrollmentCount && (
               <div className="flex items-center gap-2">
-                <span className="text-navy-400">Étudiants/an</span>
+                <span className="text-navy-400">{t("school.quick.enrollment")}</span>
                 <strong className="text-navy-800">~{school.enrollmentCount.toLocaleString("fr-FR")}</strong>
+              </div>
+            )}
+            {careers && (
+              <div className="flex items-center gap-2">
+                <span className="text-navy-400">{t("school.careers.rate")}</span>
+                <strong className="text-emerald-600">{careers.employmentRate}%</strong>
               </div>
             )}
           </div>
@@ -267,14 +310,14 @@ export default function SchoolDetail() {
 
             {/* Description */}
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">Présentation</h2>
+              <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.presentation")}</h2>
               <p className="text-navy-600 leading-relaxed text-base">{school.description}</p>
 
               {school.history && (
                 <div className="mt-4 p-4 bg-parchment/60 border border-gold-100 rounded-2xl">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-lg">📜</span>
-                    <h3 className="font-bold text-navy-700 text-sm">Historique</h3>
+                    <h3 className="font-bold text-navy-700 text-sm">{t("school.history.label")}</h3>
                   </div>
                   <p className="text-navy-500 text-sm leading-relaxed">{school.history}</p>
                 </div>
@@ -283,7 +326,7 @@ export default function SchoolDetail() {
 
             {/* Programs */}
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">Formations proposées</h2>
+              <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.programs")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {school.programs.map((prog, i) => (
                   <div key={i} className="flex items-center gap-3 bg-white border border-parchment rounded-xl p-3">
@@ -298,7 +341,7 @@ export default function SchoolDetail() {
 
             {/* Admission guide */}
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-              <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">Processus d'admission</h2>
+              <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.admission.title")}</h2>
               <AdmissionGuide school={school} />
 
               {school.cpgeFilières && (
@@ -318,7 +361,7 @@ export default function SchoolDetail() {
             {/* Highlights */}
             {(school.highlights?.length ?? 0) > 0 && (
               <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-                <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">Points forts</h2>
+                <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.highlights")}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {(school.highlights ?? []).map((h, i) => (
                     <div key={i} className="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3">
@@ -333,6 +376,70 @@ export default function SchoolDetail() {
                 </div>
               </motion.section>
             )}
+
+            {/* Careers & Salaries */}
+            {careers && (
+              <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+                <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.careers.title")}</h2>
+                <div className="bg-gradient-to-br from-navy-50 to-gold-50 border border-gold-200 rounded-2xl p-6 space-y-5">
+
+                  {/* Salary cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-white rounded-xl border border-parchment p-4 text-center">
+                      <div className="text-xs font-bold uppercase tracking-wider text-navy-400 mb-1">{t("school.careers.start")}</div>
+                      <div className="font-heading text-2xl font-bold text-navy-800">
+                        {careers.avgStartSalaryMAD.toLocaleString("fr-FR")}
+                      </div>
+                      <div className="text-xs text-navy-400">MAD/mois</div>
+                    </div>
+                    <div className="bg-white rounded-xl border border-parchment p-4 text-center">
+                      <div className="text-xs font-bold uppercase tracking-wider text-navy-400 mb-1">{t("school.careers.mid")}</div>
+                      <div className="font-heading text-2xl font-bold text-gold-600">
+                        {careers.avgMidSalaryMAD.toLocaleString("fr-FR")}
+                      </div>
+                      <div className="text-xs text-navy-400">MAD/mois</div>
+                    </div>
+                    <div className="bg-white rounded-xl border border-parchment p-4 text-center">
+                      <div className="text-xs font-bold uppercase tracking-wider text-navy-400 mb-1">{t("school.careers.rate")}</div>
+                      <div className="font-heading text-2xl font-bold text-emerald-600">{careers.employmentRate}%</div>
+                      <div className="text-xs text-navy-400">à 6 mois</div>
+                    </div>
+                  </div>
+
+                  {/* Job families */}
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-navy-500 mb-2">{t("school.careers.jobs")}</div>
+                    <div className="flex flex-wrap gap-2">
+                      {careers.jobFamilies.map((job) => (
+                        <span key={job} className="px-3 py-1.5 bg-white border border-gold-200 text-navy-700 text-sm rounded-full font-medium">
+                          {job}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Top employers */}
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-navy-500 mb-2">{t("school.careers.employers")}</div>
+                    <div className="flex flex-wrap gap-2">
+                      {careers.topEmployers.map((emp) => (
+                        <span key={emp} className="px-3 py-1.5 bg-navy-800 text-white text-xs rounded-full font-semibold">
+                          {emp}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* International */}
+                  {careers.internationalOpportunities !== undefined && (
+                    <div className={`flex items-center gap-2 text-sm rounded-xl px-4 py-3 border ${careers.internationalOpportunities ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-600"}`}>
+                      <span>{careers.internationalOpportunities ? "🌍" : "🇲🇦"}</span>
+                      <span>{t(careers.internationalOpportunities ? "school.careers.international.yes" : "school.careers.international.no")}</span>
+                    </div>
+                  )}
+                </div>
+              </motion.section>
+            )}
           </div>
 
           {/* Right sidebar */}
@@ -340,7 +447,7 @@ export default function SchoolDetail() {
             {/* Tracks */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}
               className="bg-white border border-parchment rounded-2xl p-5">
-              <h3 className="font-bold text-navy-700 mb-3 text-sm uppercase tracking-wider">Filières Bac acceptées</h3>
+              <h3 className="font-bold text-navy-700 mb-3 text-sm uppercase tracking-wider">{t("school.tracks.label")}</h3>
               <div className="space-y-2">
                 {school.tracks.map((track) => (
                   <div key={track} className="flex items-center gap-2 text-sm">
@@ -356,21 +463,24 @@ export default function SchoolDetail() {
             {/* Cost breakdown */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
               className="bg-white border border-parchment rounded-2xl p-5">
-              <h3 className="font-bold text-navy-700 mb-3 text-sm uppercase tracking-wider">Coût estimé</h3>
+              <h3 className="font-bold text-navy-700 mb-3 text-sm uppercase tracking-wider">{t("school.cost.label")}</h3>
               <div className={`text-2xl font-heading font-bold mb-1 ${isFree ? "text-emerald-600" : "text-navy-800"}`}>
-                {isFree ? "Gratuit 🎉" : `${school.annualCostMAD[0].toLocaleString("fr-FR")} MAD`}
+                {isFree ? t("school.cost.free") : `${school.annualCostMAD[0].toLocaleString("fr-FR")} MAD`}
               </div>
               {!isFree && (
                 <p className="text-xs text-navy-400">
-                  à {school.annualCostMAD[1].toLocaleString("fr-FR")} MAD/an selon les options
+                  {t("school.cost.note", { max: school.annualCostMAD[1].toLocaleString("fr-FR") })}
                 </p>
               )}
               {isFree && (
-                <p className="text-xs text-emerald-600">Frais d'inscription symboliques uniquement (~{school.annualCostMAD[1].toLocaleString("fr-FR")} MAD/an)</p>
+                <p className="text-xs text-emerald-600">
+                  {t("school.cost.symbolic", { max: school.annualCostMAD[1].toLocaleString("fr-FR") })}
+                </p>
               )}
               <div className="mt-4 pt-3 border-t border-parchment">
                 <p className="text-xs text-navy-400">
-                  Bourse Minhaty disponible sous conditions de ressources : <a href="https://www.minhaty.ma" target="_blank" rel="noopener noreferrer" className="text-gold-600 underline">minhaty.ma</a>
+                  {t("school.minhaty")}{" "}
+                  <a href="https://www.minhaty.ma" target="_blank" rel="noopener noreferrer" className="text-gold-600 underline">minhaty.ma</a>
                 </p>
               </div>
             </motion.div>
@@ -379,36 +489,36 @@ export default function SchoolDetail() {
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}
               className="bg-gradient-to-br from-navy-800 to-navy-900 rounded-2xl p-5 text-white">
               <div className="text-2xl mb-2">🎯</div>
-              <h3 className="font-bold mb-2">Suis-je éligible ?</h3>
+              <h3 className="font-bold mb-2">{t("school.cta.title")}</h3>
               <p className="text-navy-300 text-xs mb-4 leading-relaxed">
-                Remplis le questionnaire Slimane IA pour savoir si ton profil Bac correspond aux critères de sélection.
+                {t("school.cta.desc")}
               </p>
               <Link
                 to="/orientation"
                 className="block text-center py-3 px-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-gold-500/20 transition-all"
               >
-                Tester mon éligibilité
+                {t("school.cta.btn")}
               </Link>
             </motion.div>
 
             {/* Official links */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
               className="bg-white border border-parchment rounded-2xl p-5">
-              <h3 className="font-bold text-navy-700 mb-3 text-sm uppercase tracking-wider">Liens utiles</h3>
+              <h3 className="font-bold text-navy-700 mb-3 text-sm uppercase tracking-wider">{t("school.links.title")}</h3>
               <div className="space-y-2">
                 <a href="https://cursussup.gov.ma" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-navy-600 hover:text-gold-600 transition-colors">
                   <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
-                  cursussup.gov.ma (Candidatures)
+                  {t("school.links.applications")}
                 </a>
                 <a href="https://www.minhaty.ma" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-navy-600 hover:text-gold-600 transition-colors">
                   <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
-                  minhaty.ma (Bourses)
+                  {t("school.links.scholarships")}
                 </a>
                 {school.website && (
                   <a href={school.website} target="_blank" rel="noopener noreferrer"
@@ -416,7 +526,7 @@ export default function SchoolDetail() {
                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
-                    {school.website.replace(/^https?:\/\//, "")}
+                    {t("school.official.site")} — {school.website.replace(/^https?:\/\//, "")}
                   </a>
                 )}
               </div>
@@ -426,8 +536,8 @@ export default function SchoolDetail() {
 
         {/* Similar schools */}
         {similarSchools.length > 0 && (
-          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-14">
-            <h2 className="font-heading text-2xl font-bold text-navy-800 mb-6">Établissements similaires</h2>
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="mt-14">
+            <h2 className="font-heading text-2xl font-bold text-navy-800 mb-6">{t("school.similar")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {similarSchools.map((s) => {
                 const tc = TIER_COLORS[s.tier];
@@ -449,7 +559,7 @@ export default function SchoolDetail() {
             </div>
             <div className="text-center mt-6">
               <Link to="/ecoles" className="text-sm text-gold-600 hover:text-gold-700 font-semibold inline-flex items-center gap-1 transition-colors">
-                Voir tous les établissements
+                {t("school.similar.see_all")}
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>

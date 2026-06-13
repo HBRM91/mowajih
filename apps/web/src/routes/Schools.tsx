@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SCHOOLS,
@@ -27,7 +28,42 @@ const TYPE_ICONS: Record<string, string> = {
 const TRACK_LIST = ["SM", "PC", "SVT", "SE", "SH", "STI", "L"];
 const TIER_ORDER: SchoolTier[] = ["elite", "premium", "selective", "standard", "accessible"];
 
+function getDomainFromUrl(url?: string): string | null {
+  if (!url) return null;
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return null;
+  }
+}
+
+function SchoolLogo({ school }: { school: { shortName: string; website?: string; icon: string; tier: SchoolTier } }) {
+  const domain = getDomainFromUrl(school.website);
+  const tierColors = TIER_COLORS[school.tier];
+  const [imgError, setImgError] = useState(false);
+
+  if (domain && !imgError) {
+    return (
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${tierColors.bg} border border-white/50`}>
+        <img
+          src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+          alt={school.shortName}
+          className="w-8 h-8 object-contain"
+          onError={() => setImgError(true)}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${tierColors.bg}`}>
+      {school.icon}
+    </div>
+  );
+}
+
 export default function Schools() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<SchoolType | "all">("all");
   const [filterTier, setFilterTier] = useState<SchoolTier | "all">("all");
@@ -96,15 +132,17 @@ export default function Schools() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Accueil
+              {t("schools.back")}
             </Link>
             <h1 className="font-heading text-4xl md:text-6xl font-bold mb-4">
-              Toutes les écoles
+              {t("schools.title")}
               <br />
-              <span className="bg-gradient-to-r from-gold-400 to-gold-300 bg-clip-text text-transparent">du Maroc</span>
+              <span className="bg-gradient-to-r from-gold-400 to-gold-300 bg-clip-text text-transparent">
+                {t("schools.title.highlight")}
+              </span>
             </h1>
             <p className="text-navy-200 text-lg max-w-2xl mb-8">
-              {SCHOOLS.length}+ établissements — universités publiques, grandes écoles d'ingénieurs, business schools, médecine, architecture et bien plus.
+              {t("schools.subtitle", { count: SCHOOLS.length })}
             </p>
 
             {/* Search bar */}
@@ -116,7 +154,7 @@ export default function Schools() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher une école, une ville, un programme..."
+                placeholder={t("schools.search.placeholder")}
                 className="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-navy-400 focus:outline-none focus:border-gold-400/60 focus:bg-white/15 transition-all text-sm backdrop-blur-sm"
               />
               {search && (
@@ -142,7 +180,7 @@ export default function Schools() {
                 : "bg-white border border-parchment text-navy-600 hover:border-gold-200"
             }`}
           >
-            Tous ({typeGroups.all})
+            {t("schools.filter.all")} ({typeGroups.all})
           </button>
           {(Object.keys(TYPE_LABELS) as SchoolType[]).map((type) => (
             <button
@@ -166,7 +204,7 @@ export default function Schools() {
           <aside className="lg:w-56 flex-shrink-0">
             <div className="bg-white rounded-2xl border border-parchment p-5 space-y-6 sticky top-20">
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">Niveau</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">{t("schools.sidebar.tier")}</div>
                 <div className="space-y-1.5">
                   {(["all", ...TIER_ORDER] as const).map((tier) => {
                     const isAll = tier === "all";
@@ -180,7 +218,7 @@ export default function Schools() {
                             : "text-navy-600 hover:bg-parchment"
                         }`}
                       >
-                        {isAll ? "Tous niveaux" : TIER_LABELS[tier as SchoolTier]}
+                        {isAll ? t("schools.filter.tier.all") : TIER_LABELS[tier as SchoolTier]}
                       </button>
                     );
                   })}
@@ -188,7 +226,7 @@ export default function Schools() {
               </div>
 
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">Filière Bac</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">{t("schools.sidebar.track")}</div>
                 <div className="flex flex-wrap gap-1.5">
                   {["all", ...TRACK_LIST].map((track) => (
                     <button
@@ -200,14 +238,14 @@ export default function Schools() {
                           : "bg-parchment text-navy-500 hover:bg-gold-50"
                       }`}
                     >
-                      {track === "all" ? "Tous" : track}
+                      {track === "all" ? t("schools.filter.all") : track}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">Statut</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">{t("schools.sidebar.access")}</div>
                 <div className="space-y-1.5">
                   {(["all", "public", "private"] as const).map((access) => (
                     <button
@@ -219,16 +257,20 @@ export default function Schools() {
                           : "text-navy-600 hover:bg-parchment"
                       }`}
                     >
-                      {access === "all" ? "Tous" : access === "public" ? "Public / Semi-pub." : "Privé"}
+                      {access === "all"
+                        ? t("schools.filter.access.all")
+                        : access === "public"
+                          ? t("schools.filter.access.public")
+                          : t("schools.filter.access.private")}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">Trier par</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">{t("schools.sidebar.sort")}</div>
                 <div className="space-y-1.5">
-                  {([["tier", "Niveau (élite → accessible)"], ["alpha", "Alphabétique"], ["cost", "Coût (croissant)"]] as const).map(([key, label]) => (
+                  {(["tier", "alpha", "cost"] as const).map((key) => (
                     <button
                       key={key}
                       onClick={() => setSortBy(key)}
@@ -238,7 +280,7 @@ export default function Schools() {
                           : "text-navy-600 hover:bg-parchment"
                       }`}
                     >
-                      {label}
+                      {t(`schools.sort.${key}`)}
                     </button>
                   ))}
                 </div>
@@ -249,7 +291,7 @@ export default function Schools() {
                   onClick={resetFilters}
                   className="w-full py-2 text-xs text-gold-600 hover:text-gold-700 font-semibold border border-gold-200 rounded-xl hover:bg-gold-50 transition-all"
                 >
-                  Réinitialiser les filtres
+                  {t("schools.reset")}
                 </button>
               )}
             </div>
@@ -259,8 +301,9 @@ export default function Schools() {
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-5">
               <div className="text-sm text-navy-400">
-                <strong className="text-navy-700">{filtered.length}</strong> établissement{filtered.length !== 1 ? "s" : ""}
-                {hasActiveFilter && <span className="text-gold-600"> (filtré{filtered.length !== 1 ? "s" : ""})</span>}
+                <strong className="text-navy-700">{filtered.length}</strong>{" "}
+                {t("schools.results.count", { count: filtered.length })}
+                {hasActiveFilter && <span className="text-gold-600"> {t("schools.results.filtered")}</span>}
               </div>
             </div>
 
@@ -273,10 +316,10 @@ export default function Schools() {
                   className="text-center py-20 text-navy-400"
                 >
                   <div className="text-5xl mb-4">🔍</div>
-                  <p className="text-lg font-medium mb-2">Aucun résultat</p>
-                  <p className="text-sm">Essaie d'autres mots-clés ou réinitialise les filtres.</p>
+                  <p className="text-lg font-medium mb-2">{t("schools.empty.title")}</p>
+                  <p className="text-sm">{t("schools.empty.subtitle")}</p>
                   <button onClick={resetFilters} className="mt-4 px-6 py-2 bg-gold-500 text-navy-900 rounded-full text-sm font-bold hover:bg-gold-400 transition-colors">
-                    Tout afficher
+                    {t("schools.empty.btn")}
                   </button>
                 </motion.div>
               ) : (
@@ -291,7 +334,7 @@ export default function Schools() {
                     const admColors = ADMISSION_COLORS[school.admission];
                     const costText =
                       school.annualCostMAD[0] === 0 && school.annualCostMAD[1] <= 3000
-                        ? "Gratuit"
+                        ? t("match.cost.free")
                         : `${school.annualCostMAD[0].toLocaleString("fr-FR")} – ${school.annualCostMAD[1].toLocaleString("fr-FR")} MAD/an`;
                     return (
                       <motion.div
@@ -309,9 +352,7 @@ export default function Schools() {
                           <div className="p-5">
                             <div className="flex items-start justify-between mb-3">
                               <div className="flex items-center gap-3">
-                                <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${tierColors.bg}`}>
-                                  {school.icon}
-                                </div>
+                                <SchoolLogo school={school} />
                                 <div>
                                   <div className="font-bold text-navy-800 text-sm leading-tight group-hover:text-gold-700 transition-colors">
                                     {school.shortName}
@@ -332,9 +373,9 @@ export default function Schools() {
                             <p className="text-navy-500 text-xs leading-relaxed mb-3 line-clamp-2">{school.description}</p>
 
                             <div className="flex flex-wrap gap-1 mb-3">
-                              {school.tracks.slice(0, 4).map((t) => (
-                                <span key={t} className="text-[10px] px-1.5 py-0.5 bg-navy-50 text-navy-500 rounded border border-navy-100 font-medium">
-                                  {t}
+                              {school.tracks.slice(0, 4).map((tr) => (
+                                <span key={tr} className="text-[10px] px-1.5 py-0.5 bg-navy-50 text-navy-500 rounded border border-navy-100 font-medium">
+                                  {tr}
                                 </span>
                               ))}
                               {school.tracks.length > 4 && (
@@ -346,7 +387,7 @@ export default function Schools() {
                               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-lg border ${admColors.bg} ${admColors.text} ${admColors.border}`}>
                                 {ADMISSION_LABELS[school.admission]}
                               </span>
-                              <span className={`text-xs font-bold ${costText === "Gratuit" ? "text-emerald-600" : "text-navy-500"}`}>
+                              <span className={`text-xs font-bold ${costText === t("match.cost.free") ? "text-emerald-600" : "text-navy-500"}`}>
                                 {costText}
                               </span>
                             </div>
@@ -362,13 +403,13 @@ export default function Schools() {
             {filtered.length > 0 && (
               <div className="mt-10 text-center">
                 <p className="text-navy-400 text-sm mb-4">
-                  Tu ne trouves pas l'école idéale ? Utilise notre outil de recommandation IA.
+                  {t("schools.cta.text")}
                 </p>
                 <Link
                   to="/orientation"
                   className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold hover:shadow-lg hover:shadow-gold-500/25 hover:scale-105 transition-all"
                 >
-                  Obtenir mes recommandations personnalisées
+                  {t("schools.cta.btn")}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
