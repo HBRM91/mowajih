@@ -230,5 +230,9 @@
   "school.careers.international.no": "Primarily local market",
   "school.logo.alt": "{{name}} logo",
   "footer.schools.link": "View profile",
-  "footer.nav.schools": "Schools"
+  "footer.nav.schools": "Schools",
+  "cpge.badge": "📐 2 years CPGE required before admission",
+  "cpge.warning.title": "Indirect admission — Preparatory Classes required",
+  "cpge.warning.desc": "This school does not accept Baccalaureate holders directly. You must first complete 2 years of Preparatory Classes (CPGE — MP / PSI / TSI), then pass the National Common Examination (CNC). Your Bac alone is not enough to apply.",
+  "cpge.min_grade.label": "Min. Bac grade for CPGE entry"
 }

@@ -230,5 +230,9 @@
   "school.careers.international.no": "Principalement marché local",
   "school.logo.alt": "Logo {{name}}",
   "footer.schools.link": "Voir fiche",
-  "footer.nav.schools": "Écoles"
+  "footer.nav.schools": "Écoles",
+  "cpge.badge": "📐 2 ans de CPGE requis avant admission",
+  "cpge.warning.title": "Accès indirect — Classes Préparatoires obligatoires",
+  "cpge.warning.desc": "Cette école ne recrute pas directement les bacheliers. Tu dois d'abord intégrer une Classe Préparatoire (CPGE) pendant 2 ans (MP / PSI / TSI selon ta filière), puis réussir le Concours National Commun (CNC). Le bac seul ne suffit pas.",
+  "cpge.min_grade.label": "Note bac min. pour CPGE"
 }

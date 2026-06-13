@@ -33,27 +33,32 @@ function getDomainFromUrl(url?: string): string | null {
 }
 
 function SchoolLogoHero({ school }: { school: ReturnType<typeof getSchoolBySlug> }) {
-  const [imgError, setImgError] = useState(false);
   if (!school) return null;
   const domain = getDomainFromUrl(school.website);
   const tierColors = TIER_COLORS[school.tier];
+  // 0 = try Clearbit, 1 = try Google favicon, 2 = show emoji
+  const [fallback, setFallback] = useState(domain ? 0 : 2);
 
-  if (domain && !imgError) {
+  if (fallback >= 2 || !domain) {
     return (
-      <div className={`w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden ${tierColors.bg} border-2 ${tierColors.border} bg-white p-1.5`}>
-        <img
-          src={`https://www.google.com/s2/favicons?domain=${domain}&sz=128`}
-          alt={school.shortName}
-          className="w-full h-full object-contain"
-          onError={() => setImgError(true)}
-        />
+      <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl flex-shrink-0 ${tierColors.bg} border-2 ${tierColors.border}`}>
+        {school.icon}
       </div>
     );
   }
 
+  const src = fallback === 0
+    ? `https://logo.clearbit.com/${domain}?size=128`
+    : `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+
   return (
-    <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl flex-shrink-0 ${tierColors.bg} border-2 ${tierColors.border}`}>
-      {school.icon}
+    <div className={`w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden bg-white border-2 ${tierColors.border} p-1.5`}>
+      <img
+        src={src}
+        alt={school.shortName}
+        className="w-full h-full object-contain"
+        onError={() => setFallback((f) => f + 1)}
+      />
     </div>
   );
 }
@@ -275,7 +280,9 @@ export default function SchoolDetail() {
         <div className="max-w-5xl mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-navy-400">{t("school.quick.min_grade")}</span>
+              <span className="text-navy-400">
+                {school.admission === "cnc" ? t("cpge.min_grade.label") : t("school.quick.min_grade")}
+              </span>
               <strong className="text-navy-800">{school.minGrade}/20</strong>
             </div>
             <div className="flex items-center gap-2">
@@ -307,6 +314,23 @@ export default function SchoolDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left column */}
           <div className="lg:col-span-2 space-y-8">
+
+            {/* CPGE Warning Banner */}
+            {school.admission === "cnc" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-start gap-4 bg-violet-50 border-l-4 border-violet-500 rounded-2xl p-5"
+              >
+                <div className="w-10 h-10 rounded-xl bg-violet-100 border border-violet-200 flex items-center justify-center flex-shrink-0 text-2xl">
+                  📐
+                </div>
+                <div>
+                  <p className="font-bold text-violet-800 text-sm leading-snug">{t("cpge.warning.title")}</p>
+                  <p className="text-violet-700 text-sm mt-1.5 leading-relaxed">{t("cpge.warning.desc")}</p>
+                </div>
+              </motion.div>
+            )}
 
             {/* Description */}
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>

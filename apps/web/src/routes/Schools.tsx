@@ -40,24 +40,29 @@ function getDomainFromUrl(url?: string): string | null {
 function SchoolLogo({ school }: { school: { shortName: string; website?: string; icon: string; tier: SchoolTier } }) {
   const domain = getDomainFromUrl(school.website);
   const tierColors = TIER_COLORS[school.tier];
-  const [imgError, setImgError] = useState(false);
+  // 0 = try Clearbit, 1 = try Google favicon, 2 = show emoji
+  const [fallback, setFallback] = useState(domain ? 0 : 2);
 
-  if (domain && !imgError) {
+  if (fallback >= 2 || !domain) {
     return (
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${tierColors.bg} border border-white/50`}>
-        <img
-          src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
-          alt={school.shortName}
-          className="w-8 h-8 object-contain"
-          onError={() => setImgError(true)}
-        />
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${tierColors.bg}`}>
+        {school.icon}
       </div>
     );
   }
 
+  const src = fallback === 0
+    ? `https://logo.clearbit.com/${domain}?size=64`
+    : `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+
   return (
-    <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${tierColors.bg}`}>
-      {school.icon}
+    <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden bg-white border ${tierColors.border}`}>
+      <img
+        src={src}
+        alt={school.shortName}
+        className="w-9 h-9 object-contain p-0.5"
+        onError={() => setFallback((f) => f + 1)}
+      />
     </div>
   );
 }
@@ -382,6 +387,12 @@ export default function Schools() {
                                 <span className="text-[10px] px-1.5 py-0.5 text-navy-400">+{school.tracks.length - 4}</span>
                               )}
                             </div>
+
+                            {school.admission === "cnc" && (
+                              <div className="mb-2 flex items-center gap-1.5 text-[10px] font-bold text-violet-700 bg-violet-50 border border-violet-200 px-2.5 py-1.5 rounded-lg">
+                                {t("cpge.badge")}
+                              </div>
+                            )}
 
                             <div className="flex items-center justify-between pt-3 border-t border-parchment">
                               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-lg border ${admColors.bg} ${admColors.text} ${admColors.border}`}>
