@@ -14,6 +14,8 @@ const QUICK_LINKS = [
   { label: "Politique de confidentialité", to: "/privacy" },
 ];
 
+const ADMIN_URL = "https://tawjih-admin.pages.dev";
+
 export default function Footer() {
   return (
     <footer className="bg-navy-950 text-white">
@@ -99,6 +101,18 @@ export default function Footer() {
                 </Link>
               ))}
             </div>
+
+            <a
+              href={ADMIN_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[11px] text-navy-600 hover:text-navy-400 transition-colors mt-1 mb-6"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Espace partenaires
+            </a>
 
             <h4 className="font-heading font-bold text-gold-300 mb-4 text-sm uppercase tracking-wider">Contact</h4>
             <div className="space-y-2">

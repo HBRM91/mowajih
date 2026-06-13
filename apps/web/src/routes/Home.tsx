@@ -39,7 +39,7 @@ const HOW_IT_WORKS = [
   {
     step: "01",
     icon: "🎯",
-    image: "/images/step-01-choose.jpeg",
+    image: "/images/step-01-profile.jpeg",
     title: "Choisis ta filière",
     desc: "Indique ton Bac, tes notes et ta ville. 2 minutes, top chrono.",
     color: "from-navy-700 to-navy-800",
@@ -48,7 +48,7 @@ const HOW_IT_WORKS = [
   {
     step: "02",
     icon: "🤖",
-    image: "/images/step-02-ai.jpeg",
+    image: "/images/step-02-processing.jpeg",
     title: "Slimane t'analyse",
     desc: "Notre IA calcule ta probabilité d'admission dans chaque école de ta région.",
     color: "from-gold-600 to-gold-700",
@@ -57,7 +57,7 @@ const HOW_IT_WORKS = [
   {
     step: "03",
     icon: "🏆",
-    image: "/images/step-03-results.jpeg",
+    image: "/images/step-03-match.jpeg",
     title: "Découvre tes matchs",
     desc: "Tu reçois une liste personnalisée d'écoles avec les chances d'admission et les coûts.",
     color: "from-emerald-600 to-emerald-700",
@@ -199,18 +199,100 @@ export default function Home() {
             </button>
           </motion.div>
 
-          {/* Hero illustration */}
+          {/* Product preview — live result cards */}
           <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            initial={{ opacity: 0, y: 40, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="mt-12 max-w-2xl mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-navy-950/60 border border-white/10"
+            transition={{ delay: 0.6, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-14 max-w-2xl mx-auto"
           >
-            <img
-              src="/images/hero-illustration.jpeg"
-              alt="Étudiant marocain avec l'IA d'orientation JAD2"
-              className="w-full h-64 md:h-80 object-cover"
-            />
+            {/* Outer glow */}
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-gold-500/10 via-navy-400/5 to-gold-500/10 rounded-[2.5rem] blur-2xl" />
+              <div className="relative bg-navy-900/80 backdrop-blur-md rounded-3xl border border-white/10 overflow-hidden shadow-2xl shadow-navy-950/80">
+                {/* Top bar */}
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-white/8 bg-navy-950/50">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-rose-500/60" />
+                    <div className="w-3 h-3 rounded-full bg-amber-500/60" />
+                    <div className="w-3 h-3 rounded-full bg-emerald-500/60" />
+                  </div>
+                  <div className="flex-1 text-center">
+                    <span className="text-[11px] text-navy-400 font-medium">Résultats d'orientation · Slimane IA</span>
+                  </div>
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+
+                {/* Content */}
+                <div className="p-5 space-y-3">
+                  {/* Profile chip */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-gold-400/60 flex-shrink-0">
+                      <img src="/images/slimane-avatar.jpeg" alt="Slimane" className="w-full h-full object-cover object-top" />
+                    </div>
+                    <div>
+                      <div className="text-white text-xs font-bold">Bac SM · 15.4/20 · Mention Bien</div>
+                      <div className="text-navy-400 text-[11px]">Casablanca · Budget 3000-8000 MAD/mois</div>
+                    </div>
+                    <div className="ml-auto text-right">
+                      <div className="text-gold-300 text-xs font-bold">+55 XP</div>
+                      <div className="text-navy-500 text-[10px]">analyse complète</div>
+                    </div>
+                  </div>
+
+                  {/* Match cards */}
+                  {[
+                    { school: "ENSIAS", city: "Rabat", type: "Ingénierie publique", prob: 91, tier: "Sélectif", color: "emerald" },
+                    { school: "INPT", city: "Rabat", type: "Ingénierie Télécoms", prob: 84, tier: "Sélectif", color: "blue" },
+                    { school: "ENCG Casablanca", city: "Casablanca", type: "Commerce & Gestion", prob: 78, tier: "Accessible", color: "gold" },
+                  ].map((m, i) => (
+                    <motion.div
+                      key={m.school}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.9 + i * 0.15, duration: 0.5 }}
+                      className="flex items-center gap-4 bg-white/5 hover:bg-white/8 border border-white/8 hover:border-gold-500/20 rounded-2xl px-4 py-3 transition-all duration-200 group cursor-default"
+                    >
+                      <div className={`w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center font-heading font-bold text-xs ${
+                        m.color === "emerald" ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/20" :
+                        m.color === "blue" ? "bg-blue-500/15 text-blue-300 border border-blue-500/20" :
+                        "bg-gold-500/15 text-gold-300 border border-gold-500/20"
+                      }`}>
+                        #{i + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-white font-bold text-sm">{m.school}</div>
+                        <div className="text-navy-400 text-[11px]">{m.type} · {m.city}</div>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <div className={`font-heading font-bold text-base ${
+                          m.prob >= 85 ? "text-emerald-400" : m.prob >= 75 ? "text-gold-300" : "text-amber-400"
+                        }`}>{m.prob}%</div>
+                        <div className="text-[10px] text-navy-500">de match</div>
+                      </div>
+                      <div className="w-1.5 h-8 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
+                        <motion.div
+                          className={`w-full rounded-full ${m.prob >= 85 ? "bg-emerald-400" : m.prob >= 75 ? "bg-gold-400" : "bg-amber-400"}`}
+                          initial={{ height: 0 }}
+                          animate={{ height: `${m.prob}%` }}
+                          transition={{ delay: 1.1 + i * 0.15, duration: 0.8, ease: "easeOut" }}
+                          style={{ originY: 1 }}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+
+                  {/* Bottom hint */}
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-[11px] text-navy-500">+ 12 autres établissements analysés</span>
+                    <span className="text-[11px] text-gold-500 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse" />
+                      Résultats en temps réel
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* Floating school tags */}
@@ -537,7 +619,15 @@ export default function Home() {
 
       {/* ─── SLIMANE INTRODUCTION ───────────────────────────────────────────── */}
       <section className="py-24 bg-gradient-to-br from-navy-800 to-navy-900 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
+        {/* Hero photo as atmospheric background on large screens */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <img
+            src="/images/hero-photo.jpeg"
+            alt=""
+            aria-hidden="true"
+            className="absolute left-0 top-0 h-full w-1/2 object-cover object-right opacity-[0.12] hidden lg:block"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-navy-900/0 via-navy-800/80 to-navy-800/100" />
           <div className="absolute top-0 right-0 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-navy-600/20 rounded-full blur-3xl" />
         </div>
