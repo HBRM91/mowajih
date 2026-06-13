@@ -4,9 +4,7 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SCHOOLS,
-  TIER_LABELS,
   TIER_COLORS,
-  ADMISSION_LABELS,
   ADMISSION_COLORS,
   TYPE_LABELS,
   type SchoolTier,
@@ -200,7 +198,7 @@ export default function Schools() {
               }`}
             >
               <span>{TYPE_ICONS[type]}</span>
-              {TYPE_LABELS[type]}
+              {t(`type.${type}`)}
               {typeGroups[type] ? <span className="opacity-60">({typeGroups[type]})</span> : null}
             </button>
           ))}
@@ -225,7 +223,7 @@ export default function Schools() {
                             : "text-navy-600 hover:bg-parchment"
                         }`}
                       >
-                        {isAll ? t("schools.filter.tier.all") : TIER_LABELS[tier as SchoolTier]}
+                        {isAll ? t("schools.filter.tier.all") : t(`tier.${tier}`)}
                       </button>
                     );
                   })}
@@ -342,7 +340,7 @@ export default function Schools() {
                     const costText =
                       school.annualCostMAD[0] === 0 && school.annualCostMAD[1] <= 3000
                         ? t("match.cost.free")
-                        : `${school.annualCostMAD[0].toLocaleString("fr-FR")} – ${school.annualCostMAD[1].toLocaleString("fr-FR")} MAD/an`;
+                        : t("school.cost.range", { min: school.annualCostMAD[0].toLocaleString("fr-FR"), max: school.annualCostMAD[1].toLocaleString("fr-FR") });
                     return (
                       <motion.div
                         key={school.slug}
@@ -373,7 +371,7 @@ export default function Schools() {
                                 </div>
                               </div>
                               <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border flex-shrink-0 ${tierColors.bg} ${tierColors.text} ${tierColors.border}`}>
-                                {TIER_LABELS[school.tier]}
+                                {t(`tier.${school.tier}`)}
                               </span>
                             </div>
 
@@ -398,7 +396,7 @@ export default function Schools() {
 
                             <div className="flex items-center justify-between pt-3 border-t border-parchment">
                               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-lg border ${admColors.bg} ${admColors.text} ${admColors.border}`}>
-                                {ADMISSION_LABELS[school.admission]}
+                                {t(`admission.${school.admission}.label`)}
                               </span>
                               <span className={`text-xs font-bold ${costText === t("match.cost.free") ? "text-emerald-600" : "text-navy-500"}`}>
                                 {costText}
