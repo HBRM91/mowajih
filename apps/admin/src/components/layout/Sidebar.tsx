@@ -4,6 +4,7 @@ import { useState } from "react";
 const nav = [
   { path: "/", label: "Tableau de bord", icon: "📊" },
   { path: "/profiles", label: "Profils Étudiants", icon: "👤" },
+  { path: "/leads-export", label: "Leads Écoles Privées", icon: "💼" },
   { path: "/seuils", label: "Seuils & Frais", icon: "🎚️" },
   { path: "/pipeline", label: "Pipeline", icon: "🎯" },
   { path: "/analytics", label: "Analytiques", icon: "📈" },

@@ -25,6 +25,8 @@ interface FormState {
   firstName: string;
   lastName: string;
   emailContact: string;
+  phoneContact: string;
+  consentPrivateSchools: boolean;
   consent: boolean;
   slimaneMode: boolean;
   setField: (field: keyof Omit<FormState, "setField" | "nextStep" | "prevStep" | "reset" | "setSlimaneMode">, value: any) => void;
@@ -54,6 +56,8 @@ const initialState = {
   firstName: "",
   lastName: "",
   emailContact: "",
+  phoneContact: "",
+  consentPrivateSchools: false,
   consent: false,
   slimaneMode: false,
 };

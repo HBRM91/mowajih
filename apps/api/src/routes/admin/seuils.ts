@@ -147,4 +147,19 @@ app.delete("/reset", adminAuth(), async (c) => {
   return c.json({ ok: true });
 });
 
+// POST /monitoring/complete — mark seuils season as done (stops daily cron from re-running)
+app.post("/monitoring/complete", adminAuth(), async (c) => {
+  await c.env.CACHE.put("seuils_monitoring_complete", JSON.stringify({
+    year: new Date().getFullYear(),
+    markedAt: new Date().toISOString(),
+  }), { expirationTtl: 60 * 60 * 24 * 400 }); // 400 days — auto-expires before next season
+  return c.json({ ok: true, year: new Date().getFullYear() });
+});
+
+// DELETE /monitoring/complete — reset monitoring (re-enables cron for current season)
+app.delete("/monitoring/complete", adminAuth(), async (c) => {
+  await c.env.CACHE.delete("seuils_monitoring_complete");
+  return c.json({ ok: true });
+});
+
 export default app;

@@ -51,6 +51,9 @@ const profileSchema = z.object({
   firstName: z.string().max(60).optional(),
   lastName: z.string().max(60).optional(),
   emailContact: z.string().email().max(120).optional(),
+  phoneContact: z.string().max(20).optional(),
+  // Private school partner consent
+  consentPrivateSchools: z.boolean().optional(),
   // Simulation results from client-side engine
   matches: z.array(matchSchema).max(12),
   alternatives: z.array(z.object({
@@ -93,6 +96,9 @@ app.post("/", rateLimit("evaluate"), validate("json", profileSchema), async (c) 
       firstName: body.firstName ?? null,
       lastName: body.lastName ?? null,
       emailContact: body.emailContact ?? null,
+      phoneContact: body.phoneContact ?? null,
+      consentPrivateSchools: body.consentPrivateSchools === true,
+      consentPrivateAt: body.consentPrivateSchools ? new Date() : null,
       aiResults: {
         matches: body.matches,
         alternatives: body.alternatives,

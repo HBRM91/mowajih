@@ -26,6 +26,10 @@ export const students = sqliteTable("students", {
   firstName: text("first_name"),
   lastName: text("last_name"),
   emailContact: text("email_contact"),
+  phoneContact: text("phone_contact"),
+  // Private school partner sharing consent (separate from per-university opt-in)
+  consentPrivateSchools: integer("consent_private_schools", { mode: "boolean" }).default(false),
+  consentPrivateAt: integer("consent_private_at", { mode: "timestamp" }),
   // AI simulation results as JSON
   aiResults: text("ai_results", { mode: "json" }).$type<{
     matches: Array<{ university_slug: string; probability: number; confidence: string; rationale: string; estimated_annual_cost_mad: number }>;

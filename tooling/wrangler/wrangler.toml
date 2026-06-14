@@ -4,9 +4,9 @@ compatibility_date = "2024-05-12"
 compatibility_flags = ["nodejs_compat"]
 account_id = "b1b56dcea807e48c9d3bc918bf1266ec"
 
-# Daily AI auto-update: 6 AM UTC = 7 AM Morocco (winter) / 8 AM (summer)
+# Seuils monitoring: 3x/day during June-August (peak publishing season), daily rest of year
 [triggers]
-crons = ["0 6 * * *"]
+crons = ["0 6,14,22 * 6-8 *", "0 6 * 9-5 *"]
 
 # D1 Database
 [[d1_databases]]

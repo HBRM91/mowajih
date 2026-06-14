@@ -218,14 +218,51 @@ IDs à utiliser: bac, cursussup, tafem, fmp, privees`;
   }
 }
 
-export async function handleScheduled(env: Env): Promise<void> {
-  console.log("Scheduled job started at", new Date().toISOString());
+// ─── Season gate ─────────────────────────────────────────────────────────────
 
-  // Run both in parallel
-  await Promise.allSettled([
-    runSugilsAutoSuggest(env),
-    runDeadlinesAutoUpdate(env),
-  ]);
+const MONITORING_START_MONTH = 6; // June (1-indexed)
+const MONITORING_START_DAY = 17;  // June 17 = Bac results day
+const MONITORING_END_MONTH = 9;   // Stop after August 31 (September onwards = off-season)
+
+function isMonitoringSeason(now: Date): boolean {
+  const m = now.getMonth() + 1; // 1-12
+  const d = now.getDate();
+  // June 17 onwards
+  if (m === MONITORING_START_MONTH && d < MONITORING_START_DAY) return false;
+  // July, August: always active
+  if (m > MONITORING_START_MONTH && m < MONITORING_END_MONTH) return true;
+  // June from day 17: active
+  if (m === MONITORING_START_MONTH && d >= MONITORING_START_DAY) return true;
+  return false;
+}
+
+// Track which schools have confirmed published their seuils (admin marks complete)
+async function isMonitoringComplete(env: Env): Promise<boolean> {
+  const flag = await env.CACHE.get("seuils_monitoring_complete");
+  if (!flag) return false;
+  // Auto-reset each year: compare year stored vs current year
+  const parsed = JSON.parse(flag) as { year: number };
+  return parsed.year === new Date().getFullYear();
+}
+
+export async function handleScheduled(env: Env): Promise<void> {
+  const now = new Date();
+  console.log("Scheduled job started at", now.toISOString());
+
+  // Deadlines update runs year-round (lightweight, skips if fresh)
+  const deadlineUpdate = runDeadlinesAutoUpdate(env);
+
+  // Seuils monitoring: only during peak season, stop when admin marks complete
+  const doSeuils = isMonitoringSeason(now) && !(await isMonitoringComplete(env));
+
+  if (doSeuils) {
+    console.log("In seuils monitoring season — running AI suggest");
+    await Promise.allSettled([runSugilsAutoSuggest(env), deadlineUpdate]);
+  } else {
+    const reason = !isMonitoringSeason(now) ? "off-season" : "monitoring marked complete";
+    console.log(`Skipping seuils suggest (${reason})`);
+    await deadlineUpdate;
+  }
 
   console.log("Scheduled job completed at", new Date().toISOString());
 }

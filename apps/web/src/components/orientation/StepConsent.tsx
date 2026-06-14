@@ -6,11 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function StepConsent({ onSubmit, isLoading }: { onSubmit: (token?: string) => void; isLoading: boolean }) {
   const { t } = useTranslation();
-  const { consent, firstName, lastName, emailContact, setField, prevStep } = useFormStore();
+  const { consent, firstName, lastName, emailContact, phoneContact, consentPrivateSchools, setField, prevStep } = useFormStore();
   const addXp = useGameStore((s) => s.addXp);
   const awardBadge = useGameStore((s) => s.awardBadge);
   const [agreed, setAgreed] = useState(consent);
   const [showContact, setShowContact] = useState(!!(firstName || lastName || emailContact));
+  const [showPrivateOpt, setShowPrivateOpt] = useState(consentPrivateSchools);
 
   const handleSubmit = () => {
     addXp(20, "Completed orientation form");
@@ -112,6 +113,96 @@ export default function StepConsent({ onSubmit, isLoading }: { onSubmit: (token?
                   <p className="mt-2 text-[10px] text-navy-400">
                     Ces informations sont stockées localement et ne sont utilisées que pour générer ton dossier de candidature.
                   </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Private school partner opt-in */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="mb-5 bg-gradient-to-br from-violet-50 to-violet-100/20 border border-violet-200 rounded-2xl p-5"
+      >
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-violet-700 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">
+            🏛️
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h4 className="font-heading font-bold text-navy-800 text-sm">Être contacté par des écoles privées</h4>
+                <p className="text-xs text-navy-500 mt-0.5">
+                  UM6P, UIR, HEM, AUI, Mundiapolis… reçois leurs offres directement.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const newVal = !showPrivateOpt;
+                  setShowPrivateOpt(newVal);
+                  if (!newVal) {
+                    setField("consentPrivateSchools", false);
+                    setField("phoneContact", "");
+                  }
+                }}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                  showPrivateOpt
+                    ? "bg-violet-700 text-white"
+                    : "bg-violet-500 text-white hover:bg-violet-600"
+                }`}
+              >
+                {showPrivateOpt ? "Activé ✓" : "Activer"}
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {showPrivateOpt && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-4 space-y-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-navy-500 uppercase tracking-wider mb-1">
+                        Téléphone (WhatsApp de préférence)
+                      </label>
+                      <input
+                        type="tel"
+                        value={phoneContact}
+                        onChange={(e) => setField("phoneContact", e.target.value)}
+                        placeholder="+212 6XX XXX XXX"
+                        maxLength={20}
+                        className="w-full px-3 py-2 rounded-xl border border-violet-200 bg-white text-sm text-navy-700 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 outline-none"
+                      />
+                    </div>
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <div className="relative flex-shrink-0 mt-0.5">
+                        <input
+                          type="checkbox"
+                          checked={consentPrivateSchools}
+                          onChange={(e) => setField("consentPrivateSchools", e.target.checked)}
+                          className="peer sr-only"
+                        />
+                        <div className="w-5 h-5 rounded-md border-2 border-violet-300 peer-checked:bg-violet-600 peer-checked:border-violet-600 transition flex items-center justify-center">
+                          <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      </div>
+                      <span className="text-xs text-navy-600 leading-relaxed">
+                        J'accepte que mes coordonnées (nom, email, téléphone, filière, notes) soient transmises à des écoles privées partenaires de JAD2 à des fins de recrutement. Je peux retirer ce consentement à tout moment via <strong>jad2advisory@gmail.com</strong>.
+                      </span>
+                    </label>
+                    <div className="text-[10px] text-violet-600 bg-violet-50 border border-violet-100 rounded-lg px-3 py-2">
+                      🛡️ Conforme CNDP · Tes données ne seront jamais vendues à des tiers non partenaires.
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

@@ -35,6 +35,8 @@ export default function Orientation() {
       firstName: form.firstName || undefined,
       lastName: form.lastName || undefined,
       emailContact: form.emailContact || undefined,
+      phoneContact: form.phoneContact || undefined,
+      consentPrivateSchools: form.consentPrivateSchools || undefined,
     };
 
     const result = await evaluate.mutateAsync(payload);
