@@ -10,6 +10,8 @@ import {
   type SchoolTier,
   type SchoolType,
 } from "../data/schools";
+import SchoolLogo from "../components/ui/SchoolLogo";
+import { useCompareStore } from "../stores/compareStore";
 
 const TYPE_ICONS: Record<string, string> = {
   engineering: "⚙️",
@@ -26,49 +28,9 @@ const TYPE_ICONS: Record<string, string> = {
 const TRACK_LIST = ["SM", "PC", "SVT", "SE", "SH", "STI", "L"];
 const TIER_ORDER: SchoolTier[] = ["elite", "premium", "selective", "standard", "accessible"];
 
-function getDomainFromUrl(url?: string): string | null {
-  if (!url) return null;
-  try {
-    return new URL(url).hostname;
-  } catch {
-    return null;
-  }
-}
-
-function SchoolLogo({ school }: { school: { shortName: string; website?: string; icon: string; tier: SchoolTier; logoPath?: string } }) {
-  const tierColors = TIER_COLORS[school.tier];
-  // 0 = local logoPath, 1 = Clearbit, 2 = Google favicon, 3 = emoji
-  const domain = getDomainFromUrl(school.website);
-  const startLevel = school.logoPath ? 0 : domain ? 1 : 3;
-  const [level, setLevel] = useState(startLevel);
-
-  if (level >= 3 || (!school.logoPath && !domain)) {
-    return (
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${tierColors.bg}`}>
-        {school.icon}
-      </div>
-    );
-  }
-
-  const src =
-    level === 0 ? school.logoPath! :
-    level === 1 ? `https://logo.clearbit.com/${domain}?size=64` :
-    `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-
-  return (
-    <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden bg-white border ${tierColors.border}`}>
-      <img
-        src={src}
-        alt={school.shortName}
-        className="w-9 h-9 object-contain p-0.5"
-        onError={() => setLevel((l) => l + 1)}
-      />
-    </div>
-  );
-}
-
 export default function Schools() {
   const { t } = useTranslation();
+  const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<SchoolType | "all">("all");
   const [filterTier, setFilterTier] = useState<SchoolTier | "all">("all");
@@ -347,6 +309,7 @@ export default function Schools() {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: Math.min(i * 0.03, 0.3) }}
+                        className="relative group/card"
                       >
                         <Link
                           to={`/ecoles/${school.slug}`}
@@ -404,6 +367,21 @@ export default function Schools() {
                             </div>
                           </div>
                         </Link>
+                        {/* Compare toggle button */}
+                        <button
+                          onClick={(e) => { e.preventDefault(); compareToggle(school); }}
+                          className={`absolute top-3 right-3 z-10 opacity-0 group-hover/card:opacity-100 transition-all duration-200 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm ${
+                            inCompare(school.slug)
+                              ? "bg-gold-500 text-navy-900 opacity-100"
+                              : compareSchools.length >= 3
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                : "bg-navy-800 text-white"
+                          }`}
+                          disabled={!inCompare(school.slug) && compareSchools.length >= 3}
+                          title={inCompare(school.slug) ? "Retirer de la comparaison" : "Ajouter à la comparaison"}
+                        >
+                          {inCompare(school.slug) ? "✓ Comparé" : "⚖ Comparer"}
+                        </button>
                       </motion.div>
                     );
                   })}

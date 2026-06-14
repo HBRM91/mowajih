@@ -10,6 +10,7 @@ import {
 } from "../data/schools";
 import { getSchoolCareers } from "../data/careers";
 import { getSchoolCampusInfo } from "../data/campusData";
+import { useCompareStore } from "../stores/compareStore";
 
 function getDomainFromUrl(url?: string): string | null {
   if (!url) return null;
@@ -325,6 +326,7 @@ export default function SchoolDetail() {
   const lang = (["fr", "ar", "en"].includes(i18n.language) ? i18n.language : "fr") as "fr" | "ar" | "en";
   const school = getSchoolBySlug(slug ?? "");
   const careers = getSchoolCareers(slug ?? "");
+  const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
 
   if (!school) {
     return (
@@ -390,19 +392,34 @@ export default function SchoolDetail() {
                   {school.founded && <><span className="text-navy-500 mx-1">·</span>{t("school.founded", { year: school.founded })}</>}
                 </p>
               </div>
-              {school.website && (
-                <a
-                  href={school.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 bg-white/10 border border-white/20 text-white rounded-xl text-sm font-semibold hover:bg-white/20 transition-all"
+              <div className="flex flex-col gap-2 flex-shrink-0">
+                {school.website && (
+                  <a
+                    href={school.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 border border-white/20 text-white rounded-xl text-sm font-semibold hover:bg-white/20 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    {t("school.official.site")}
+                  </a>
+                )}
+                <button
+                  onClick={() => compareToggle(school)}
+                  disabled={!inCompare(school.slug) && compareSchools.length >= 3}
+                  className={`inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    inCompare(school.slug)
+                      ? "bg-gold-500 text-navy-900 hover:bg-gold-400"
+                      : compareSchools.length >= 3
+                        ? "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
+                        : "bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                  }`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                  {t("school.official.site")}
-                </a>
-              )}
+                  ⚖ {inCompare(school.slug) ? "Ajouté à la comparaison" : compareSchools.length >= 3 ? "Comparaison pleine (3/3)" : "Ajouter à comparer"}
+                </button>
+              </div>
             </div>
           </motion.div>
         </div>

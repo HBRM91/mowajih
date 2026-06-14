@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameStore } from "../stores/gameStore";
 import { useFormStore } from "../stores/formStore";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { SCHOOLS, getTopSchoolsByTrack, TIER_LABELS, TIER_COLORS } from "../data/schools";
+import SchoolLogo from "../components/ui/SchoolLogo";
 
 const BAC_TRACKS = [
   { key: "SM", label: "Sciences Maths", icon: "🧮", color: "from-blue-600 to-blue-800", light: "bg-blue-50 border-blue-200 text-blue-800" },
@@ -478,9 +479,7 @@ export default function Home() {
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-navy-800 rounded-xl flex items-center justify-center text-xl">
-                          {school.icon}
-                        </div>
+                        <SchoolLogo school={school} size="sm" />
                         <div>
                           <div className="text-white font-bold text-sm leading-tight group-hover:text-gold-300 transition-colors">{school.shortName}</div>
                           <div className="text-navy-400 text-xs mt-0.5">{school.city}</div>
@@ -631,6 +630,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ─── CALENDRIER DES INSCRIPTIONS ────────────────────────────────────── */}
+      <DeadlinesSection />
 
       {/* ─── SLIMANE INTRODUCTION ───────────────────────────────────────────── */}
       <section className="py-24 bg-gradient-to-br from-navy-800 to-navy-900 relative overflow-hidden">
@@ -904,5 +906,178 @@ export default function Home() {
         </div>
       </section>
     </div>
+  );
+}
+
+// ─── DEADLINES SECTION ──────────────────────────────────────────────────────
+const DEADLINES = [
+  {
+    id: "bac",
+    label: "Résultats Bac",
+    sublabel: "Résultats officiels Tawjihi 2026",
+    date: new Date("2026-06-17T08:00:00"),
+    color: "from-emerald-500 to-emerald-600",
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+    text: "text-emerald-800",
+    icon: "🎓",
+    link: "https://bac.men.gov.ma",
+    linkLabel: "men.gov.ma",
+  },
+  {
+    id: "cursussup",
+    label: "cursussup.gov.ma",
+    sublabel: "Phase 1 — inscriptions ENSA, ENCG, ENSAM...",
+    date: new Date("2026-07-15T23:59:00"),
+    color: "from-blue-500 to-blue-600",
+    bg: "bg-blue-50",
+    border: "border-blue-200",
+    text: "text-blue-800",
+    icon: "🖥️",
+    link: "https://cursussup.gov.ma",
+    linkLabel: "cursussup.gov.ma",
+  },
+  {
+    id: "tafem",
+    label: "TAFEM — ENCG",
+    sublabel: "Concours d'accès aux 12 campus ENCG",
+    date: new Date("2026-08-22T09:00:00"),
+    color: "from-amber-500 to-amber-600",
+    bg: "bg-amber-50",
+    border: "border-amber-200",
+    text: "text-amber-800",
+    icon: "📝",
+    link: "https://tafem.ma",
+    linkLabel: "tafem.ma",
+  },
+  {
+    id: "fmp",
+    label: "FMP Médecine",
+    sublabel: "Concours national d'entrée en médecine",
+    date: new Date("2026-08-08T08:00:00"),
+    color: "from-rose-500 to-rose-600",
+    bg: "bg-rose-50",
+    border: "border-rose-200",
+    text: "text-rose-800",
+    icon: "🩺",
+    link: null,
+    linkLabel: null,
+  },
+  {
+    id: "privees",
+    label: "Écoles privées",
+    sublabel: "Dossiers UM6P, UIR, HEM, AUI",
+    date: new Date("2026-07-31T23:59:00"),
+    color: "from-violet-500 to-violet-600",
+    bg: "bg-violet-50",
+    border: "border-violet-200",
+    text: "text-violet-800",
+    icon: "🏛️",
+    link: null,
+    linkLabel: null,
+  },
+];
+
+function useCountdown(target: Date) {
+  const [diff, setDiff] = useState(() => target.getTime() - Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setDiff(target.getTime() - Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [target]);
+  if (diff <= 0) return null;
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  return { days, hours, mins };
+}
+
+function DeadlineCard({ dl }: { dl: typeof DEADLINES[0] }) {
+  const countdown = useCountdown(dl.date);
+  const passed = !countdown;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className={`${dl.bg} border ${dl.border} rounded-2xl p-5 flex flex-col gap-3`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <span className="text-2xl">{dl.icon}</span>
+          <div>
+            <div className={`font-bold text-sm ${dl.text}`}>{dl.label}</div>
+            <div className="text-[11px] text-navy-500 mt-0.5 leading-tight">{dl.sublabel}</div>
+          </div>
+        </div>
+        {passed && (
+          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full flex-shrink-0">
+            Passé
+          </span>
+        )}
+      </div>
+
+      <div className="text-[11px] text-navy-500">
+        {dl.date.toLocaleDateString("fr-MA", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+      </div>
+
+      {!passed && countdown && (
+        <div className="flex gap-2">
+          {[
+            { v: countdown.days, u: "j" },
+            { v: countdown.hours, u: "h" },
+            { v: countdown.mins, u: "min" },
+          ].map(({ v, u }) => (
+            <div key={u} className={`flex-1 text-center py-2 rounded-xl bg-gradient-to-br ${dl.color} text-white`}>
+              <div className="font-heading font-bold text-lg leading-none">{v}</div>
+              <div className="text-[9px] opacity-80 mt-0.5">{u}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {dl.link && (
+        <a
+          href={dl.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`text-[11px] font-semibold ${dl.text} hover:underline flex items-center gap-1`}
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          {dl.linkLabel}
+        </a>
+      )}
+    </motion.div>
+  );
+}
+
+function DeadlinesSection() {
+  return (
+    <section className="py-20 bg-parchment border-y border-gold-100/60">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-10">
+          <span className="inline-flex items-center gap-2 text-rose-600 text-sm font-bold uppercase tracking-[0.15em]">
+            <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
+            Dates limites 2026
+          </span>
+          <h2 className="font-heading text-3xl md:text-4xl font-bold text-navy-800 mt-3 mb-3">
+            Calendrier des inscriptions
+          </h2>
+          <p className="text-navy-400 max-w-xl mx-auto text-sm">
+            Les dates clés pour ta candidature 2026–2027. Ne rate aucune échéance.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {DEADLINES.map((dl) => <DeadlineCard key={dl.id} dl={dl} />)}
+        </div>
+        <div className="mt-8 text-center">
+          <p className="text-xs text-navy-400">
+            Dates indicatives — vérifiez toujours les dates officielles sur les sites des établissements.
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }
