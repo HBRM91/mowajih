@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  SCHOOLS,
   TIER_COLORS,
   ADMISSION_COLORS,
   TYPE_LABELS,
@@ -12,6 +11,7 @@ import {
 } from "../data/schools";
 import SchoolLogo from "../components/ui/SchoolLogo";
 import { useCompareStore } from "../stores/compareStore";
+import { useMergedSchools } from "../hooks/useSchoolOverrides";
 
 const TYPE_ICONS: Record<string, string> = {
   engineering: "⚙️",
@@ -31,6 +31,7 @@ const TIER_ORDER: SchoolTier[] = ["elite", "premium", "selective", "standard", "
 export default function Schools() {
   const { t } = useTranslation();
   const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
+  const allSchools = useMergedSchools();
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<SchoolType | "all">("all");
   const [filterTier, setFilterTier] = useState<SchoolTier | "all">("all");
@@ -39,7 +40,7 @@ export default function Schools() {
   const [sortBy, setSortBy] = useState<"tier" | "alpha" | "cost">("tier");
 
   const filtered = useMemo(() => {
-    let result = SCHOOLS.filter((s) => {
+    let result = allSchools.filter((s) => {
       if (search) {
         const q = search.toLowerCase();
         if (
@@ -66,15 +67,15 @@ export default function Schools() {
     }
 
     return result;
-  }, [search, filterType, filterTier, filterTrack, filterAccess, sortBy]);
+  }, [allSchools, search, filterType, filterTier, filterTrack, filterAccess, sortBy]);
 
   const typeGroups = useMemo(() => {
-    const counts: Partial<Record<SchoolType | "all", number>> = { all: SCHOOLS.length };
-    SCHOOLS.forEach((s) => {
+    const counts: Partial<Record<SchoolType | "all", number>> = { all: allSchools.length };
+    allSchools.forEach((s) => {
       counts[s.type] = (counts[s.type] ?? 0) + 1;
     });
     return counts;
-  }, []);
+  }, [allSchools]);
 
   const resetFilters = () => {
     setSearch("");
@@ -109,7 +110,7 @@ export default function Schools() {
               </span>
             </h1>
             <p className="text-navy-200 text-lg max-w-2xl mb-8">
-              {t("schools.subtitle", { count: SCHOOLS.length })}
+              {t("schools.subtitle", { count: allSchools.length })}
             </p>
 
             {/* Search bar */}

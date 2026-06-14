@@ -20,6 +20,7 @@ import adminSeuils from "./routes/admin/seuils";
 import adminAssets from "./routes/admin/assets";
 import adminLeads from "./routes/admin/leads";
 import { adminAuth } from "./middleware/adminAuth";
+import { handleScheduled, DEFAULT_DEADLINES } from "./scheduled";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -90,10 +91,24 @@ app.route("/api/admin/dossier", adminDossier);
 app.route("/api/admin/seuils", adminSeuils);
 app.route("/api/admin/leads", adminLeads);
 app.route("/api/admin/assets", adminAssets);
-// Public seuils overrides — read by web app on load
+// Public seuils overrides — merged by web app with hardcoded school data
 app.get("/api/public/seuils", async (c) => {
   const raw = await c.env.CACHE.get("school_seuils_overrides");
   if (!raw) return c.json({ updates: [], updatedAt: null });
+  return c.json(JSON.parse(raw));
+});
+
+// Public deadlines — KV-driven with hardcoded fallback
+app.get("/api/public/deadlines", async (c) => {
+  const raw = await c.env.CACHE.get("calendar_deadlines");
+  if (!raw) return c.json({ deadlines: DEFAULT_DEADLINES, source: "default" });
+  return c.json(JSON.parse(raw));
+});
+
+// Admin: pending AI seuil suggestions awaiting review
+app.get("/api/admin/seuils/pending", adminAuth(), async (c) => {
+  const raw = await c.env.CACHE.get("school_seuils_pending");
+  if (!raw) return c.json({ count: 0, suggestions: [], generatedAt: null });
   return c.json(JSON.parse(raw));
 });
 
@@ -110,4 +125,10 @@ app.onError((err, c) => {
 app.notFound((c) => c.json({ error: "Not found" }, 404));
 
 export { LeadStreamDO } from "./services/leadStreamDO";
-export default app;
+
+export default {
+  fetch: app.fetch,
+  async scheduled(_controller: unknown, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }) {
+    ctx.waitUntil(handleScheduled(env));
+  },
+};

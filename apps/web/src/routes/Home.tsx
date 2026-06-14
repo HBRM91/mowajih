@@ -4,8 +4,10 @@ import { useTranslation } from "react-i18next";
 import { useGameStore } from "../stores/gameStore";
 import { useFormStore } from "../stores/formStore";
 import { useState, useRef, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { SCHOOLS, getTopSchoolsByTrack, TIER_LABELS, TIER_COLORS } from "../data/schools";
 import SchoolLogo from "../components/ui/SchoolLogo";
+import { API_URL } from "../lib/api";
 
 const BAC_TRACKS = [
   { key: "SM", label: "Sciences Maths", icon: "🧮", color: "from-blue-600 to-blue-800", light: "bg-blue-50 border-blue-200 text-blue-800" },
@@ -1054,6 +1056,25 @@ function DeadlineCard({ dl }: { dl: typeof DEADLINES[0] }) {
 }
 
 function DeadlinesSection() {
+  const { data } = useQuery({
+    queryKey: ["deadlines"],
+    queryFn: async () => {
+      const res = await fetch(`${API_URL}/api/public/deadlines`);
+      if (!res.ok) return null;
+      return res.json() as Promise<{ deadlines: Array<{ id: string; date: string; sublabel?: string }>; source?: string }>;
+    },
+    staleTime: 1000 * 60 * 60,
+    retry: false,
+  });
+
+  const merged = DEADLINES.map((dl) => {
+    const apiEntry = data?.deadlines?.find((d) => d.id === dl.id);
+    if (!apiEntry) return dl;
+    return { ...dl, date: new Date(apiEntry.date), sublabel: apiEntry.sublabel ?? dl.sublabel };
+  });
+
+  const isAiUpdated = data?.source === "auto";
+
   return (
     <section className="py-20 bg-parchment border-y border-gold-100/60">
       <div className="max-w-6xl mx-auto px-4">
@@ -1068,9 +1089,17 @@ function DeadlinesSection() {
           <p className="text-navy-400 max-w-xl mx-auto text-sm">
             Les dates clés pour ta candidature 2026–2027. Ne rate aucune échéance.
           </p>
+          {isAiUpdated && (
+            <span className="inline-flex items-center gap-1.5 text-[11px] text-navy-400 mt-3 bg-navy-50 border border-navy-100 px-3 py-1 rounded-full">
+              <svg className="w-3 h-3 text-navy-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Dates mises à jour automatiquement par IA
+            </span>
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {DEADLINES.map((dl) => <DeadlineCard key={dl.id} dl={dl} />)}
+          {merged.map((dl) => <DeadlineCard key={dl.id} dl={dl} />)}
         </div>
         <div className="mt-8 text-center">
           <p className="text-xs text-navy-400">
