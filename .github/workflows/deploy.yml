@@ -25,14 +25,16 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
-      - name: Unit tests
-        run: npm run test
-
+      # Must run before tests: apps/api's test suite imports @tawjih/ai, which
+      # resolves through its built dist/ output (no dist/ exists until this runs).
       - name: Build shared packages
         run: |
           npm run build -w packages/shared
           npm run build -w packages/ui
           npm run build -w packages/ai
+
+      - name: Unit tests
+        run: npm run test
 
       - name: Build web
         run: npm run build -w apps/web
