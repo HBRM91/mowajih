@@ -4,25 +4,15 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   SCHOOLS,
-  TIER_LABELS,
   TIER_COLORS,
-  ADMISSION_LABELS,
   ADMISSION_COLORS,
-  TYPE_LABELS,
   getSchoolBySlug,
 } from "../data/schools";
+import { getSchoolText } from "../data/schools.i18n";
 import { getSchoolCareers } from "../data/careers";
 import { getSchoolCampusInfo } from "../data/campusData";
-
-const TRACK_LABELS: Record<string, string> = {
-  SM: "Sciences Mathématiques",
-  PC: "Sciences Physiques",
-  SVT: "Sciences de la Vie & Terre",
-  SE: "Sciences Économiques",
-  SH: "Sciences Humaines",
-  STI: "Sciences Techniques",
-  L: "Lettres",
-};
+import { useCompareStore } from "../stores/compareStore";
+import { useProgressStore } from "../stores/progressStore";
 
 function getDomainFromUrl(url?: string): string | null {
   if (!url) return null;
@@ -67,6 +57,7 @@ function SchoolLogoHero({ school }: { school: ReturnType<typeof getSchoolBySlug>
 }
 
 function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug> }) {
+  const { t } = useTranslation();
   if (!school) return null;
   const { admission } = school;
 
@@ -75,16 +66,16 @@ function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug>
       <div className="bg-violet-50 border border-violet-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xl">📐</span>
-          <h4 className="font-bold text-violet-800">Voie CPGE + Concours CNC</h4>
+          <h4 className="font-bold text-violet-800">{t("admission.cnc.title")}</h4>
         </div>
         <ol className="space-y-2 text-sm text-violet-700">
-          <li className="flex gap-2"><span className="font-bold text-violet-500 flex-shrink-0">1.</span> Intégrer une CPGE scientifique (MP / PSI / MPSI / TSI) après le Bac — sélection sur dossier avec mention Bien ou TB.</li>
-          <li className="flex gap-2"><span className="font-bold text-violet-500 flex-shrink-0">2.</span> Préparer pendant 2 ans (classes de MP1, MP2 ou PSI1, PSI2).</li>
-          <li className="flex gap-2"><span className="font-bold text-violet-500 flex-shrink-0">3.</span> Passer le Concours National Commun (CNC) en fin de 2e année. Notes des deux années sont prises en compte.</li>
-          <li className="flex gap-2"><span className="font-bold text-violet-500 flex-shrink-0">4.</span> Classement sur 4 000–6 000 candidats nationaux. Les meilleurs intègrent EMI, EHTP, ENSIAS, INPT, etc.</li>
+          <li className="flex gap-2"><span className="font-bold text-violet-500 flex-shrink-0">1.</span> {t("admission.cnc.step1")}</li>
+          <li className="flex gap-2"><span className="font-bold text-violet-500 flex-shrink-0">2.</span> {t("admission.cnc.step2")}</li>
+          <li className="flex gap-2"><span className="font-bold text-violet-500 flex-shrink-0">3.</span> {t("admission.cnc.step3")}</li>
+          <li className="flex gap-2"><span className="font-bold text-violet-500 flex-shrink-0">4.</span> {t("admission.cnc.step4")}</li>
         </ol>
         <div className="mt-3 pt-3 border-t border-violet-200 text-xs text-violet-500">
-          Dossier de candidature CPGE : cursussup.gov.ma · Résultats CNC : mcs.ac.ma
+          {t("admission.cnc.footer")}
         </div>
       </div>
     );
@@ -95,18 +86,18 @@ function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug>
       <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xl">📋</span>
-          <h4 className="font-bold text-orange-800">Admission directe Bac (plateforme Tawjihi)</h4>
+          <h4 className="font-bold text-orange-800">{t("admission.bac.title")}</h4>
         </div>
         <div className="mb-3 bg-orange-100 rounded-xl p-3">
-          <p className="text-xs font-bold text-orange-700 mb-1">Formule de sélection 75/25 :</p>
-          <p className="text-sm font-mono text-orange-800">Moyenne = (Note nationale × 0,75) + (Note régionale × 0,25)</p>
-          <p className="text-xs text-orange-600 mt-1">La note régionale correspond aux notes du contrôle continu (devoirs & épreuves régionales).</p>
+          <p className="text-xs font-bold text-orange-700 mb-1">{t("admission.bac.formula.label")}</p>
+          <p className="text-sm font-mono text-orange-800">{t("admission.bac.formula.text")}</p>
+          <p className="text-xs text-orange-600 mt-1">{t("admission.bac.formula.note")}</p>
         </div>
         <ol className="space-y-2 text-sm text-orange-700">
-          <li className="flex gap-2"><span className="font-bold text-orange-500 flex-shrink-0">1.</span> Obtenir ton Bac avec la moyenne requise (note min : <strong>{school.minGrade}/20</strong>).</li>
-          <li className="flex gap-2"><span className="font-bold text-orange-500 flex-shrink-0">2.</span> Candidater sur <strong>cursussup.gov.ma</strong> ou <strong>tawjihi.ma</strong> dès la publication des résultats.</li>
-          <li className="flex gap-2"><span className="font-bold text-orange-500 flex-shrink-0">3.</span> La sélection se fait par classement selon la formule 75/25. Le nombre de places est limité.</li>
-          <li className="flex gap-2"><span className="font-bold text-orange-500 flex-shrink-0">4.</span> Confirmer le choix dans les délais impartis (généralement 72h après l'affectation).</li>
+          <li className="flex gap-2"><span className="font-bold text-orange-500 flex-shrink-0">1.</span> {t("admission.bac.step1", { grade: school.minGrade })}</li>
+          <li className="flex gap-2"><span className="font-bold text-orange-500 flex-shrink-0">2.</span> {t("admission.bac.step2")}</li>
+          <li className="flex gap-2"><span className="font-bold text-orange-500 flex-shrink-0">3.</span> {t("admission.bac.step3")}</li>
+          <li className="flex gap-2"><span className="font-bold text-orange-500 flex-shrink-0">4.</span> {t("admission.bac.step4")}</li>
         </ol>
       </div>
     );
@@ -117,16 +108,16 @@ function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug>
       <div className="bg-sky-50 border border-sky-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xl">📝</span>
-          <h4 className="font-bold text-sky-800">Concours TAFEM (ENCG)</h4>
+          <h4 className="font-bold text-sky-800">{t("admission.tafem.title")}</h4>
         </div>
         <ol className="space-y-2 text-sm text-sky-700">
-          <li className="flex gap-2"><span className="font-bold text-sky-500 flex-shrink-0">1.</span> Présélection sur dossier Bac via cursussup.gov.ma (seuil minimum variable selon campus).</li>
-          <li className="flex gap-2"><span className="font-bold text-sky-500 flex-shrink-0">2.</span> Épreuve écrite TAFEM : Culture générale, Mathématiques, Logique, Économie (3h).</li>
-          <li className="flex gap-2"><span className="font-bold text-sky-500 flex-shrink-0">3.</span> Oral / entretien de motivation pour les candidats retenus.</li>
-          <li className="flex gap-2"><span className="font-bold text-sky-500 flex-shrink-0">4.</span> Classement final = note Bac + note TAFEM + note oral.</li>
+          <li className="flex gap-2"><span className="font-bold text-sky-500 flex-shrink-0">1.</span> {t("admission.tafem.step1")}</li>
+          <li className="flex gap-2"><span className="font-bold text-sky-500 flex-shrink-0">2.</span> {t("admission.tafem.step2")}</li>
+          <li className="flex gap-2"><span className="font-bold text-sky-500 flex-shrink-0">3.</span> {t("admission.tafem.step3")}</li>
+          <li className="flex gap-2"><span className="font-bold text-sky-500 flex-shrink-0">4.</span> {t("admission.tafem.step4")}</li>
         </ol>
         <div className="mt-3 pt-3 border-t border-sky-200 text-xs text-sky-500">
-          Inscriptions : cursussup.gov.ma · Site ENCG : encg.ac.ma
+          {t("admission.tafem.footer")}
         </div>
       </div>
     );
@@ -137,17 +128,17 @@ function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug>
       <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xl">📁</span>
-          <h4 className="font-bold text-emerald-800">Admission sur dossier + entretien</h4>
+          <h4 className="font-bold text-emerald-800">{t("admission.dossier.title")}</h4>
         </div>
         <ol className="space-y-2 text-sm text-emerald-700">
-          <li className="flex gap-2"><span className="font-bold text-emerald-500 flex-shrink-0">1.</span> Consulter les dates d'ouverture des candidatures sur le site officiel de l'établissement.</li>
-          <li className="flex gap-2"><span className="font-bold text-emerald-500 flex-shrink-0">2.</span> Préparer le dossier : relevés de notes du Bac, lettre de motivation, CV, résultats de tests (SAT/ACT pour certaines).</li>
-          <li className="flex gap-2"><span className="font-bold text-emerald-500 flex-shrink-0">3.</span> Passer l'entretien de motivation ou le test d'admission de l'école.</li>
-          <li className="flex gap-2"><span className="font-bold text-emerald-500 flex-shrink-0">4.</span> Attendre la décision et répondre dans les délais.</li>
+          <li className="flex gap-2"><span className="font-bold text-emerald-500 flex-shrink-0">1.</span> {t("admission.dossier.step1")}</li>
+          <li className="flex gap-2"><span className="font-bold text-emerald-500 flex-shrink-0">2.</span> {t("admission.dossier.step2")}</li>
+          <li className="flex gap-2"><span className="font-bold text-emerald-500 flex-shrink-0">3.</span> {t("admission.dossier.step3")}</li>
+          <li className="flex gap-2"><span className="font-bold text-emerald-500 flex-shrink-0">4.</span> {t("admission.dossier.step4")}</li>
         </ol>
         {school.website && (
           <div className="mt-3 pt-3 border-t border-emerald-200 text-xs text-emerald-600">
-            Site officiel : <a href={school.website} target="_blank" rel="noopener noreferrer" className="underline">{school.website}</a>
+            <a href={school.website} target="_blank" rel="noopener noreferrer" className="underline">{school.website}</a>
           </div>
         )}
       </div>
@@ -159,16 +150,16 @@ function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug>
       <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xl">🎓</span>
-          <h4 className="font-bold text-slate-700">Inscription directe sur Bac</h4>
+          <h4 className="font-bold text-slate-700">{t("admission.direct.title")}</h4>
         </div>
         <ol className="space-y-2 text-sm text-slate-600">
-          <li className="flex gap-2"><span className="font-bold text-slate-400 flex-shrink-0">1.</span> Obtenir ton Bac dans la filière concernée.</li>
-          <li className="flex gap-2"><span className="font-bold text-slate-400 flex-shrink-0">2.</span> S'inscrire directement à la faculté après publication des résultats du Bac.</li>
-          <li className="flex gap-2"><span className="font-bold text-slate-400 flex-shrink-0">3.</span> Apporter les documents requis : attestation de réussite au Bac, CIN, photos d'identité, dossier médical.</li>
-          <li className="flex gap-2"><span className="font-bold text-slate-400 flex-shrink-0">4.</span> Choisir ta branche/filière d'études lors de l'inscription. Certaines filières peuvent être limitées.</li>
+          <li className="flex gap-2"><span className="font-bold text-slate-400 flex-shrink-0">1.</span> {t("admission.direct.step1")}</li>
+          <li className="flex gap-2"><span className="font-bold text-slate-400 flex-shrink-0">2.</span> {t("admission.direct.step2")}</li>
+          <li className="flex gap-2"><span className="font-bold text-slate-400 flex-shrink-0">3.</span> {t("admission.direct.step3")}</li>
+          <li className="flex gap-2"><span className="font-bold text-slate-400 flex-shrink-0">4.</span> {t("admission.direct.step4")}</li>
         </ol>
         <div className="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500">
-          Portail universitaire : <strong>cursussup.gov.ma</strong>
+          {t("admission.direct.footer")}
         </div>
       </div>
     );
@@ -178,9 +169,9 @@ function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug>
     <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-xl">📋</span>
-        <h4 className="font-bold text-orange-800">{ADMISSION_LABELS[admission]}</h4>
+        <h4 className="font-bold text-orange-800">{t(`admission.${admission}.label`)}</h4>
       </div>
-      <p className="text-sm text-orange-700">Note minimale recommandée : <strong>{school.minGrade}/20</strong></p>
+      <p className="text-sm text-orange-700">{t("admission.min_grade_note", { grade: school.minGrade })}</p>
       {school.website && (
         <a href={school.website} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs text-orange-600 underline">
           {school.website}
@@ -336,7 +327,11 @@ export default function SchoolDetail() {
   const { t, i18n } = useTranslation();
   const lang = (["fr", "ar", "en"].includes(i18n.language) ? i18n.language : "fr") as "fr" | "ar" | "en";
   const school = getSchoolBySlug(slug ?? "");
+  const schoolText = school ? getSchoolText(school, lang) : null;
   const careers = getSchoolCareers(slug ?? "");
+  const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
+  const viewedJobFamilies = useProgressStore((s) => s.viewedJobFamilies);
+  const markJobFamilyViewed = useProgressStore((s) => s.markJobFamilyViewed);
 
   if (!school) {
     return (
@@ -356,7 +351,7 @@ export default function SchoolDetail() {
   const isFree = school.annualCostMAD[0] === 0 && school.annualCostMAD[1] <= 3000;
   const costText = isFree
     ? t("school.cost.free")
-    : `${school.annualCostMAD[0].toLocaleString("fr-FR")} – ${school.annualCostMAD[1].toLocaleString("fr-FR")} MAD/an`;
+    : t("school.cost.range", { min: school.annualCostMAD[0].toLocaleString("fr-FR"), max: school.annualCostMAD[1].toLocaleString("fr-FR") });
 
   const similarSchools = SCHOOLS.filter(
     (s) => s.slug !== school.slug && s.type === school.type && s.tier === school.tier
@@ -384,10 +379,10 @@ export default function SchoolDetail() {
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${tierColors.bg} ${tierColors.text} ${tierColors.border}`}>
-                    {TIER_LABELS[school.tier]}
+                    {t(`tier.${school.tier}`)}
                   </span>
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${admColors.bg} ${admColors.text} ${admColors.border}`}>
-                    {ADMISSION_LABELS[school.admission]}
+                    {t(`admission.${school.admission}.label`)}
                   </span>
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${school.access === "public" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
                     {t(`access.${school.access}`)}
@@ -399,22 +394,37 @@ export default function SchoolDetail() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   </svg>
                   {school.cities ? school.cities.join(", ") : school.city} · {school.region}
-                  {school.founded && <><span className="text-navy-500 mx-1">·</span>Fondée en {school.founded}</>}
+                  {school.founded && <><span className="text-navy-500 mx-1">·</span>{t("school.founded", { year: school.founded })}</>}
                 </p>
               </div>
-              {school.website && (
-                <a
-                  href={school.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 bg-white/10 border border-white/20 text-white rounded-xl text-sm font-semibold hover:bg-white/20 transition-all"
+              <div className="flex flex-col gap-2 flex-shrink-0">
+                {school.website && (
+                  <a
+                    href={school.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 border border-white/20 text-white rounded-xl text-sm font-semibold hover:bg-white/20 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    {t("school.official.site")}
+                  </a>
+                )}
+                <button
+                  onClick={() => compareToggle(school)}
+                  disabled={!inCompare(school.slug) && compareSchools.length >= 3}
+                  className={`inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    inCompare(school.slug)
+                      ? "bg-gold-500 text-navy-900 hover:bg-gold-400"
+                      : compareSchools.length >= 3
+                        ? "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
+                        : "bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                  }`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                  {t("school.official.site")}
-                </a>
-              )}
+                  ⚖ {inCompare(school.slug) ? t("compare.added") : compareSchools.length >= 3 ? t("compare.full") : t("compare.add")}
+                </button>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -436,7 +446,7 @@ export default function SchoolDetail() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-navy-400">{t("school.quick.domain")}</span>
-              <strong className="text-navy-800">{TYPE_LABELS[school.type]}</strong>
+              <strong className="text-navy-800">{t(`type.${school.type}`)}</strong>
             </div>
             {school.enrollmentCount && (
               <div className="flex items-center gap-2">
@@ -480,7 +490,7 @@ export default function SchoolDetail() {
             {/* Description */}
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.presentation")}</h2>
-              <p className="text-navy-600 leading-relaxed text-base">{school.description}</p>
+              <p className="text-navy-600 leading-relaxed text-base">{schoolText?.description ?? school.description}</p>
 
               {school.history && (
                 <div className="mt-4 p-4 bg-parchment/60 border border-gold-100 rounded-2xl">
@@ -497,7 +507,7 @@ export default function SchoolDetail() {
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
               <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.programs")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {school.programs.map((prog, i) => (
+                {(schoolText?.programs ?? school.programs).map((prog, i) => (
                   <div key={i} className="flex items-center gap-3 bg-white border border-parchment rounded-xl p-3">
                     <div className="w-7 h-7 rounded-lg bg-gold-50 border border-gold-200 flex items-center justify-center flex-shrink-0">
                       <span className="text-gold-600 text-xs font-bold">{i + 1}</span>
@@ -515,7 +525,7 @@ export default function SchoolDetail() {
 
               {school.cpgeFilières && (
                 <div className="mt-4 bg-violet-50 border border-violet-100 rounded-xl p-4">
-                  <p className="text-xs font-bold text-violet-600 uppercase tracking-wider mb-2">Filières CPGE acceptées</p>
+                  <p className="text-xs font-bold text-violet-600 uppercase tracking-wider mb-2">{t("cpge.filieres.label")}</p>
                   <div className="flex flex-wrap gap-2">
                     {school.cpgeFilières.map((f) => (
                       <span key={f} className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-sm font-bold border border-violet-200">
@@ -559,19 +569,19 @@ export default function SchoolDetail() {
                       <div className="font-heading text-2xl font-bold text-navy-800">
                         {careers.avgStartSalaryMAD.toLocaleString("fr-FR")}
                       </div>
-                      <div className="text-xs text-navy-400">MAD/mois</div>
+                      <div className="text-xs text-navy-400">{t("school.salary.unit")}</div>
                     </div>
                     <div className="bg-white rounded-xl border border-parchment p-4 text-center">
                       <div className="text-xs font-bold uppercase tracking-wider text-navy-400 mb-1">{t("school.careers.mid")}</div>
                       <div className="font-heading text-2xl font-bold text-gold-600">
                         {careers.avgMidSalaryMAD.toLocaleString("fr-FR")}
                       </div>
-                      <div className="text-xs text-navy-400">MAD/mois</div>
+                      <div className="text-xs text-navy-400">{t("school.salary.unit")}</div>
                     </div>
                     <div className="bg-white rounded-xl border border-parchment p-4 text-center">
                       <div className="text-xs font-bold uppercase tracking-wider text-navy-400 mb-1">{t("school.careers.rate")}</div>
                       <div className="font-heading text-2xl font-bold text-emerald-600">{careers.employmentRate}%</div>
-                      <div className="text-xs text-navy-400">à 6 mois</div>
+                      <div className="text-xs text-navy-400">{t("school.careers.at6months")}</div>
                     </div>
                   </div>
 
@@ -579,11 +589,24 @@ export default function SchoolDetail() {
                   <div>
                     <div className="text-xs font-bold uppercase tracking-wider text-navy-500 mb-2">{t("school.careers.jobs")}</div>
                     <div className="flex flex-wrap gap-2">
-                      {careers.jobFamilies.map((job) => (
-                        <span key={job} className="px-3 py-1.5 bg-white border border-gold-200 text-navy-700 text-sm rounded-full font-medium">
-                          {job}
-                        </span>
-                      ))}
+                      {careers.jobFamilies.map((job) => {
+                        const viewed = viewedJobFamilies.includes(job);
+                        return (
+                          <button
+                            key={job}
+                            type="button"
+                            onClick={() => markJobFamilyViewed(job)}
+                            className={`px-3 py-1.5 border text-sm rounded-full font-medium transition-colors flex items-center gap-1.5 ${
+                              viewed
+                                ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                                : "bg-white border-gold-200 text-navy-700 hover:border-gold-400"
+                            }`}
+                          >
+                            {viewed && <span className="text-emerald-500">✓</span>}
+                            {job}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -626,7 +649,7 @@ export default function SchoolDetail() {
                     <span className="w-8 text-center font-bold text-navy-700 bg-navy-50 rounded-lg py-0.5 text-xs border border-navy-100">
                       {track}
                     </span>
-                    <span className="text-navy-500">{TRACK_LABELS[track] ?? track}</span>
+                    <span className="text-navy-500">{t(`track.${track}`, track)}</span>
                   </div>
                 ))}
               </div>
@@ -723,7 +746,7 @@ export default function SchoolDetail() {
                     <div className="font-bold text-navy-800 text-sm group-hover:text-gold-700 transition-colors">{s.shortName}</div>
                     <div className="text-xs text-navy-400 mt-0.5">{s.city}</div>
                     <div className={`mt-2 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border w-fit ${tc.bg} ${tc.text} ${tc.border}`}>
-                      {TIER_LABELS[s.tier]}
+                      {t(`tier.${s.tier}`)}
                     </div>
                   </Link>
                 );

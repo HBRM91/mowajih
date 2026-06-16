@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
 import { useParams, useLocation, Link } from "react-router-dom";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useGameStore } from "../stores/gameStore";
 import { useFormStore } from "../stores/formStore";
 import MatchCard from "../components/results/MatchCard";
 import AlternativeList from "../components/results/AlternativeList";
+import OrientationReadiness from "../components/results/OrientationReadiness";
 import { getSchoolBySlug } from "../data/schools";
 
 interface LocationState {
@@ -25,15 +24,6 @@ export default function Results() {
   const location = useLocation();
   const { t } = useTranslation();
   const state = location.state as LocationState | null;
-  const addXp = useGameStore((s) => s.addXp);
-  const awardBadge = useGameStore((s) => s.awardBadge);
-
-  useEffect(() => {
-    addXp(30, "Viewed results");
-    if (state?.matches && state.matches.length > 0) {
-      awardBadge("first_match");
-    }
-  }, []);
 
   const hasMatches = state?.matches && state.matches.length > 0;
   const topMatch = hasMatches ? state.matches[0] : null;
@@ -75,19 +65,10 @@ export default function Results() {
             transition={{ delay: 0.3 }}
             className="text-navy-300 text-sm"
           >
-            Analyse IA · Réf&nbsp;
+            {t("results.ai_ref")}&nbsp;
             <span className="font-mono text-gold-300 text-xs">{uuid?.slice(0, 8)}…</span>
           </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-gold-500/15 border border-gold-500/25 rounded-full text-gold-300 text-sm font-bold"
-          >
-            <span className="text-lg">🎉</span>
-            {t("gamification.xp_earned", { amount: 30 })}
-          </motion.div>
         </div>
       </div>
 
@@ -99,19 +80,72 @@ export default function Results() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-8 p-5 bg-gradient-to-r from-gold-50 to-gold-100/30 border border-gold-200 rounded-2xl flex items-center gap-4"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center text-navy-900 text-xl flex-shrink-0">
-              🏆
-            </div>
-            <div>
-              <div className="text-xs font-bold text-gold-700 uppercase tracking-wider">{t("results.best_match")}</div>
-              <div className="font-heading font-bold text-navy-800 text-base">
-                {topName} — {Math.round(topMatch.probability * 100)}% {t("match.probability").toLowerCase()}
+            {topSchool ? (
+              <Link
+                to={`/ecoles/${topSchool.slug}`}
+                className="group mb-4 p-5 bg-gradient-to-r from-gold-50 to-gold-100/30 border border-gold-200 rounded-2xl flex items-center gap-4 hover:border-gold-400 transition-colors"
+              >
+                <div className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center text-navy-900 text-xl flex-shrink-0">
+                  🏆
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-bold text-gold-700 uppercase tracking-wider">{t("results.best_match")}</div>
+                  <div className="font-heading font-bold text-navy-800 text-base truncate">
+                    {topName} — {Math.round(topMatch.probability * 100)}% {t("match.probability").toLowerCase()}
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-gold-600 flex-shrink-0 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
+            ) : (
+              <div className="mb-4 p-5 bg-gradient-to-r from-gold-50 to-gold-100/30 border border-gold-200 rounded-2xl flex items-center gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-600 rounded-xl flex items-center justify-center text-navy-900 text-xl flex-shrink-0">
+                  🏆
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-gold-700 uppercase tracking-wider">{t("results.best_match")}</div>
+                  <div className="font-heading font-bold text-navy-800 text-base">
+                    {topName} — {Math.round(topMatch.probability * 100)}% {t("match.probability").toLowerCase()}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </motion.div>
         )}
+
+        {/* Quick actions: Slimane + restart, right under the top match */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="mb-8 grid grid-cols-1 sm:grid-cols-2 gap-3"
+        >
+          <button
+            type="button"
+            onClick={() => (window as any).__slimaneOpen?.()}
+            className="flex items-center gap-3 p-4 bg-gradient-to-br from-navy-800 to-navy-900 text-white rounded-2xl hover:from-navy-900 hover:to-navy-950 transition-colors text-left"
+          >
+            <span className="text-xl flex-shrink-0">🤖</span>
+            <div className="min-w-0">
+              <div className="font-heading font-bold text-sm">{t("cta.chat_slimane")}</div>
+              <div className="text-navy-300 text-xs mt-0.5 hidden sm:block leading-snug">{t("results.slimane_desc")}</div>
+            </div>
+          </button>
+
+          <Link
+            to="/orientation"
+            onClick={() => useFormStore.getState().reset()}
+            className="flex items-center gap-3 p-4 bg-white border border-gold-200 rounded-2xl hover:border-gold-400 transition-colors text-left"
+          >
+            <span className="text-xl flex-shrink-0">🔄</span>
+            <div className="min-w-0">
+              <div className="font-heading font-bold text-sm text-navy-800">{t("results.restart")}</div>
+              <div className="text-navy-400 text-xs mt-0.5 hidden sm:block leading-snug">{t("results.restart_desc")}</div>
+            </div>
+          </Link>
+        </motion.div>
 
         {/* Matches grid */}
         {hasMatches ? (
@@ -126,13 +160,14 @@ export default function Results() {
                 {t("results.sorted")}
               </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
               {state.matches.map((match, idx) => (
                 <motion.div
                   key={match.university_slug}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.08 }}
+                  className="h-full"
                 >
                   <MatchCard match={match} rank={idx} />
                 </motion.div>
@@ -168,43 +203,10 @@ export default function Results() {
           </motion.div>
         )}
 
-        {/* Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4"
-        >
-          <div className="p-6 bg-gradient-to-br from-navy-800 to-navy-900 rounded-2xl text-white">
-            <div className="text-2xl mb-3">🤖</div>
-            <h4 className="font-heading font-bold mb-2">{t("slimane.name")}</h4>
-            <p className="text-navy-300 text-sm mb-4 leading-relaxed">
-              Des questions sur tes résultats ? Slimane peut t'expliquer chaque recommandation en détail.
-            </p>
-            <button
-              type="button"
-              onClick={() => (window as any).__slimaneOpen?.()}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500 text-navy-900 rounded-xl font-bold text-sm hover:bg-gold-400 transition"
-            >
-              {t("cta.chat_slimane")}
-            </button>
-          </div>
-
-          <div className="p-6 bg-gradient-to-br from-gold-50 to-gold-100/30 rounded-2xl border border-gold-200">
-            <div className="text-2xl mb-3">🔄</div>
-            <h4 className="font-heading font-bold text-navy-800 mb-2">{t("results.restart")}</h4>
-            <p className="text-navy-500 text-sm mb-4 leading-relaxed">
-              Teste avec un profil différent ou d'autres préférences.
-            </p>
-            <Link
-              to="/orientation"
-              onClick={() => useFormStore.getState().reset()}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-navy-800 text-gold-200 rounded-xl font-bold text-sm hover:bg-navy-900 transition"
-            >
-              {t("results.restart")}
-            </Link>
-          </div>
-        </motion.div>
+        {/* Orientation readiness + exploration quests */}
+        <div className="mt-10">
+          <OrientationReadiness topSchool={topSchool} />
+        </div>
 
         {/* Legal disclaimer */}
         <motion.div

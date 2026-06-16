@@ -4,6 +4,10 @@ compatibility_date = "2024-05-12"
 compatibility_flags = ["nodejs_compat"]
 account_id = "b1b56dcea807e48c9d3bc918bf1266ec"
 
+# Seuils monitoring: 3x/day during June-August (peak publishing season), daily rest of year
+[triggers]
+crons = ["0 6,14,22 * 6-8 *", "0 6 * 9-5 *"]
+
 # D1 Database
 [[d1_databases]]
 binding = "DB"
@@ -34,6 +38,9 @@ new_sqlite_classes = ["LeadStreamDO"]
 [vars]
 TURNSTILE_SITE_KEY = "1x00000000000000000000AA"
 ENVIRONMENT = "development"
+# Placeholder only — set the real value with:
+#   wrangler secret put RESEND_API_KEY --config tooling/wrangler/wrangler.toml
+RESEND_API_KEY = "REPLACE_WITH_SECRET"
 
 # Production environment
 [env.production]

@@ -1,180 +1,156 @@
 import { Hono } from "hono";
 import { z } from "zod";
-import { drizzle } from "drizzle-orm/d1";
-import { eq, and, gte, count, avg, sum, desc } from "drizzle-orm";
-import { leads, universities, adminConversations, students } from "@tawjih/shared";
-import { auth } from "../../middleware/auth";
 import { validate } from "../../middleware/validate";
-import { buildAssistantSystemPrompt } from "@tawjih/ai";
 import type { Env } from "../../types/env";
+
+type PlatformContext = {
+  funnel?: {
+    simulations: number; leads: number; optIns: number;
+    contacts: number; converted: number;
+    simToLead: number; leadToOptIn: number; optInToConverted: number;
+  };
+  schoolDemand?: Array<{ schoolSlug: string; count: number; avgProbability: number }>;
+  trackDist?: Array<{ bacTrack: string; count: number; avgGrade: number }>;
+  regionDist?: Array<{ region: string; count: number }>;
+  budgetDist?: Array<{ bracket: string; count: number }>;
+  trend30d?: Array<{ day: string; count: number }>;
+  mentionDist?: Array<{ mention: string; count: number }>;
+  monthlyRevenue?: Array<{ month: string; revenue: number; optIns: number; leads: number }>;
+};
 
 const assistantSchema = z.object({
   message: z.string().min(1).max(2000),
-  conversationId: z.string().optional(),
-  universityId: z.number().int().positive(),
-  stream: z.boolean().default(false),
+  history: z
+    .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string() }))
+    .max(20)
+    .default([]),
+  context: z.record(z.unknown()).optional(),
 });
 
-const app = new Hono<{ Bindings: Env; Variables: { user: { email: string; universityId?: number } } }>();
-
-app.post("/", auth("dean"), validate("json", assistantSchema), async (c) => {
-  const body = c.req.valid("json");
-  const user = c.get("user");
-
-  if (user.universityId && user.universityId !== body.universityId) {
-    return c.json({ error: "Forbidden — cannot access other university" }, 403);
-  }
-
-  const db = drizzle(c.env.DB);
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // RAG Injection
-  const [
-    newLeadsCount,
-    avgProb,
-    optInRevenue,
-    topTracks,
-    conversation,
-    uni,
-  ] = await Promise.all([
-    db.select({ count: count() }).from(leads).where(
-      and(eq(leads.universityId, body.universityId), gte(leads.createdAt, today))
-    ).get(),
-    db.select({ avg: avg(leads.matchProbability) }).from(leads).where(
-      and(eq(leads.universityId, body.universityId), gte(leads.createdAt, thirtyDaysAgo))
-    ).get(),
-    db.select({ total: sum(universities.optInCost) })
-      .from(leads)
-      .innerJoin(universities, eq(leads.universityId, universities.id))
-      .where(and(eq(leads.universityId, body.universityId), eq(leads.hasOptedIn, true)))
-      .get(),
-    db.select({ bacTrack: students.bacTrack, count: count() })
-      .from(leads)
-      .innerJoin(students, eq(leads.studentUuid, students.uuid))
-      .where(eq(leads.universityId, body.universityId))
-      .groupBy(students.bacTrack)
-      .orderBy(desc(count()))
-      .limit(3),
-    body.conversationId && /^\d+$/.test(body.conversationId)
-      ? db.select().from(adminConversations).where(eq(adminConversations.id, parseInt(body.conversationId, 10))).get()
-      : Promise.resolve(null),
-    db.select().from(universities).where(eq(universities.id, body.universityId)).get(),
-  ]);
-
-  const totalLeads = await db.select({ count: count() }).from(leads).where(eq(leads.universityId, body.universityId)).get();
-  const remainingQuota = (uni?.monthlyQuota ?? 50) - (totalLeads?.count ?? 0);
-  const conversionRate = totalLeads?.count
-    ? (((await db.select({ count: count() }).from(leads).where(and(eq(leads.universityId, body.universityId), eq(leads.hasOptedIn, true))).get())?.count ?? 0) / totalLeads.count) * 100
-    : 0;
-
-  const systemPrompt = buildAssistantSystemPrompt({
-    universityName: uni?.name ?? "Votre université",
-    remainingQuota,
-    newLeadsCount: newLeadsCount?.count ?? 0,
-    conversionRate: Math.round(conversionRate * 100) / 100,
-    potentialRevenue: optInRevenue?.total ? parseInt(optInRevenue.total) : 0,
+function buildSystemPrompt(ctx?: PlatformContext): string {
+  const today = new Date().toLocaleDateString("fr-MA", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 
-  const messages = conversation?.messages ?? [];
-  messages.push({ role: "user", content: body.message, timestamp: new Date().toISOString() });
+  const lines: string[] = [];
+
+  if (ctx?.funnel) {
+    const f = ctx.funnel;
+    lines.push("ENTONNOIR DE CONVERSION :");
+    lines.push(`  Simulations : ${f.simulations} | Leads : ${f.leads} (${f.simToLead}% sim→lead)`);
+    lines.push(`  Opt-ins : ${f.optIns} (${f.leadToOptIn}% lead→opt-in) | Convertis : ${f.converted} (${f.optInToConverted}% opt-in→converti)`);
+  }
+
+  if (ctx?.trackDist?.length) {
+    lines.push("FILIÈRES BAC (top 5) :");
+    ctx.trackDist.slice(0, 5).forEach(t =>
+      lines.push(`  ${t.bacTrack} : ${t.count} étudiants, moy. ${t.avgGrade?.toFixed(1) ?? "?"}/20`)
+    );
+  }
+
+  if (ctx?.regionDist?.length) {
+    lines.push("RÉGIONS (top 5) :");
+    ctx.regionDist.slice(0, 5).forEach(r => lines.push(`  ${r.region} : ${r.count} profils`));
+  }
+
+  if (ctx?.budgetDist?.length) {
+    lines.push("TRANCHES BUDGÉTAIRES :");
+    ctx.budgetDist.forEach(b => lines.push(`  ${b.bracket} MAD/an : ${b.count} étudiants`));
+  }
+
+  if (ctx?.schoolDemand?.length) {
+    lines.push("ÉCOLES LES PLUS DEMANDÉES :");
+    ctx.schoolDemand.slice(0, 5).forEach(s =>
+      lines.push(`  ${s.schoolSlug} : ${s.count} demandes (match moy. ${((s.avgProbability ?? 0) * 100).toFixed(0)}%)`)
+    );
+  }
+
+  if (ctx?.mentionDist?.length) {
+    lines.push("NIVEAUX SCOLAIRES :");
+    ctx.mentionDist.forEach(m => lines.push(`  ${m.mention} : ${m.count}`));
+  }
+
+  if (ctx?.monthlyRevenue?.length) {
+    const total = ctx.monthlyRevenue.reduce((s, m) => s + (m.revenue ?? 0), 0);
+    lines.push(`REVENUS CUMULÉS : ${total.toLocaleString("fr-MA")} MAD`);
+    ctx.monthlyRevenue.slice(-3).forEach(m =>
+      lines.push(`  ${m.month} : ${(m.revenue ?? 0).toLocaleString("fr-MA")} MAD (${m.optIns} opt-ins, ${m.leads} leads)`)
+    );
+  }
+
+  if (ctx?.trend30d?.length) {
+    const last7 = ctx.trend30d.slice(-7);
+    const avg = last7.reduce((s, d) => s + d.count, 0) / last7.length;
+    const yesterday = ctx.trend30d[ctx.trend30d.length - 1];
+    lines.push(`TENDANCE 30J : moy. 7j = ${avg.toFixed(1)} sim/jour${yesterday ? `, hier = ${yesterday.count}` : ""}`);
+  }
+
+  const dataSection = lines.length
+    ? lines.join("\n")
+    : "Aucune donnée dashboard disponible. Demande à l'admin de recharger la page.";
+
+  return `Tu es l'assistant IA de JAD2 TAWJIH, la plateforme marocaine d'orientation académique pour lycéens.
+Tu assistes Hamza ElBouhali (fondateur et administrateur) dans le pilotage business et l'analyse des données.
+
+DATE : ${today}
+
+══ DONNÉES EN TEMPS RÉEL ══
+${dataSection}
+
+══ TES CAPACITÉS ══
+1. ANALYSE — Interprète les métriques, identifie les tendances et anomalies de conversion
+2. EMAILS — Rédige des emails professionnels (partenariats écoles, relances, rapports investisseurs)
+3. STRATÉGIE — Propose des actions concrètes basées sur les données ci-dessus
+4. RAPPORT — Synthétise la performance en bullet points actionnables
+
+══ RÈGLES ══
+- Sois concis, direct, professionnel (ton B2B marocain)
+- Utilise des bullet points et le **gras** pour la clarté
+- Pour les emails : encadre avec ---EMAIL--- et ---FIN EMAIL---
+- Si tu détectes une anomalie (taux <5%, chute soudaine, etc.) : commence par ⚠️ ALERTE
+- Cite toujours les chiffres exacts des données injectées
+- Réponds en français sauf si l'utilisateur écrit en arabe ou en anglais`;
+}
+
+interface GeminiResponse {
+  candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  error?: { message?: string };
+}
+
+const app = new Hono<{ Bindings: Env }>();
+
+app.post("/", validate("json", assistantSchema), async (c) => {
+  const { message, history, context } = c.req.valid("json");
+
+  const systemPrompt = buildSystemPrompt(context as PlatformContext | undefined);
+
+  const contents = [
+    ...history.slice(-14),
+    { role: "user" as const, content: message },
+  ].map(m => ({
+    role: m.role === "user" ? "user" : "model",
+    parts: [{ text: m.content }],
+  }));
 
   const geminiPayload = {
-    contents: [
-      { role: "user", parts: [{ text: systemPrompt }] },
-      ...messages.slice(-10).map((m: { role: string; content: string }) => ({
-        role: m.role === "user" ? "user" : "model",
-        parts: [{ text: m.content }],
-      })),
-    ],
-    tools: [
-      {
-        function_declarations: [
-          { name: "get_lead_summary", description: "Résumer les leads" },
-          { name: "get_lead_details", description: "Détails d'un lead" },
-          { name: "update_lead_status", description: "Mettre à jour le statut" },
-          { name: "draft_email", description: "Rédiger un email" },
-          { name: "generate_report", description: "Générer un rapport" },
-        ],
-      },
-    ],
+    system_instruction: { parts: [{ text: systemPrompt }] },
+    contents,
+    generationConfig: { temperature: 0.4, maxOutputTokens: 1500 },
   };
-
-  if (body.stream) {
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${c.env.GEMINI_API_KEY}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(geminiPayload),
-            }
-          );
-
-          const reader = res.body?.getReader();
-          if (!reader) return;
-
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            controller.enqueue(value);
-          }
-          controller.close();
-        } catch (err) {
-          controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ error: String(err) })}\n\n`));
-          controller.close();
-        }
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-      },
-    });
-  }
-
-  interface GeminiResponse {
-    candidates?: Array<{
-      content?: { parts?: Array<{ text?: string }> };
-    }>;
-  }
 
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${c.env.GEMINI_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(geminiPayload),
-    }
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(geminiPayload) }
   );
 
   const data = (await res.json()) as GeminiResponse;
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
-  messages.push({ role: "assistant", content: text, timestamp: new Date().toISOString() });
-
-  if (conversation) {
-    await db.update(adminConversations).set({ messages }).where(eq(adminConversations.id, conversation.id));
-  } else {
-    await db.insert(adminConversations).values({
-      deanEmail: user.email,
-      universityId: body.universityId,
-      messages,
-      contextSnapshot: JSON.stringify({ topTracks, avgProb: avgProb?.avg }),
-    });
+  if (data.error) {
+    return c.json({ error: data.error.message ?? "Erreur API Gemini" }, 502);
   }
 
-  return c.json({
-    response: text,
-    conversationId: conversation?.id ?? null,
-    context: { topTracks, remainingQuota, conversionRate },
-  });
+  const response = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  return c.json({ response });
 });
 
 export default app;

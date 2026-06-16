@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useFormStore } from "../../stores/formStore";
+import { useProgressStore } from "../../stores/progressStore";
 
 interface Message {
   role: "user" | "slimane";
@@ -109,15 +110,15 @@ function getInitialGreeting(lang: Lang): { text: string; quickReplies: string[] 
   return {
     text: tx(
       lang,
-      "Bonjour ! Je suis Slimane, conseiller académique IA spécialisé dans l'enseignement supérieur au Maroc. Je connais toutes les écoles — ENSA, ENCG, EMI, EHTP, UM6P, UIR, HEM, médecine et bien plus.\n\nPose-moi n'importe quelle question sur ton orientation ou lance le questionnaire pour un matching personnalisé.",
-      "مرحباً ! أنا سليمان، مستشار أكاديمي متخصص في التعليم العالي بالمغرب. أعرف جميع المؤسسات — ENSA، ENCG، EMI، EHTP، UM6P، UIR، HEM، كلية الطب وغيرها.\n\nاطرح علي أي سؤال حول توجيهك الدراسي، أو أجرِ الاستبيان للحصول على توصيات مخصصة.",
-      "Hello! I'm Slimane, an AI academic advisor specialising in higher education in Morocco. I know every institution — ENSA, ENCG, EMI, EHTP, UM6P, UIR, HEM, medicine and more.\n\nAsk me anything about your orientation, or take the questionnaire for a personalised match."
+      "Salut ! Je suis Slimane, ton conseiller académique. Dis-moi ta filière Bac, pose ta question directement — ou remplis le questionnaire pour un matching personnalisé. C'est toi qui choisis !",
+      "مرحباً ! أنا سليمان، مرشدك الأكاديمي. أخبرني بشعبتك في الباك، أو اطرح سؤالك مباشرة — أو املأ الاستبيان للحصول على توصيات مخصصة. الخيار لك !",
+      "Hey! I'm Slimane, your academic advisor. Tell me your Bac track, ask me anything directly — or take the questionnaire for a personalised match. Your call!"
     ),
     quickReplies: qx(
       lang,
-      ["Je suis Bac SM/PC", "Je veux faire médecine", "Écoles à Casablanca", "Passer le questionnaire"],
-      ["شعبة علوم رياضية / فيزيائية", "أريد دراسة الطب", "مدارس في الدار البيضاء", "إجراء الاستبيان"],
-      ["I'm Bac SM/PC", "I want to study medicine", "Schools in Casablanca", "Take the questionnaire"]
+      ["Je suis Bac SM/PC", "Business & économie", "Je veux faire médecine", "Passer le questionnaire"],
+      ["شعبة علوم رياضية / فيزيائية", "الأعمال والاقتصاد", "أريد دراسة الطب", "إجراء الاستبيان"],
+      ["I'm Bac SM/PC", "Business & economics", "I want to study medicine", "Take the questionnaire"]
     ),
   };
 }
@@ -196,8 +197,8 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
     };
   }
 
-  // Bac SE
-  if (/(bac se|sciences eco|economique|علوم اقتصادية|اقتصاد بكالوريا)/.test(lower + raw)) {
+  // Bac SE — also catches "pour eco", "en eco", "filiere eco", etc.
+  if (/(bac se|sciences eco|economique|eco\b|filiere eco|option eco|pour eco|علوم اقتصادية|اقتصاد بكالوريا)/.test(lower + raw)) {
     return {
       text: tx(lang,
         "Le Bac SE est idéal pour le business, l'économie et la gestion.\n\n**Public quasi gratuit :**\n→ ENCG (12 campus, seuil SE 12/20, 5K–12K MAD/an)\n→ ISCAE Casablanca/Rabat (seuil SE 17.24/20, très sélectif)\n→ FSJES dans toutes les universités publiques (accès libre)\n\n**Privé premium :**\n→ HEM Business School (35K–65K MAD/an, accrédité AACSB)\n→ UIR pôle Business (40K–60K MAD/an)\n→ UM6P (bourses disponibles jusqu'à 100%)\n\nInscriptions via **cursussup.gov.ma** pour le public.",
@@ -554,7 +555,7 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
   }
 
   // Business (generic)
-  if (/(business|management|commerce|marketing|finance|gestion|الأعمال|التسيير|التجارة|التمويل)/.test(lower + raw)) {
+  if (/(business|management|commerce|marketing|finance|gestion|economie|ecole.*commerce|ecole.*business|الأعمال|التسيير|التجارة|التمويل)/.test(lower + raw)) {
     return {
       text: tx(lang,
         "**Business & management au Maroc**\n\n**Public quasi gratuit :**\n→ ENCG (12 campus, TAFEM, seuil 12/20 SM/SE)\n→ ISCAE Casa/Rabat (17+/20, très sélectif)\n→ FSJES — accès libre, toutes universités publiques\n\n**Privé premium :**\n→ HEM Business School (AACSB, 35K–65K MAD/an)\n→ UIR Business (40K–60K MAD/an)\n→ UM6P (bourses jusqu'à 100%)",
@@ -604,9 +605,25 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
     };
   }
 
-  // Darija (Moroccan dialect) — catch common Darija patterns and route to AI
-  if (/(bghit|wach|chno|chkoun|shkoon|kidayr|kifash|mzyane|ghalya|rkhisa|bzzaf|msskin|weyn|mnin|3lash|dyal|dyali|kolchi|ghadir|nsskon|skn|ndir|nkml|ach|waش|واش|بغيت|كيفاش|مزيان|غالية|رخيصة|بزاف|ديال|كلشي|غادي)/.test(lower + raw)) {
-    // Darija detected — signal to use AI (which understands Darija)
+  // Darija — "I want a good school" / "what school should I choose" type queries
+  if (/(bghit.*(mdrasa|ecole|jami3a|kulliya|school)|fin.*ndiru|chno.*nkml|chno.*ndir.*(ba3d|bac)|ach men.*(ecole|mdrasa)|mdrasa.*mzyan|ecole.*mzyan|miziana.*mdrasa|mdrasa.*mizian)/.test(lower + raw)) {
+    return {
+      text: tx(lang,
+        "Wakha ! Pour te trouver les meilleures options, j'ai besoin de ta filière Bac. C'est laquelle ?",
+        "حسناً ! لأجد لك أفضل الخيارات، أحتاج لمعرفة شعبتك في الباك. ما هي شعبتك ؟",
+        "Got it! To find you the best fit, I need your Bac track. Which one is it?"
+      ),
+      quickReplies: qx(lang,
+        ["Bac SM (sciences math)", "Bac PC (physique-chimie)", "Bac SVT (biologie)", "Bac SE (économie)"],
+        ["بكالوريا علوم رياضية", "بكالوريا علوم فيزيائية", "بكالوريا علوم الحياة", "بكالوريا علوم اقتصادية"],
+        ["Bac SM (maths)", "Bac PC (physics)", "Bac SVT (biology)", "Bac SE (economics)"]
+      ),
+      matched: true,
+    };
+  }
+
+  // Darija — general open darija queries → try AI, signal caller
+  if (/(bghit|wach|chno|chkoun|shkoon|kidayr|kifash|mzyane|mzyan|mzian|miziana|mizyan|mziane|ghalya|rkhisa|bzzaf|msskin|weyn|mnin|3lash|dyal|dyali|kolchi|ghadir|nsskon|skn|ndir|nkml|achmen|achno|ach men|mdrassa|mdrasa|drassa|drasa|chhal|safi|walo|waldik|mhimch|waش|واش|بغيت|كيفاش|مزيان|غالية|رخيصة|بزاف|ديال|كلشي|غادي|آش|كيداير)/.test(lower + raw)) {
     return {
       text: tx(lang,
         "Je cherche la meilleure réponse pour toi...",
@@ -614,9 +631,9 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         "Let me find the best answer for you..."
       ),
       quickReplies: qx(lang,
-        ["Ingénierie au Maroc", "Business au Maroc", "Médecine au Maroc", "Aide-moi à choisir"],
-        ["الهندسة بالمغرب", "الأعمال بالمغرب", "الطب بالمغرب", "ساعدني في الاختيار"],
-        ["Engineering in Morocco", "Business in Morocco", "Medicine in Morocco", "Help me choose"]
+        ["Bac SM / PC / STI", "Business & économie", "Médecine", "Aide-moi à choisir"],
+        ["بكالوريا رياضية / فيزيائية", "الأعمال والاقتصاد", "الطب", "ساعدني في الاختيار"],
+        ["Bac SM / PC / STI", "Business & economics", "Medicine", "Help me choose"]
       ),
       matched: false,
     };
@@ -697,6 +714,7 @@ export default function SlimaneChat() {
     setInput("");
     setIsThinking(true);
     setMood("thinking");
+    useProgressStore.getState().markSlimaneQueried();
 
     const quick = generateSlimaneReply(text, lang);
 
@@ -726,12 +744,17 @@ export default function SlimaneChat() {
           body: JSON.stringify({ messages: history, lang }),
         });
         const data = await res.json() as { reply: string | null };
+        const aiReply = data.reply?.trim() ?? null;
         setIsThinking(false);
         setMood("happy");
         setMessages((prev) => [...prev, {
           role: "slimane",
-          content: data.reply ?? quick.text,
-          quickReplies: data.reply ? undefined : quick.quickReplies,
+          content: aiReply ?? tx(lang,
+            "Hmm, laisse-moi reformuler — dis-moi ta filière Bac et ta question précise, je vais trouver la meilleure réponse pour toi.",
+            "دعني أعيد المحاولة — أخبرني بشعبتك وسؤالك بالتحديد وسأجد لك أفضل إجابة.",
+            "Let me try again — tell me your Bac track and your exact question, I'll find you the best answer."
+          ),
+          quickReplies: aiReply ? undefined : quick.quickReplies,
           timestamp: new Date(),
         }]);
       } catch {
@@ -739,8 +762,16 @@ export default function SlimaneChat() {
         setMood("happy");
         setMessages((prev) => [...prev, {
           role: "slimane",
-          content: quick.text,
-          quickReplies: quick.quickReplies,
+          content: tx(lang,
+            "Dis-moi ta filière Bac (SM, PC, SVT, SE, STI, SH ou L) et ta note générale — je te trouve les meilleures options.",
+            "أخبرني بشعبتك في البكالوريا (علوم رياضية، فيزيائية، أحياء...) ومعدلك العام — وسأجد لك أفضل الخيارات.",
+            "Tell me your Bac track (SM, PC, SVT, SE, STI, SH or L) and your overall grade — I'll find you the best options."
+          ),
+          quickReplies: qx(lang,
+            ["Je suis Bac SM/PC", "Je suis Bac SVT", "Business & économie", "Passer le questionnaire"],
+            ["شعبة رياضية / فيزيائية", "شعبة علوم الحياة", "الأعمال والاقتصاد", "إجراء الاستبيان"],
+            ["I'm Bac SM/PC", "I'm Bac SVT", "Business & economics", "Take the questionnaire"]
+          ),
           timestamp: new Date(),
         }]);
       }

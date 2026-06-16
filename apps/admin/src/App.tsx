@@ -14,6 +14,8 @@ const Analytics = lazy(() => import("./routes/Analytics"));
 const Communications = lazy(() => import("./routes/Communications"));
 const Settings = lazy(() => import("./routes/Settings"));
 const Assets = lazy(() => import("./routes/Assets"));
+const LeadsExport = lazy(() => import("./routes/LeadsExport"));
+const ContactSubmissions = lazy(() => import("./routes/ContactSubmissions"));
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -47,6 +49,8 @@ function App() {
           <Route path="/analytics" element={<ErrorBoundary><Analytics /></ErrorBoundary>} />
           <Route path="/communications" element={<ErrorBoundary><Communications /></ErrorBoundary>} />
           <Route path="/assets" element={<ErrorBoundary><Assets /></ErrorBoundary>} />
+          <Route path="/leads-export" element={<ErrorBoundary><LeadsExport /></ErrorBoundary>} />
+          <Route path="/contact-submissions" element={<ErrorBoundary><ContactSubmissions /></ErrorBoundary>} />
           <Route path="/settings" element={<ErrorBoundary><Settings /></ErrorBoundary>} />
         </Route>
         {/* Catch-all: redirect to login if not matched */}

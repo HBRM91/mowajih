@@ -87,6 +87,9 @@ app.get("/platform", adminAuth(), async (c) => {
     totalOptIns,
     totalConverted,
     totalWithContact,
+    consentPrivateLeads,
+    todaySimulations,
+    avgGradeResult,
     mentionDist,
     trackDist,
     regionDist,
@@ -102,6 +105,13 @@ app.get("/platform", adminAuth(), async (c) => {
     db.select({ count: count() }).from(leads).where(eq(leads.status, "converted")).get(),
     db.select({ count: count() }).from(students)
       .where(sql`${students.emailContact} IS NOT NULL AND ${students.emailContact} != ''`).get(),
+    // Private school consent leads
+    db.select({ count: count() }).from(students).where(eq(students.consentPrivateSchools, true)).get(),
+    // Simulations today
+    db.select({ count: count() }).from(students)
+      .where(sql`date(${students.createdAt}) = date('now')`).get(),
+    // Average general grade across all students
+    db.select({ avg: avg(students.generalGrade) }).from(students).get(),
 
     // Mention distribution
     db.select({ mention: students.mention, count: count() })
@@ -216,6 +226,9 @@ app.get("/platform", adminAuth(), async (c) => {
   const optIns = totalOptIns?.count ?? 0;
   const converted = totalConverted?.count ?? 0;
 
+  const consentCount = consentPrivateLeads?.count ?? 0;
+  const avgGrade = avgGradeResult?.avg ? Math.round(parseFloat(String(avgGradeResult.avg)) * 10) / 10 : 0;
+
   return c.json({
     funnel: {
       simulations: total,
@@ -223,11 +236,14 @@ app.get("/platform", adminAuth(), async (c) => {
       optIns,
       contacts: totalWithContact?.count ?? 0,
       converted,
-      // Conversion rates
+      consentPrivate: consentCount,
+      consentRate: total ? Math.round((consentCount / total) * 100) : 0,
       simToLead: total ? Math.round((leadsCount / total) * 100) : 0,
       leadToOptIn: leadsCount ? Math.round((optIns / leadsCount) * 100) : 0,
       optInToConverted: optIns ? Math.round((converted / optIns) * 100) : 0,
     },
+    todaySimulations: todaySimulations?.count ?? 0,
+    avgGrade,
     schoolDemand,
     mentionDist,
     trackDist: trackDist.map((t) => ({
