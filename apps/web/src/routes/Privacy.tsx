@@ -37,14 +37,15 @@ function PrivacyFR() {
         <p><strong>Base légale :</strong> consentement explicite recueilli à l'étape de validation du formulaire (art. 4 Loi 09-08).</p>
         <div className="mt-3 rounded-xl border border-navy-100 bg-navy-50/40 px-4 py-3 text-xs text-navy-500 space-y-1">
           <p className="font-bold text-navy-600">Régime réglementaire déclaré</p>
-          <p>• <strong>Traitement de la plateforme :</strong> placé sous le régime de la Déclaration Simplifiée auprès de la CNDP, conformément aux dispositions de la délibération officielle n° 44-AU-2014.</p>
-          <p>• <strong>Routage et hébergement technique :</strong> ce service s'appuie sur des infrastructures cloud externalisées (Cloudflare, Resend) impliquant un transit technique éphémère des flux hors du Maroc. Ce transfert a fait l'objet d'une demande d'autorisation de transfert simultanée auprès de la CNDP via le formulaire officiel F118.</p>
+          <p>• <strong>Traitement de la plateforme :</strong> ce traitement est en cours de notification auprès de la CNDP sous le régime de la Déclaration Simplifiée (Délibération n° 44-AU-2014).</p>
+          <p>• <strong>Routage et hébergement technique :</strong> ce service s'appuie sur des infrastructures cloud externalisées (Cloudflare, Resend) impliquant un transit technique éphémère des flux hors du Maroc. Ce transfert fait l'objet d'une demande d'autorisation déposée auprès de la CNDP via le formulaire officiel F118.</p>
+          <p className="italic text-navy-400 pt-1.5 mt-1.5 border-t border-navy-100/60">Dès obtention des récépissés officiels, les numéros d'autorisation seront affichés ici conformément à la Loi 09-08.</p>
         </div>
       </Section>
 
       <Section title="4. Durée de conservation">
         <p><strong>Données de simulation :</strong> les profils d'orientation strictement anonymisés sont conservés pour une durée maximale de 24 mois à des fins purement statistiques.</p>
-        <p><strong>Données de contact :</strong> aucune durée de conservation sur le site. Les PII (données personnelles identifiables) sont détruites instantanément de la mémoire volatile de nos serveurs applicatifs dès que l'e-mail est relayé à notre équipe.</p>
+        <p><strong>Données de contact :</strong> aucune durée de conservation sur le site web. Les données sont détruites instantanément des serveurs applicatifs dès le relais de l'e-mail. Les e-mails ainsi reçus sur notre messagerie d'entreprise sécurisée sont conservés pour une durée maximale de 12 mois à des fins de suivi de votre demande, avant d'être définitivement supprimés.</p>
       </Section>
 
       <Section title="5. Partage des données">
@@ -105,14 +106,15 @@ function PrivacyAR() {
         <p><strong>الأساس القانوني:</strong> موافقة صريحة تُجمع في خطوة التحقق من النموذج (المادة 4 من القانون 09-08).</p>
         <div className="mt-3 rounded-xl border border-navy-100 bg-navy-50/40 px-4 py-3 text-xs text-navy-500 space-y-1">
           <p className="font-bold text-navy-600">النظام التنظيمي المُصرَّح به</p>
-          <p>• <strong>معالجة المنصة:</strong> تخضع لنظام التصريح المبسَّط (DS) لدى CNDP وفقاً لأحكام المقرر الرسمي رقم 44-AU-2014.</p>
-          <p>• <strong>التوجيه والاستضافة التقنية:</strong> يعتمد هذا الخدمة على بنية حوسبة سحابية خارجية (Cloudflare، Resend) تترتب عليها عبور تقني مؤقت للتدفقات خارج المغرب. وقد كان هذا النقل موضوع طلب إذن نقل مودَع بالتوازي لدى CNDP عبر الاستمارة الرسمية F118.</p>
+          <p>• <strong>معالجة المنصة:</strong> هذه المعالجة قيد التبليغ لدى CNDP في إطار نظام التصريح المبسَّط (المقرر رقم 44-AU-2014).</p>
+          <p>• <strong>التوجيه والاستضافة التقنية:</strong> يعتمد هذا الخدمة على بنية حوسبة سحابية خارجية (Cloudflare، Resend) تترتب عليها عبور تقني مؤقت للتدفقات خارج المغرب. وهذا النقل موضوع طلب إذن مودَع لدى CNDP عبر الاستمارة الرسمية F118.</p>
+          <p className="italic text-navy-400 pt-1.5 mt-1.5 border-t border-navy-100/60">بمجرد الحصول على الإيصالات الرسمية، سيتم نشر أرقام التراخيص هنا وفقاً للقانون 09-08.</p>
         </div>
       </Section>
 
       <Section title="4. مدة الاحتفاظ بالبيانات">
         <p><strong>بيانات المحاكاة:</strong> تُحفظ ملفات التوجيه المجهولة الهوية تماماً لمدة أقصاها 24 شهراً لأغراض إحصائية بحتة.</p>
-        <p><strong>بيانات التواصل:</strong> لا توجد أي مدة احتفاظ على الموقع. تُحذف البيانات الشخصية المُعرِّفة (PII) فوراً من الذاكرة العابرة لخوادمنا التطبيقية بمجرد إحالة البريد الإلكتروني إلى فريقنا.</p>
+        <p><strong>بيانات التواصل:</strong> لا توجد أي مدة احتفاظ على الموقع الإلكتروني. تُحذف البيانات فوراً من خوادمنا التطبيقية بمجرد إحالة البريد الإلكتروني. تُحفظ الرسائل المستلمة على بريدنا المهني الآمن لمدة أقصاها 12 شهراً لأغراض متابعة طلبكم، قبل حذفها نهائياً.</p>
       </Section>
 
       <Section title="5. مشاركة البيانات">
@@ -173,14 +175,15 @@ function PrivacyEN() {
         <p><strong>Legal basis:</strong> explicit consent collected at the form validation step (Art. 4, Law 09-08).</p>
         <div className="mt-3 rounded-xl border border-navy-100 bg-navy-50/40 px-4 py-3 text-xs text-navy-500 space-y-1">
           <p className="font-bold text-navy-600">Declared regulatory regime</p>
-          <p>• <strong>Platform processing:</strong> filed under the Simplified Declaration regime with the CNDP, in accordance with the official Deliberation No. 44-AU-2014.</p>
-          <p>• <strong>Routing and technical hosting:</strong> this service relies on outsourced cloud infrastructure (Cloudflare, Resend) involving ephemeral technical transit of data flows outside Morocco. This transfer is the subject of a simultaneous transfer authorisation request filed with the CNDP via the official Form F118.</p>
+          <p>• <strong>Platform processing:</strong> this processing is currently being notified to the CNDP under the Simplified Declaration regime (Deliberation No. 44-AU-2014).</p>
+          <p>• <strong>Routing and technical hosting:</strong> this service relies on outsourced cloud infrastructure (Cloudflare, Resend) involving ephemeral technical transit of data flows outside Morocco. This transfer is the subject of an authorisation request filed with the CNDP via the official Form F118.</p>
+          <p className="italic text-navy-400 pt-1.5 mt-1.5 border-t border-navy-100/60">Once the official receipts are obtained, the authorisation numbers will be displayed here in accordance with Law 09-08.</p>
         </div>
       </Section>
 
       <Section title="4. Retention period">
         <p><strong>Simulation data:</strong> strictly anonymised orientation profiles are retained for a maximum of 24 months for purely statistical purposes.</p>
-        <p><strong>Contact data:</strong> no retention period on the site whatsoever. Personally identifiable information (PII) is instantly destroyed from the volatile memory of our application servers as soon as the email is relayed to our team.</p>
+        <p><strong>Contact data:</strong> no retention period on the website whatsoever. Data is instantly destroyed from our application servers as soon as the email is relayed. Emails received in our secure corporate mailbox are retained for a maximum of 12 months for the purpose of following up on your request, after which they are permanently deleted.</p>
       </Section>
 
       <Section title="5. Data sharing">

@@ -213,6 +213,10 @@ function StudentForm() {
           </>
         )}
       </motion.button>
+
+      <p className="text-[11px] text-navy-400 leading-relaxed text-center">
+        {t("contact.legal_notice")}
+      </p>
     </div>
   );
 }
@@ -419,6 +423,10 @@ function B2BForm() {
           </>
         )}
       </motion.button>
+
+      <p className="text-[11px] text-navy-400 leading-relaxed text-center">
+        {t("contact.legal_notice")}
+      </p>
     </div>
   );
 }
