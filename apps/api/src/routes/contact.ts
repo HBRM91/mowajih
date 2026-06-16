@@ -77,12 +77,18 @@ app.post("/", rateLimit("contact"), validate("json", contactSchema), async (c) =
   const { Resend } = await import("resend");
   const resend = new Resend(c.env.RESEND_API_KEY);
   try {
-    await resend.emails.send({
-      from: "noreply@tawjih.ai",
+    // resend.emails.send() resolves with { data, error } — it does NOT throw on
+    // API-level failures (e.g. unverified sending domain), so `error` must be
+    // checked explicitly or a failed send is silently swallowed.
+    const { error } = await resend.emails.send({
+      from: "JAD2 TAWJIH <noreply@jad2advisory.com>",
       to: "Tawjih@jad2advisory.com",
       subject,
       text: emailText,
     });
+    if (error) {
+      console.error("[contact] Resend send returned an error:", error);
+    }
   } catch (err) {
     // Relay failure is transparent to the user — log and continue
     console.error("[contact] Resend send failed:", err);
