@@ -38,9 +38,8 @@ new_sqlite_classes = ["LeadStreamDO"]
 [vars]
 TURNSTILE_SITE_KEY = "1x00000000000000000000AA"
 ENVIRONMENT = "development"
-# Placeholder only — set the real value with:
+# RESEND_API_KEY is set as a secret, not a var — see:
 #   wrangler secret put RESEND_API_KEY --config tooling/wrangler/wrangler.toml
-RESEND_API_KEY = "REPLACE_WITH_SECRET"
 
 # Production environment
 [env.production]
