@@ -56,7 +56,7 @@ export async function hybridMatch(env: Env, input: MatchInput): Promise<{ matche
   }
 
   // Semantic boost via Vectorize if interestsVector available
-  let semanticBoost: Map<string, number> = new Map();
+  const semanticBoost: Map<string, number> = new Map();
   if (input.interestsVector && input.interestsVector.length > 0) {
     try {
       const vectorRes = await env.VECTORIZE.query(input.interestsVector, { topK: 10 });
