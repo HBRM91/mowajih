@@ -73,6 +73,10 @@ export default function StepConsent({ onSubmit, isLoading }: { onSubmit: (token?
         <span className="text-sm text-navy-600 leading-relaxed">{t("consent.checkbox")}</span>
       </label>
 
+      <p className="mt-3 text-[11px] text-navy-400 leading-relaxed">
+        {t("consent.legal_notice")}
+      </p>
+
       <div className="flex gap-3 mt-8">
         <button
           type="button"
