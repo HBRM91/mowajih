@@ -14,7 +14,7 @@ app.get("/", adminAuth(), async (c) => {
   const limit = Math.min(50, Math.max(10, parseInt(c.req.query("limit") ?? "20", 10)));
   const offset = (page - 1) * limit;
 
-  let query = db
+  const query = db
     .select({
       uuid: students.uuid,
       bacTrack: students.bacTrack,

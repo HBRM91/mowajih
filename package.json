@@ -14,7 +14,7 @@
     "dev:admin": "npm run dev -w apps/admin",
     "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
-    "test": "vitest",
+    "test": "vitest run",
     "db:generate": "drizzle-kit generate --config tooling/drizzle/drizzle.config.ts",
     "db:migrate": "wrangler d1 migrations apply tawjih-db --local",
     "db:seed": "tsx tooling/drizzle/seed.ts",

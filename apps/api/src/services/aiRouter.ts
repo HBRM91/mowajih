@@ -153,12 +153,17 @@ async function logAi(
     cached: boolean;
   }
 ) {
-  const db = drizzle(env.DB);
-  await db.insert(aiLogs).values({
-    modelUsed: opts.modelUsed,
-    latencyMs: opts.latencyMs,
-    status: opts.status,
-    errorMessage: opts.errorMessage || null,
-    cached: opts.cached,
-  });
+  // Analytics logging is best-effort — a D1 hiccup must never break the user-facing evaluation response.
+  try {
+    const db = drizzle(env.DB);
+    await db.insert(aiLogs).values({
+      modelUsed: opts.modelUsed,
+      latencyMs: opts.latencyMs,
+      status: opts.status,
+      errorMessage: opts.errorMessage || null,
+      cached: opts.cached,
+    });
+  } catch (err) {
+    console.error("[aiRouter] logAi failed:", err);
+  }
 }

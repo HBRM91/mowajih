@@ -687,10 +687,9 @@ export default function SlimaneChat() {
   const inputRef = useRef<HTMLInputElement>(null);
   const setSlimaneMode = useFormStore((s) => s.setSlimaneMode);
 
-  // Reset greeting when language changes
+  // Reset greeting when language changes (deliberately omits other deps — only `lang` should retrigger this)
   useEffect(() => {
     setMessages([makeInitial(lang)]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lang]);
 
   useEffect(() => {
