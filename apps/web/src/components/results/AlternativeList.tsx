@@ -12,8 +12,8 @@ export default function AlternativeList({ alternatives }: { alternatives: Altern
 
   return (
     <div className="p-8 bg-gradient-to-br from-navy-50 to-navy-100/20 rounded-3xl border border-navy-200/30">
-      <h3 className="font-heading text-xl font-bold text-navy-800 mb-2 text-center">{t("results.noMatches")}</h3>
-      <p className="text-navy-400 text-sm text-center mb-6">Ne t'inquiète pas, il y a toujours une solution.</p>
+      <h3 className="font-heading text-xl font-bold text-navy-800 mb-2 text-center">{t("results.no_matches")}</h3>
+      <p className="text-navy-400 text-sm text-center mb-6">{t("results.no_matches_reassurance")}</p>
       <div className="space-y-3">
         {alternatives.map((alt, idx) => (
           <motion.div

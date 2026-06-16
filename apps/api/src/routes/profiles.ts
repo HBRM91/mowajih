@@ -8,12 +8,39 @@ import type { Env } from "../types/env";
 
 // Known school slugs — rejects fabricated/injection slugs from bots
 const VALID_SCHOOL_SLUGS = new Set([
-  "emi","ehtp","ensias","inpt","um6p","ensa-agadir","ensa-casablanca","ensa-fes","ensa-kenitra",
-  "ensa-marrakech","ensa-oujda","ensa-safi","ensa-rabat","ensa-tetouan","ensam-casablanca",
-  "ensam-meknes","iscae","encg-casablanca","encg-rabat","encg-agadir","encg-fes","encg-tangier",
-  "encg-meknes","encg-laayoune","encg-oujda","iav-hassan-ii","ena-rabat","fm-rabat","fm-casablanca",
-  "fm-fes","fm-marrakech","uir","al-akhawayn","hem","esith","mundiapolis","emsi","upf",
-  "cpge-lydauto","cpge-moulay-youssef","cpge-my-abdellah","cpge-classe-preparatoire-rabat",
+  // Elite engineering — CNC
+  "emi","ehtp","ensias","inpt","enim","insea",
+  // ENSAM campuses
+  "ensam-casablanca","ensam-meknes","ensam-rabat",
+  // ENSA network (13 campuses)
+  "ensa-agadir","ensa-fes","ensa-marrakech","ensa-kenitra","ensa-tanger","ensa-oujda",
+  "ensa-beni-mellal","ensa-el-jadida","ensa-berrechid","ensa-khouribga","ensa-safi",
+  "ensa-al-hoceima","ensa-tetouan","ensa-casablanca","ensa-rabat",
+  // Business
+  "iscae",
+  "encg-casablanca","encg-agadir","encg-fes","encg-tanger","encg-marrakech","encg-oujda",
+  "encg-settat","encg-kenitra","encg-el-jadida","encg-beni-mellal","encg-dakhla",
+  "encg-rabat","encg-meknes","encg-laayoune","encg-tangier",
+  // Agriculture / architecture / medicine
+  "iav-hassan-ii",
+  "ena-rabat","ena-fes","ena-marrakech","ena-agadir","ena-tetouan","ena-oujda",
+  "fm-rabat","fm-casablanca","fm-fes","fm-marrakech","fm-oujda","fm-tanger","fm-agadir",
+  "fmd-rabat","fmd-casablanca","fmd-fes",
+  "ispits",
+  // Private / international
+  "um6p","uir","al-akhawayn","hem","esith","mundiapolis","emsi","upf","upm","um6ss","esisa",
+  // CPGE schools
+  "cpge-moulay-youssef","cpge-ferhat-hachad","cpge-alkindi-tanger","cpge-ibn-youssef","cpge-oujda",
+  // Arts / communication
+  "isit-tanger","isic-rabat","inba-tetouan","isadac","esav-marrakech",
+  // Engineering / tech private
+  "enset-mohammedia","esca-casablanca","cesem-casablanca","supdeco-maroc","ipes-casablanca",
+  "fp-rabat",
+  // Public universities
+  "fs-rabat","fsjes-casablanca","fsjes-agdal","fsjes-marrakech","fsjes-agadir","fsjes-fes",
+  "fst-mohammedia","fst-fes","fst-marrakech","fst-agadir","fst-beni-mellal",
+  "est-casablanca","est-sale","est-fes","est-meknes","est-agadir","est-oujda",
+  "ista",
 ]);
 
 const matchSchema = z.object({
@@ -69,6 +96,10 @@ const app = new Hono<{ Bindings: Env }>();
 app.post("/", rateLimit("evaluate"), validate("json", profileSchema), async (c) => {
   const body = c.req.valid("json");
 
+  // Defense-in-depth: strip PII when platform is in anonymous mode (no CNDP approval yet)
+  const modeRaw = await c.env.CACHE.get("platform_data_mode");
+  const isFullMode = modeRaw === "full";
+
   const mention = body.mention ?? computeMention(body.generalGrade);
   const retentionExpiry = new Date(Date.now() + 24 * 30 * 24 * 60 * 60 * 1000); // 24 months
 
@@ -93,12 +124,12 @@ app.post("/", rateLimit("evaluate"), validate("json", profileSchema), async (c) 
       city: body.city as "Casablanca" | "Rabat" | "Marrakech" | "Fès" | "Tanger" | "Agadir" | "Oujda" | "Tétouan" | "Salé" | "Meknès",
       region: body.region,
       financialBracket: body.financialBracket,
-      firstName: body.firstName ?? null,
-      lastName: body.lastName ?? null,
-      emailContact: body.emailContact ?? null,
-      phoneContact: body.phoneContact ?? null,
-      consentPrivateSchools: body.consentPrivateSchools === true,
-      consentPrivateAt: body.consentPrivateSchools ? new Date() : null,
+      firstName: isFullMode ? (body.firstName ?? null) : null,
+      lastName: isFullMode ? (body.lastName ?? null) : null,
+      emailContact: isFullMode ? (body.emailContact ?? null) : null,
+      phoneContact: isFullMode ? (body.phoneContact ?? null) : null,
+      consentPrivateSchools: isFullMode ? body.consentPrivateSchools === true : false,
+      consentPrivateAt: isFullMode && body.consentPrivateSchools ? new Date() : null,
       aiResults: {
         matches: body.matches,
         alternatives: body.alternatives,

@@ -9,6 +9,8 @@ export interface Env {
   TURNSTILE_SECRET_KEY: string;
   CLOUDFLARE_ACCESS_TEAM_DOMAIN: string;
   ENVIRONMENT: "development" | "production";
+  // Resend email relay (set via: wrangler secret put RESEND_API_KEY --config tooling/wrangler/wrangler.toml)
+  RESEND_API_KEY: string;
   // Admin password auth (set these in Cloudflare Workers secrets)
   JWT_SECRET: string;
   ADMIN_PASSWORD_HASH: string;  // PBKDF2-SHA256 hash of admin password, base64url

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useFormStore } from "../stores/formStore";
 import { useEvaluate } from "../hooks/useOrientation";
 import StepTrack from "../components/orientation/StepTrack";
@@ -13,6 +14,7 @@ export default function Orientation() {
   const form = useFormStore();
   const evaluate = useEvaluate();
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
 
   const handleSubmit = async () => {
     const parseGrade = (v: string) => (v && v.trim() !== "" ? parseFloat(v) : undefined);
@@ -37,6 +39,7 @@ export default function Orientation() {
       emailContact: form.emailContact || undefined,
       phoneContact: form.phoneContact || undefined,
       consentPrivateSchools: form.consentPrivateSchools || undefined,
+      language: i18n.language,
     };
 
     const result = await evaluate.mutateAsync(payload);

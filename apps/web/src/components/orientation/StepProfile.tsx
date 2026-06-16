@@ -1,9 +1,23 @@
 import { useTranslation } from "react-i18next";
 import { useFormStore } from "../../stores/formStore";
-import { useGameStore } from "../../stores/gameStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { MOROCCAN_CITIES_BY_REGION } from "../../data/schools";
+
+const REGION_DISPLAY: Record<string, { fr: string; ar: string; en: string }> = {
+  "Tanger-Tétouan-Al Hoceïma": { fr: "Tanger-Tétouan-Al Hoceïma", ar: "طنجة-تطوان-الحسيمة", en: "Tangier-Tetouan-Al Hoceima" },
+  "Oriental": { fr: "Oriental", ar: "الجهة الشرقية", en: "Oriental" },
+  "Fès-Meknès": { fr: "Fès-Meknès", ar: "فاس-مكناس", en: "Fès-Meknès" },
+  "Rabat-Salé-Kénitra": { fr: "Rabat-Salé-Kénitra", ar: "الرباط-سلا-القنيطرة", en: "Rabat-Salé-Kénitra" },
+  "Béni Mellal-Khénifra": { fr: "Béni Mellal-Khénifra", ar: "بني ملال-خنيفرة", en: "Béni Mellal-Khénifra" },
+  "Casablanca-Settat": { fr: "Casablanca-Settat", ar: "الدار البيضاء-سطات", en: "Casablanca-Settat" },
+  "Marrakech-Safi": { fr: "Marrakech-Safi", ar: "مراكش-آسفي", en: "Marrakech-Safi" },
+  "Drâa-Tafilalet": { fr: "Drâa-Tafilalet", ar: "درعة-تافيلالت", en: "Drâa-Tafilalet" },
+  "Souss-Massa": { fr: "Souss-Massa", ar: "سوس-ماسة", en: "Souss-Massa" },
+  "Guelmim-Oued Noun": { fr: "Guelmim-Oued Noun", ar: "كلميم-واد نون", en: "Guelmim-Oued Noun" },
+  "Laâyoune-Sakia El Hamra": { fr: "Laâyoune-Sakia El Hamra", ar: "العيون-الساقية الحمراء", en: "Laâyoune-Sakia El Hamra" },
+  "Dakhla-Oued Ed-Dahab": { fr: "Dakhla-Oued Ed-Dahab", ar: "الداخلة-وادي الذهب", en: "Dakhla-Oued Ed-Dahab" },
+};
 
 const FINANCIAL_ICONS: Record<string, string> = {
   "<<3000": "💚",
@@ -13,18 +27,17 @@ const FINANCIAL_ICONS: Record<string, string> = {
 };
 
 export default function StepProfile() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { city, region, financialBracket, setField, nextStep, prevStep } = useFormStore();
-  const addXp = useGameStore((s) => s.addXp);
   const [selectedRegion, setSelectedRegion] = useState<string>(region || "");
 
+  const lang = i18n.language.startsWith("ar") ? "ar" : i18n.language.startsWith("en") ? "en" : "fr";
   const regions = Object.keys(MOROCCAN_CITIES_BY_REGION);
   const citiesInRegion = selectedRegion ? MOROCCAN_CITIES_BY_REGION[selectedRegion] : [];
 
   const isValid = city && financialBracket;
 
   const handleNext = () => {
-    addXp(15, "Completed profile");
     nextStep();
   };
 
@@ -71,7 +84,7 @@ export default function StepProfile() {
                     : "bg-cream border-parchment text-navy-600 hover:border-gold-200 hover:bg-gold-50/50"
                 }`}
               >
-                {r}
+                {REGION_DISPLAY[r]?.[lang] ?? r}
               </motion.button>
             ))}
           </div>
@@ -158,11 +171,6 @@ export default function StepProfile() {
           </div>
         </div>
 
-        {/* XP hint */}
-        <div className="flex items-center gap-2 text-xs text-gold-600 bg-gold-50 border border-gold-200 rounded-xl px-4 py-2.5">
-          <span className="text-base">🎯</span>
-          <span>{t("step.profile.xp_hint")}</span>
-        </div>
       </div>
 
       <div className="flex gap-3 mt-8">

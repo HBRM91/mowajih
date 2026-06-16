@@ -19,6 +19,8 @@ import adminDossier from "./routes/admin/dossier";
 import adminSeuils from "./routes/admin/seuils";
 import adminAssets from "./routes/admin/assets";
 import adminLeads from "./routes/admin/leads";
+import contact from "./routes/contact";
+import adminContact from "./routes/admin/contactSubmissions";
 import { adminAuth } from "./middleware/adminAuth";
 import { handleScheduled, DEFAULT_DEADLINES } from "./scheduled";
 
@@ -29,8 +31,8 @@ app.use(cors({
   origin: (origin, c) => {
     const env = (c.env as { ENVIRONMENT?: string }).ENVIRONMENT;
     const production = [
-      "https://tawjih.ai",
-      "https://admin.tawjih.ai",
+      "https://tawjih.jad2advisory.com",
+      "https://admin.tawjih.jad2advisory.com",
       "https://tawjih-web.pages.dev",
       "https://tawjih-admin.pages.dev",
     ];
@@ -40,7 +42,7 @@ app.use(cors({
       origin === "http://localhost:5173" || origin === "http://localhost:5174"
     );
     if (production.includes(origin ?? "") || isPagesDeploy || isDev) return origin;
-    return "https://tawjih-web.pages.dev";
+    return "https://tawjih.jad2advisory.com";
   },
   allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowHeaders: ["Content-Type", "Authorization", "CF-Access-JWT-Assertion"],
@@ -91,6 +93,12 @@ app.route("/api/admin/dossier", adminDossier);
 app.route("/api/admin/seuils", adminSeuils);
 app.route("/api/admin/leads", adminLeads);
 app.route("/api/admin/assets", adminAssets);
+// Public contact form — student & B2B submissions
+app.route("/api/contact", contact);
+// Admin contact submissions
+app.use("/api/admin/contact/*", adminAuth());
+app.route("/api/admin/contact", adminContact);
+
 // Public seuils overrides — merged by web app with hardcoded school data
 app.get("/api/public/seuils", async (c) => {
   const raw = await c.env.CACHE.get("school_seuils_overrides");
@@ -103,6 +111,21 @@ app.get("/api/public/deadlines", async (c) => {
   const raw = await c.env.CACHE.get("calendar_deadlines");
   if (!raw) return c.json({ deadlines: DEFAULT_DEADLINES, source: "default" });
   return c.json(JSON.parse(raw));
+});
+
+// Public: platform data collection mode — "anonymous" (default) or "full"
+app.get("/api/public/platform-mode", async (c) => {
+  const raw = await c.env.CACHE.get("platform_data_mode");
+  const mode = raw === "full" ? "full" : "anonymous";
+  return c.json({ mode });
+});
+
+// Admin: toggle platform data collection mode
+app.post("/api/admin/platform-mode", adminAuth(), async (c) => {
+  const body = await c.req.json<{ mode?: string }>();
+  const mode = body.mode === "full" ? "full" : "anonymous";
+  await c.env.CACHE.put("platform_data_mode", mode, { expirationTtl: 60 * 60 * 24 * 365 * 5 });
+  return c.json({ ok: true, mode });
 });
 
 // Admin: pending AI seuil suggestions awaiting review

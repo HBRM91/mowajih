@@ -21,13 +21,19 @@ const BUDGET_LABELS: Record<string, string> = {
 };
 
 interface PlatformData {
-  funnel: { simulations: number; leads: number; optIns: number; contacts: number; converted: number; simToLead: number; leadToOptIn: number; optInToConverted: number };
+  funnel: {
+    simulations: number; leads: number; optIns: number; contacts: number; converted: number;
+    consentPrivate: number; consentRate: number;
+    simToLead: number; leadToOptIn: number; optInToConverted: number;
+  };
+  todaySimulations: number;
+  avgGrade: number;
   schoolDemand: Array<{ schoolSlug: string; count: number; avgProbability: number }>;
   trackDist: Array<{ bacTrack: string; count: number; avgGrade: number }>;
   regionDist: Array<{ region: string; count: number }>;
   budgetDist: Array<{ bracket: string; count: number }>;
   trend30d: Array<{ day: string; count: number }>;
-  recentProfiles: Array<{ uuid: string; bacTrack: string; mention: string; city: string; generalGrade: number; financialBracket: string; createdAt: string }>;
+  recentProfiles: Array<{ uuid: string; bacTrack: string; mention: string; city: string; region?: string; generalGrade: number; financialBracket: string; createdAt: string }>;
   monthlyRevenue: Array<{ month: string; revenue: number; optIns: number; leads: number }>;
   mentionDist: Array<{ mention: string; count: number }>;
 }
@@ -48,7 +54,6 @@ export default function Dashboard() {
   const dateStr = now.toLocaleDateString("fr-MA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   const f = data?.funnel;
-  const totalRevenue = data?.monthlyRevenue?.reduce((s, m) => s + (m.revenue ?? 0), 0) ?? 0;
   const maxDemand = Math.max(...(data?.schoolDemand?.map((s) => s.count) ?? [1]));
   const maxRegion = Math.max(...(data?.regionDist?.map((r) => r.count) ?? [1]));
 
@@ -59,7 +64,7 @@ export default function Dashboard() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-heading text-3xl font-bold text-navy-800">{greeting} 👋</h1>
-          <p className="text-navy-400 mt-1 capitalize">{dateStr} · JAD2 Advisory — Tableau de bord</p>
+          <p className="text-navy-400 mt-1 capitalize">{dateStr} · JAD2 TAWJIH — Tableau de bord</p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full text-emerald-700 text-xs font-bold">
           <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
@@ -67,7 +72,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── KPI Row ── */}
+      {/* ── KPI Row 1 — Funnel ── */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
           { label: "Simulations", value: f?.simulations, sub: "Total étudiants", icon: "🎓", color: "from-navy-700 to-navy-800", text: "text-white" },
@@ -93,7 +98,58 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* ── Funnel + Revenue ── */}
+      {/* ── KPI Row 2 — Real-time + Private Leads ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            label: "Simulations aujourd'hui",
+            value: isLoading ? "—" : fmt(data?.todaySimulations ?? 0),
+            sub: "Sessions du jour",
+            icon: "📅",
+            color: "bg-white border border-gold-100/60",
+            valueClass: "text-navy-800",
+          },
+          {
+            label: "Note bac moyenne",
+            value: isLoading ? "—" : `${data?.avgGrade ?? "—"}/20`,
+            sub: "Profils simulés",
+            icon: "📊",
+            color: "bg-white border border-gold-100/60",
+            valueClass: "text-navy-800",
+          },
+          {
+            label: "Leads écoles privées",
+            value: isLoading ? "—" : fmt(f?.consentPrivate ?? 0),
+            sub: "Consentement CNDP confirmé",
+            icon: "💼",
+            color: "bg-gradient-to-br from-violet-50 to-violet-100 border border-violet-200",
+            valueClass: "text-violet-800",
+          },
+          {
+            label: "Taux de consentement",
+            value: isLoading ? "—" : `${f?.consentRate ?? 0}%`,
+            sub: "des simulations optent pour le partage",
+            icon: "🔐",
+            color: `${(f?.consentRate ?? 0) > 15 ? "bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200" : "bg-white border border-gold-100/60"}`,
+            valueClass: (f?.consentRate ?? 0) > 15 ? "text-emerald-700" : "text-navy-800",
+          },
+        ].map((kpi, i) => (
+          <motion.div
+            key={kpi.label}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 + i * 0.06 }}
+            className={`${kpi.color} rounded-2xl p-5 shadow-sm`}
+          >
+            <div className="text-xl mb-2">{kpi.icon}</div>
+            <div className={`font-heading text-2xl font-bold ${kpi.valueClass}`}>{kpi.value}</div>
+            <div className="text-xs font-bold text-navy-700 mt-0.5">{kpi.label}</div>
+            <div className="text-[11px] text-navy-400 mt-1">{kpi.sub}</div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* ── Funnel + Private Leads Panel ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         {/* Conversion funnel */}
@@ -109,6 +165,7 @@ export default function Dashboard() {
               { label: "Opt-ins (accord contact)", value: f?.optIns ?? 0, max: f?.simulations ?? 1, color: "bg-emerald-500" },
               { label: "Contacts identifiés", value: f?.contacts ?? 0, max: f?.simulations ?? 1, color: "bg-blue-500" },
               { label: "Convertis (école contactée)", value: f?.converted ?? 0, max: f?.simulations ?? 1, color: "bg-purple-600" },
+              { label: "Leads privés (CNDP)", value: f?.consentPrivate ?? 0, max: f?.simulations ?? 1, color: "bg-violet-500" },
             ].map((step, i) => (
               <div key={step.label}>
                 <div className="flex items-center justify-between mb-1 text-xs">
@@ -132,28 +189,45 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Revenue */}
+        {/* Private Leads B2B Panel */}
         <div className="bg-gradient-to-br from-navy-900 to-navy-800 rounded-2xl p-6 text-white shadow-sm">
-          <h2 className="font-heading font-bold text-gold-300 mb-1">Revenu plateforme</h2>
-          <p className="text-navy-400 text-xs mb-5">Cumul des opt-ins facturés</p>
+          <h2 className="font-heading font-bold text-violet-300 mb-1">Leads Écoles Privées</h2>
+          <p className="text-navy-400 text-xs mb-5">Étudiants ayant consenti au partage (CNDP)</p>
           <div className="font-heading text-4xl font-bold text-white mb-1">
-            {fmt(totalRevenue)} <span className="text-lg text-gold-400">MAD</span>
+            {fmt(f?.consentPrivate ?? 0)} <span className="text-lg text-violet-400">leads</span>
           </div>
-          <p className="text-navy-400 text-xs mb-6">Derniers 6 mois · {data?.monthlyRevenue?.reduce((s, m) => s + (m.optIns ?? 0), 0) ?? 0} opt-ins facturés</p>
-          <div className="space-y-2">
-            {(data?.monthlyRevenue ?? []).slice(-3).map((m) => (
-              <div key={m.month} className="flex items-center justify-between text-xs">
-                <span className="text-navy-400">{m.month}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-navy-300">{m.leads} leads</span>
-                  <span className="text-gold-400 font-bold">{fmt(m.revenue ?? 0)} MAD</span>
-                </div>
-              </div>
-            ))}
+          <p className="text-navy-400 text-xs mb-5">Taux de consentement : <span className="text-violet-300 font-bold">{f?.consentRate ?? 0}%</span> des simulations</p>
+
+          {/* Score summary */}
+          <div className="space-y-2.5 mb-5">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-navy-400">Note bac moyenne</span>
+              <span className="text-gold-400 font-bold">{data?.avgGrade ?? "—"}/20</span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-navy-400">Simulations aujourd'hui</span>
+              <span className="text-emerald-400 font-bold">{fmt(data?.todaySimulations ?? 0)}</span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-navy-400">Statut partenariats</span>
+              <span className="text-amber-400 font-bold">Aucun actif</span>
+            </div>
           </div>
-          <Link to="/analytics" className="mt-5 block text-center text-xs text-gold-400 hover:text-gold-300 transition font-medium">
-            Voir analytiques complètes →
-          </Link>
+
+          <div className="flex gap-2">
+            <Link
+              to="/leads-export"
+              className="flex-1 text-center py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold rounded-xl transition"
+            >
+              Exporter CSV
+            </Link>
+            <Link
+              to="/communications"
+              className="flex-1 text-center py-2 bg-navy-700 hover:bg-navy-600 text-violet-300 text-xs font-bold rounded-xl transition"
+            >
+              Pitcher →
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -221,19 +295,24 @@ export default function Dashboard() {
             {(data?.trackDist ?? []).map((t) => {
               const total = data?.trackDist?.reduce((s, x) => s + x.count, 0) ?? 1;
               return (
-                <div key={t.bacTrack} className="flex items-center gap-2">
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${TRACK_COLORS[t.bacTrack] ?? "bg-gray-100 text-gray-700"} flex-shrink-0 w-8 text-center`}>
-                    {t.bacTrack}
-                  </span>
-                  <div className="flex-1 h-2 bg-navy-50 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pct(t.count, total)}%` }}
-                      transition={{ duration: 0.7 }}
-                      className="h-full bg-navy-600 rounded-full"
-                    />
+                <div key={t.bacTrack}>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${TRACK_COLORS[t.bacTrack] ?? "bg-gray-100 text-gray-700"} flex-shrink-0 w-8 text-center`}>
+                      {t.bacTrack}
+                    </span>
+                    <div className="flex-1 h-2 bg-navy-50 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct(t.count, total)}%` }}
+                        transition={{ duration: 0.7 }}
+                        className="h-full bg-navy-600 rounded-full"
+                      />
+                    </div>
+                    <span className="text-[11px] text-navy-500 w-8 text-right">{pct(t.count, total)}%</span>
                   </div>
-                  <span className="text-[11px] text-navy-500 w-8 text-right">{pct(t.count, total)}%</span>
+                  {t.avgGrade > 0 && (
+                    <div className="ml-10 text-[10px] text-navy-400 mt-0.5">Moy. {t.avgGrade}/20</div>
+                  )}
                 </div>
               );
             })}
@@ -299,9 +378,9 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { to: "/profiles", icon: "👤", label: "Profils étudiants", color: "border-blue-200 hover:bg-blue-50" },
-          { to: "/pipeline", icon: "🎯", label: "Pipeline leads", color: "border-gold-200 hover:bg-gold-50" },
-          { to: "/communications", icon: "✉️", label: "Communications IA", color: "border-emerald-200 hover:bg-emerald-50" },
+          { to: "/leads-export", icon: "💼", label: "Leads Privés", color: "border-violet-200 hover:bg-violet-50" },
           { to: "/seuils", icon: "🎚️", label: "Seuils & frais", color: "border-purple-200 hover:bg-purple-50" },
+          { to: "/settings", icon: "⚙️", label: "Paramètres", color: "border-slate-200 hover:bg-slate-50" },
         ].map((a) => (
           <Link
             key={a.to}

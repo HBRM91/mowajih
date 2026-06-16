@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useCompareStore } from "../../stores/compareStore";
 import SchoolLogo from "./SchoolLogo";
 
 export default function CompareBar() {
+  const { t } = useTranslation();
   const { schools, remove, clear } = useCompareStore();
 
   return (
@@ -24,7 +26,7 @@ export default function CompareBar() {
                 <button
                   onClick={() => remove(s.slug)}
                   className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rose-500 rounded-full text-white text-[9px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Retirer"
+                  title={t("compare.bar.remove")}
                 >
                   ×
                 </button>
@@ -44,13 +46,13 @@ export default function CompareBar() {
 
           <div className="flex items-center gap-2">
             <span className="text-white/60 text-xs font-medium whitespace-nowrap">
-              {schools.length}/3 école{schools.length > 1 ? "s" : ""}
+              {schools.length}/3 {t("compare.bar.count", { count: schools.length })}
             </span>
             <Link
               to="/comparer"
               className="px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-xl text-xs font-bold hover:from-gold-400 hover:to-gold-300 transition-all whitespace-nowrap shadow-lg"
             >
-              Comparer →
+              {t("compare.bar.cta")} →
             </Link>
             <button
               onClick={clear}

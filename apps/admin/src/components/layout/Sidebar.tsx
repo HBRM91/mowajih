@@ -9,6 +9,7 @@ const nav = [
   { path: "/pipeline", label: "Pipeline", icon: "🎯" },
   { path: "/analytics", label: "Analytiques", icon: "📈" },
   { path: "/communications", label: "Communications", icon: "✉️" },
+  { path: "/contact-submissions", label: "Demandes Contact", icon: "📩" },
   { path: "/assets", label: "Générateur d'Assets", icon: "🎨" },
   { path: "/settings", label: "Paramètres", icon: "⚙️" },
 ];
@@ -62,11 +63,11 @@ export default function Sidebar() {
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-navy-800">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-gradient-to-br from-gold-400 to-gold-600 rounded-full flex items-center justify-center text-navy-900 text-xs font-bold">
-              D
+              H
             </div>
             <div>
-              <div className="text-sm font-medium text-white">Doyen</div>
-              <div className="text-xs text-navy-400">Université Mundiapolis</div>
+              <div className="text-sm font-medium text-white">Hamza El Bouhali</div>
+              <div className="text-xs text-navy-400">Admin · JAD2 TAWJIH</div>
             </div>
           </div>
         </div>

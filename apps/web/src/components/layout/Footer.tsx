@@ -3,15 +3,14 @@ import { useTranslation } from "react-i18next";
 import { SCHOOLS } from "../../data/schools";
 
 const SCHOOL_CATEGORIES = [
-  { label: "Ingénierie publique", slugs: ["emi", "ehtp", "ensias", "inpt", "enim"], icon: "⚙️" },
-  { label: "Business & Commerce", slugs: ["iscae", "insea", "encg-casablanca", "hem", "encg-fes"], icon: "📊" },
-  { label: "Universités privées", slugs: ["um6p", "uir", "mundiapolis", "al-akhawayn", "emsi"], icon: "🎓" },
-  { label: "Médecine & Santé", slugs: ["fm-rabat", "fm-casablanca", "fm-fes", "fm-marrakech", "iav-hassan-ii"], icon: "🏥" },
+  { labelKey: "footer.cat.engineering", slugs: ["emi", "ehtp", "ensias", "inpt", "enim"], icon: "⚙️" },
+  { labelKey: "footer.cat.business", slugs: ["iscae", "insea", "encg-casablanca", "hem", "encg-fes"], icon: "📊" },
+  { labelKey: "footer.cat.private_uni", slugs: ["um6p", "uir", "mundiapolis", "al-akhawayn", "emsi"], icon: "🎓" },
+  { labelKey: "footer.cat.medicine", slugs: ["fm-rabat", "fm-casablanca", "fm-fes", "fm-marrakech", "iav-hassan-ii"], icon: "🏥" },
 ];
 
-const ADMIN_URL = "https://tawjih-admin.pages.dev";
 const CONTACT_EMAIL = "Tawjih@jad2advisory.com";
-const PARENT_SITE = "https://jad2advisory.hamzaelbouhali.workers.dev/";
+const PARENT_SITE = "https://jad2advisory.com/";
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -25,31 +24,29 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-3 mb-5 group">
-              <img
-                src="/logo.png"
-                alt="JAD2 TAWJIH"
-                className="h-11 w-auto object-contain rounded-xl brightness-0 invert ring-1 ring-white/15 group-hover:ring-gold-400/40 transition-all shadow-lg"
-              />
+              <div className="bg-white/90 rounded-xl px-2 py-1.5 transition-all group-hover:bg-white">
+                <img src="/logo.png" alt="JAD2 TAWJIH" className="h-9 w-auto object-contain" />
+              </div>
               <div>
                 <div className="font-heading font-bold text-xl text-gold-300 leading-none">JAD2</div>
                 <div className="text-[11px] uppercase tracking-[0.25em] text-gold-500/70 leading-none mt-0.5">TAWJIH</div>
               </div>
             </Link>
             <p className="text-navy-300 text-sm leading-relaxed mb-5">
-              Outil d'orientation indépendant pour les bacheliers marocains. Propulsé par l'IA, basé sur les données officielles Tawjihi et cursussup. Non affilié aux établissements présentés.
+              {t("footer.brand.desc")}
             </p>
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 text-xs text-navy-400">
                 <span className="text-emerald-400">✓</span>
-                Conforme CNDP — Données anonymisées
+                {t("footer.trust.cndp")}
               </div>
               <div className="flex items-center gap-2 text-xs text-navy-400">
                 <span className="text-emerald-400">✓</span>
-                100% Gratuit pour les étudiants
+                {t("footer.trust.free")}
               </div>
               <div className="flex items-center gap-2 text-xs text-navy-400">
                 <span className="text-emerald-400">✓</span>
-                Disponible en FR · AR · EN
+                {t("footer.trust.languages")}
               </div>
             </div>
           </div>
@@ -57,14 +54,14 @@ export default function Footer() {
           {/* Etablissements */}
           <div className="lg:col-span-2">
             <h4 className="font-heading font-bold text-gold-300 mb-5 text-sm uppercase tracking-wider">
-              Établissements analysés
+              {t("footer.schools.heading")}
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {SCHOOL_CATEGORIES.map((cat) => (
-                <div key={cat.label}>
+                <div key={cat.labelKey}>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-navy-300 uppercase tracking-wider mb-2">
                     <span>{cat.icon}</span>
-                    {cat.label}
+                    {t(cat.labelKey)}
                   </div>
                   <div className="space-y-1.5">
                     {cat.slugs.map((slug) => {
@@ -99,7 +96,7 @@ export default function Footer() {
 
           {/* Navigation + Contact */}
           <div>
-            <h4 className="font-heading font-bold text-gold-300 mb-5 text-sm uppercase tracking-wider">Navigation</h4>
+            <h4 className="font-heading font-bold text-gold-300 mb-5 text-sm uppercase tracking-wider">{t("footer.nav.heading")}</h4>
             <div className="space-y-2 mb-8">
               <Link to="/" className="flex items-center gap-2 text-sm text-navy-300 hover:text-gold-300 transition-colors group">
                 <span className="w-1 h-1 bg-navy-600 group-hover:bg-gold-400 rounded-full transition-colors" />
@@ -117,21 +114,13 @@ export default function Footer() {
                 <span className="w-1 h-1 bg-navy-600 group-hover:bg-gold-400 rounded-full transition-colors" />
                 {t("nav.privacy")}
               </Link>
+              <Link to="/contact" className="flex items-center gap-2 text-sm text-navy-300 hover:text-gold-300 transition-colors group">
+                <span className="w-1 h-1 bg-navy-600 group-hover:bg-gold-400 rounded-full transition-colors" />
+                {t("nav.contact")}
+              </Link>
             </div>
 
-            <a
-              href={ADMIN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] text-navy-600 hover:text-navy-400 transition-colors mt-1 mb-6"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Espace partenaires
-            </a>
-
-            <h4 className="font-heading font-bold text-gold-300 mb-4 text-sm uppercase tracking-wider">Contact</h4>
+            <h4 className="font-heading font-bold text-gold-300 mb-4 text-sm uppercase tracking-wider">{t("footer.contact.heading")}</h4>
             <div className="space-y-2">
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
@@ -151,7 +140,7 @@ export default function Footer() {
                 <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
                 </svg>
-                JAD2 Advisory (site parent)
+                {t("footer.parent_site")}
               </a>
             </div>
           </div>
@@ -164,7 +153,7 @@ export default function Footer() {
               { value: SCHOOLS.length + "+", label: t("stats.schools") },
               { value: "12", label: t("stats.regions") },
               { value: "7", label: t("stats.tracks") },
-              { value: "3", label: "Langues" },
+              { value: "3", label: t("stats.languages") },
             ].map((s) => (
               <div key={s.label}>
                 <div className="font-heading text-2xl font-bold text-gold-400">{s.value}</div>
@@ -177,12 +166,12 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-navy-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-xs text-navy-500">
-            © {new Date().getFullYear()} JAD2 TAWJIH · Division Éducation de JAD2 Advisory. Tous droits réservés.
+            © {new Date().getFullYear()} JAD2 TAWJIH · {t("footer.copyright")}
           </span>
           <div className="flex items-center gap-4 text-xs text-navy-500">
             <Link to="/privacy" className="hover:text-navy-300 transition">{t("nav.privacy")}</Link>
             <span>·</span>
-            <span>Conforme CNDP</span>
+            <span>{t("footer.cndp_badge")}</span>
             <span>·</span>
             <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-navy-300 transition">{CONTACT_EMAIL}</a>
           </div>

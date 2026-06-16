@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useFormStore } from "../../stores/formStore";
+import { useProgressStore } from "../../stores/progressStore";
 
 interface Message {
   role: "user" | "slimane";
@@ -604,10 +605,25 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
     };
   }
 
-  // Darija (Moroccan dialect) — catch common Darija patterns and route to AI
-  // Includes spelling variants: miziana/mzyan/mzian/mzyane, achmen/achno, mdrassa/drasa, etc.
-  if (/(bghit|wach|chno|chkoun|shkoon|kidayr|kifash|mzyane|mzyan|mzian|miziana|mizyan|mziane|ghalya|rkhisa|bzzaf|msskin|weyn|mnin|3lash|dyal|dyali|kolchi|ghadir|nsskon|skn|ndir|nkml|achmen|achno|ach men|mdrassa|mdrasa|drassa|drasa|chhal|safi|walo|waldik|mhimch|had.*mdrasa|fin.*mdrasa|waش|واش|بغيت|كيفاش|مزيان|غالية|رخيصة|بزاف|ديال|كلشي|غادي|آش|كيداير)/.test(lower + raw)) {
-    // Darija detected — signal to use AI (which understands Darija)
+  // Darija — "I want a good school" / "what school should I choose" type queries
+  if (/(bghit.*(mdrasa|ecole|jami3a|kulliya|school)|fin.*ndiru|chno.*nkml|chno.*ndir.*(ba3d|bac)|ach men.*(ecole|mdrasa)|mdrasa.*mzyan|ecole.*mzyan|miziana.*mdrasa|mdrasa.*mizian)/.test(lower + raw)) {
+    return {
+      text: tx(lang,
+        "Wakha ! Pour te trouver les meilleures options, j'ai besoin de ta filière Bac. C'est laquelle ?",
+        "حسناً ! لأجد لك أفضل الخيارات، أحتاج لمعرفة شعبتك في الباك. ما هي شعبتك ؟",
+        "Got it! To find you the best fit, I need your Bac track. Which one is it?"
+      ),
+      quickReplies: qx(lang,
+        ["Bac SM (sciences math)", "Bac PC (physique-chimie)", "Bac SVT (biologie)", "Bac SE (économie)"],
+        ["بكالوريا علوم رياضية", "بكالوريا علوم فيزيائية", "بكالوريا علوم الحياة", "بكالوريا علوم اقتصادية"],
+        ["Bac SM (maths)", "Bac PC (physics)", "Bac SVT (biology)", "Bac SE (economics)"]
+      ),
+      matched: true,
+    };
+  }
+
+  // Darija — general open darija queries → try AI, signal caller
+  if (/(bghit|wach|chno|chkoun|shkoon|kidayr|kifash|mzyane|mzyan|mzian|miziana|mizyan|mziane|ghalya|rkhisa|bzzaf|msskin|weyn|mnin|3lash|dyal|dyali|kolchi|ghadir|nsskon|skn|ndir|nkml|achmen|achno|ach men|mdrassa|mdrasa|drassa|drasa|chhal|safi|walo|waldik|mhimch|waش|واش|بغيت|كيفاش|مزيان|غالية|رخيصة|بزاف|ديال|كلشي|غادي|آش|كيداير)/.test(lower + raw)) {
     return {
       text: tx(lang,
         "Je cherche la meilleure réponse pour toi...",
@@ -615,9 +631,9 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
         "Let me find the best answer for you..."
       ),
       quickReplies: qx(lang,
-        ["Ingénierie au Maroc", "Business au Maroc", "Médecine au Maroc", "Aide-moi à choisir"],
-        ["الهندسة بالمغرب", "الأعمال بالمغرب", "الطب بالمغرب", "ساعدني في الاختيار"],
-        ["Engineering in Morocco", "Business in Morocco", "Medicine in Morocco", "Help me choose"]
+        ["Bac SM / PC / STI", "Business & économie", "Médecine", "Aide-moi à choisir"],
+        ["بكالوريا رياضية / فيزيائية", "الأعمال والاقتصاد", "الطب", "ساعدني في الاختيار"],
+        ["Bac SM / PC / STI", "Business & economics", "Medicine", "Help me choose"]
       ),
       matched: false,
     };
@@ -698,6 +714,7 @@ export default function SlimaneChat() {
     setInput("");
     setIsThinking(true);
     setMood("thinking");
+    useProgressStore.getState().markSlimaneQueried();
 
     const quick = generateSlimaneReply(text, lang);
 
@@ -746,11 +763,15 @@ export default function SlimaneChat() {
         setMessages((prev) => [...prev, {
           role: "slimane",
           content: tx(lang,
-            "Ma connexion est un peu lente là — reformule ta question et je te réponds tout de suite. Ou essaie l'un des sujets ci-dessous.",
-            "اتصالي بطيء قليلاً الآن — أعد صياغة سؤالك وسأجيبك فوراً. أو جرب أحد المواضيع أدناه.",
-            "My connection is a bit slow — rephrase your question and I'll answer right away. Or try one of the topics below."
+            "Dis-moi ta filière Bac (SM, PC, SVT, SE, STI, SH ou L) et ta note générale — je te trouve les meilleures options.",
+            "أخبرني بشعبتك في البكالوريا (علوم رياضية، فيزيائية، أحياء...) ومعدلك العام — وسأجد لك أفضل الخيارات.",
+            "Tell me your Bac track (SM, PC, SVT, SE, STI, SH or L) and your overall grade — I'll find you the best options."
           ),
-          quickReplies: quick.quickReplies,
+          quickReplies: qx(lang,
+            ["Je suis Bac SM/PC", "Je suis Bac SVT", "Business & économie", "Passer le questionnaire"],
+            ["شعبة رياضية / فيزيائية", "شعبة علوم الحياة", "الأعمال والاقتصاد", "إجراء الاستبيان"],
+            ["I'm Bac SM/PC", "I'm Bac SVT", "Business & economics", "Take the questionnaire"]
+          ),
           timestamp: new Date(),
         }]);
       }

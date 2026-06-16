@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { useFormStore } from "../../stores/formStore";
-import { useGameStore } from "../../stores/gameStore";
 import { motion } from "framer-motion";
 
 const TRACK_META = [
@@ -16,11 +15,9 @@ const TRACK_META = [
 export default function StepTrack() {
   const { t } = useTranslation();
   const { bacTrack, setField, nextStep } = useFormStore();
-  const addXp = useGameStore((s) => s.addXp);
 
   const handleSelect = (track: string) => {
     setField("bacTrack", track);
-    addXp(10, "Selected bac track");
     setTimeout(nextStep, 350);
   };
 
@@ -36,9 +33,7 @@ export default function StepTrack() {
           {t("step.progress", { current: 1 })}
         </span>
         <h2 className="font-heading text-3xl font-bold text-navy-800 mt-2">{t("step.track")}</h2>
-        <p className="text-navy-400 mt-2 text-sm">
-          Quelle est ta filière au Baccalauréat ? (+10 XP 🎮)
-        </p>
+        <p className="text-navy-400 mt-2 text-sm">{t("step.track.subtitle")}</p>
       </motion.div>
 
       <div className="grid grid-cols-1 gap-3">
@@ -84,8 +79,8 @@ export default function StepTrack() {
       </div>
 
       <div className="mt-6 flex items-center gap-2 text-xs text-gold-600 bg-gold-50 border border-gold-200 rounded-xl px-4 py-3">
-        <span className="text-lg">🎮</span>
-        <span>Sélectionne ta filière pour gagner tes premiers <strong>10 XP</strong> et passer à l'étape suivante automatiquement !</span>
+        <span className="text-lg">💡</span>
+        <span>{t("step.track.hint")}</span>
       </div>
     </div>
   );

@@ -1,10 +1,9 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ProbabilityRing from "./ProbabilityRing";
-import OptInModal from "./OptInModal";
-import { useGameStore } from "../../stores/gameStore";
-import { getSchoolBySlug, TIER_COLORS, TIER_LABELS, TYPE_LABELS, ADMISSION_LABELS, ADMISSION_COLORS } from "../../data/schools";
+import { getSchoolBySlug, TIER_COLORS, ADMISSION_COLORS } from "../../data/schools";
+import { useProgressStore } from "../../stores/progressStore";
 
 interface Match {
   university_slug: string;
@@ -23,44 +22,35 @@ const LEGACY_SCHOOLS: Record<string, { name: string; shortName: string; city: st
 };
 
 export default function MatchCard({ match, rank }: { match: Match; rank?: number }) {
-  const [showModal, setShowModal] = useState(false);
   const { t } = useTranslation();
-  const addXp = useGameStore((s) => s.addXp);
-  const awardBadge = useGameStore((s) => s.awardBadge);
+  const viewedJobFamilies = useProgressStore((s) => s.viewedJobFamilies);
+  const markJobFamilyViewed = useProgressStore((s) => s.markJobFamilyViewed);
 
   const school = getSchoolBySlug(match.university_slug);
   const legacy = LEGACY_SCHOOLS[match.university_slug];
 
-  const name = school?.name ?? legacy?.name ?? match.university_slug;
-  const shortName = school?.shortName ?? legacy?.shortName ?? match.university_slug;
+  const shortName = school?.shortName ?? legacy?.shortName ?? school?.name ?? legacy?.name ?? match.university_slug;
   const city = school?.city ?? legacy?.city ?? "Maroc";
   const tier = (school?.tier ?? legacy?.tier ?? "standard") as keyof typeof TIER_COLORS;
   const icon = school?.icon ?? legacy?.icon ?? "🏛️";
-  const type = school ? TYPE_LABELS[school.type] : "Établissement";
   const access = school?.access ?? "private";
-  const programs = school?.programs?.slice(0, 3) ?? [];
+  const programs = school?.programs?.slice(0, 4) ?? [];
   const highlights = school?.highlights?.slice(0, 2) ?? [];
-  const website = school?.website;
+  const hasCampus = school?.hasCampus ?? false;
+  const campusDetails = school?.campusDetails;
+  const jobFamilies = school?.jobFamilies ?? [];
 
   const tierStyle = TIER_COLORS[tier] || TIER_COLORS.standard;
   const admissionMode = school?.admission;
   const admissionStyle = admissionMode ? ADMISSION_COLORS[admissionMode] : null;
-  const admissionLabel = admissionMode ? ADMISSION_LABELS[admissionMode] : null;
-
-  const handleOptIn = () => {
-    addXp(25, "Opted in to university");
-    awardBadge("optin_hero");
-    setShowModal(true);
-  };
 
   const rankColors = ["from-amber-400 to-amber-500", "from-slate-400 to-slate-500", "from-amber-600/70 to-amber-700/70"];
 
   return (
-    <>
-      <motion.div
-        whileHover={{ y: -6 }}
-        className={`relative flex flex-col rounded-3xl border overflow-hidden shadow-md hover:shadow-xl hover:shadow-navy-900/8 transition-all duration-300 bg-white ${tierStyle.border}`}
-      >
+    <motion.div
+      whileHover={{ y: -6 }}
+      className={`relative flex flex-col h-full rounded-3xl border overflow-hidden shadow-md hover:shadow-xl hover:shadow-navy-900/8 transition-all duration-300 bg-white ${tierStyle.border}`}
+    >
         {/* Rank badge */}
         {rank !== undefined && rank < 3 && (
           <div className={`absolute top-4 left-4 z-10 w-8 h-8 rounded-xl bg-gradient-to-br ${rankColors[rank]} text-white text-xs font-heading font-bold flex items-center justify-center shadow-lg`}>
@@ -91,10 +81,10 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
           {/* Tier + type badges */}
           <div className="flex flex-wrap gap-1.5 mt-3">
             <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${tierStyle.bg} ${tierStyle.text} ${tierStyle.border}`}>
-              {TIER_LABELS[tier]}
+              {t(`tier.${tier}`)}
             </span>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/70 border border-gray-200 text-navy-500 font-medium">
-              {type}
+              {school ? t(`type.${school.type}`) : t("type.university")}
             </span>
             <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
               access === "public"
@@ -103,14 +93,29 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
                   ? "bg-blue-50 text-blue-700 border border-blue-200"
                   : "bg-amber-50 text-amber-700 border border-amber-200"
             }`}>
-              {access === "public" ? "Public" : access === "semi-public" ? "Semi-pub." : "Privé"}
+              {t(`access.${access}`)}
             </span>
-            {admissionLabel && admissionStyle && (
+            {admissionMode && admissionStyle && (
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${admissionStyle.bg} ${admissionStyle.text} ${admissionStyle.border}`}>
-                {admissionLabel}
+                {t(`admission.${admissionMode}.label`)}
+              </span>
+            )}
+            {hasCampus && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold border bg-teal-50 text-teal-700 border-teal-200 flex items-center gap-1">
+                🏫 Campus
               </span>
             )}
           </div>
+          {/* Campus details */}
+          {campusDetails && (
+            <div className="mt-2.5 text-[11px] text-navy-500 bg-white/60 rounded-xl px-3 py-2 border border-white/80 leading-relaxed">
+              <span className="font-bold text-navy-700">Campus</span>
+              {campusDetails.size && <span className="ml-1 text-navy-400">· {campusDetails.size}</span>}
+              {campusDetails.housing && <span className="ml-1 text-emerald-600 font-medium">· 🏠 {t("match.campus.housing")}</span>}
+              {campusDetails.sports && <span className="ml-1 text-blue-600 font-medium">· ⚽ {t("match.campus.sports")}</span>}
+              <span className="block mt-0.5 text-navy-400">{campusDetails.description}</span>
+            </div>
+          )}
         </div>
 
         {/* Body */}
@@ -123,7 +128,7 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
           {/* Programs */}
           {programs.length > 0 && (
             <div className="mb-4">
-              <div className="text-xs font-bold text-navy-400 uppercase tracking-wider mb-2">Filières disponibles</div>
+              <div className="text-xs font-bold text-navy-400 uppercase tracking-wider mb-2">{t("match.programs")}</div>
               <div className="flex flex-wrap gap-1.5">
                 {programs.map((p) => (
                   <span key={p} className="text-[10px] px-2 py-1 bg-navy-50 text-navy-600 rounded-lg border border-navy-100 font-medium">
@@ -143,6 +148,33 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
                   {h}
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Job families */}
+          {jobFamilies.length > 0 && (
+            <div className="mb-4">
+              <div className="text-xs font-bold text-navy-400 uppercase tracking-wider mb-2">{t("match.job_families")}</div>
+              <div className="flex flex-wrap gap-1.5">
+                {jobFamilies.slice(0, 4).map((jf) => {
+                  const viewed = viewedJobFamilies.includes(jf);
+                  return (
+                    <button
+                      key={jf}
+                      type="button"
+                      onClick={() => markJobFamilyViewed(jf)}
+                      className={`text-[10px] px-2 py-1 rounded-lg border font-medium transition-colors flex items-center gap-1 ${
+                        viewed
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : "bg-gold-50 text-gold-800 border-gold-200 hover:border-gold-400"
+                      }`}
+                    >
+                      {viewed && <span className="text-emerald-500">✓</span>}
+                      {jf}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -169,39 +201,30 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
             </div>
           </div>
 
-          {/* CTAs */}
-          <div className="flex flex-col gap-2">
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.98 }}
-              onClick={handleOptIn}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-navy-700 to-navy-800 text-gold-200 text-sm font-bold hover:from-navy-800 hover:to-navy-900 transition-all shadow-md shadow-navy-900/15 touch-target flex items-center justify-center gap-2"
+          {/* School profile pivot action — always present for visual consistency across cards */}
+          {school ? (
+            <Link
+              to={`/ecoles/${school.slug}`}
+              className="mt-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-navy-800 text-gold-200 rounded-xl font-bold text-sm hover:bg-navy-900 transition-colors"
             >
+              {t("match.view_school")}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
-              {access === "private" || access === "semi-public"
-                ? t("match.request_info")
-                : t("match.submit_dossier")}
-            </motion.button>
-            {website && (
-              <a
-                href={website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-2 rounded-xl border border-navy-200 text-navy-500 text-xs font-medium hover:bg-navy-50 transition-all flex items-center justify-center gap-1.5 touch-target"
-              >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-                Site officiel
-              </a>
-            )}
-          </div>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => (window as any).__slimaneOpen?.()}
+              className="mt-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-navy-800 text-gold-200 rounded-xl font-bold text-sm hover:bg-navy-900 transition-colors"
+            >
+              {t("match.ask_slimane")}
+              <span>🤖</span>
+            </button>
+          )}
+
         </div>
       </motion.div>
 
-      {showModal && <OptInModal universityName={name} onClose={() => setShowModal(false)} />}
-    </>
   );
 }

@@ -37,6 +37,7 @@ export default function Schools() {
   const [filterTier, setFilterTier] = useState<SchoolTier | "all">("all");
   const [filterTrack, setFilterTrack] = useState<string>("all");
   const [filterAccess, setFilterAccess] = useState<"all" | "public" | "private">("all");
+  const [filterCampus, setFilterCampus] = useState(false);
   const [sortBy, setSortBy] = useState<"tier" | "alpha" | "cost">("tier");
 
   const filtered = useMemo(() => {
@@ -55,6 +56,7 @@ export default function Schools() {
       if (filterTrack !== "all" && !s.tracks.includes(filterTrack)) return false;
       if (filterAccess === "public" && s.access !== "public" && s.access !== "semi-public") return false;
       if (filterAccess === "private" && s.access !== "private" && s.access !== "semi-public") return false;
+      if (filterCampus && !s.hasCampus) return false;
       return true;
     });
 
@@ -83,10 +85,11 @@ export default function Schools() {
     setFilterTier("all");
     setFilterTrack("all");
     setFilterAccess("all");
+    setFilterCampus(false);
     setSortBy("tier");
   };
 
-  const hasActiveFilter = search || filterType !== "all" || filterTier !== "all" || filterTrack !== "all" || filterAccess !== "all";
+  const hasActiveFilter = search || filterType !== "all" || filterTier !== "all" || filterTrack !== "all" || filterAccess !== "all" || filterCampus;
 
   return (
     <div className="min-h-screen bg-cream">
@@ -236,6 +239,18 @@ export default function Schools() {
               </div>
 
               <div>
+                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">Campus</div>
+                <button
+                  onClick={() => setFilterCampus(!filterCampus)}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+                    filterCampus ? "bg-teal-600 text-white" : "text-navy-600 hover:bg-parchment"
+                  }`}
+                >
+                  🏫 Campus dédié uniquement
+                </button>
+              </div>
+
+              <div>
                 <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">{t("schools.sidebar.sort")}</div>
                 <div className="space-y-1.5">
                   {(["tier", "alpha", "cost"] as const).map((key) => (
@@ -351,6 +366,30 @@ export default function Schools() {
                                 <span className="text-[10px] px-1.5 py-0.5 text-navy-400">+{school.tracks.length - 4}</span>
                               )}
                             </div>
+
+                            {/* Campus badge */}
+                            {school.hasCampus && school.campusDetails && (
+                              <div className="mb-2 flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-2.5 py-1.5 rounded-lg">
+                                <span>🏫 Campus dédié</span>
+                                {school.campusDetails.size && <span className="font-normal text-teal-600">· {school.campusDetails.size}</span>}
+                                {school.campusDetails.housing && <span className="text-emerald-600">· 🏠 Hébergement</span>}
+                                {school.campusDetails.sports && <span className="text-blue-600">· ⚽ Sports</span>}
+                              </div>
+                            )}
+
+                            {/* Job families */}
+                            {school.jobFamilies && school.jobFamilies.length > 0 && (
+                              <div className="mb-2">
+                                <div className="text-[9px] font-bold uppercase tracking-wider text-navy-400 mb-1">Métiers</div>
+                                <div className="flex flex-wrap gap-1">
+                                  {school.jobFamilies.slice(0, 3).map((jf) => (
+                                    <span key={jf} className="text-[9px] px-1.5 py-0.5 bg-gold-50 text-gold-800 rounded border border-gold-200 font-medium">
+                                      {jf}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
 
                             {school.admission === "cnc" && (
                               <div className="mb-2 flex items-center gap-1.5 text-[10px] font-bold text-violet-700 bg-violet-50 border border-violet-200 px-2.5 py-1.5 rounded-lg">

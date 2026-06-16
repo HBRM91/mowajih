@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { School } from "../data/schools";
+import { useProgressStore } from "./progressStore";
 
 interface CompareStore {
   schools: School[];
@@ -16,6 +17,7 @@ export const useCompareStore = create<CompareStore>((set, get) => ({
     const current = get().schools;
     if (current.length >= 3 || current.some((s) => s.slug === school.slug)) return;
     set({ schools: [...current, school] });
+    useProgressStore.getState().markCompared(school.slug);
   },
   remove: (slug) => set({ schools: get().schools.filter((s) => s.slug !== slug) }),
   toggle: (school) => {

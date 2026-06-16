@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { useFormStore } from "../../stores/formStore";
-import { useGameStore } from "../../stores/gameStore";
 import { motion } from "framer-motion";
 
 function computeMention(grade: number) {
@@ -122,13 +121,10 @@ function GradeInput({ label, value, onChange, placeholder = "0", required }: Gra
 export default function StepGrades() {
   const { t } = useTranslation();
   const form = useFormStore();
-  const addXp = useGameStore((s) => s.addXp);
-
   const mention = form.generalGrade ? computeMention(parseFloat(form.generalGrade)) : null;
   const isValid = !!form.generalGrade && parseFloat(form.generalGrade) >= 0 && parseFloat(form.generalGrade) <= 20;
 
   const handleNext = () => {
-    addXp(15, "Entered grades");
     form.nextStep();
   };
 
@@ -187,7 +183,7 @@ export default function StepGrades() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="flex-1 h-px bg-gold-100" />
-              <span className="text-xs text-navy-400 font-medium px-2">Notes par matière</span>
+              <span className="text-xs text-navy-400 font-medium px-2">{t("step.grades.subjects")}</span>
               <div className="flex-1 h-px bg-gold-100" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

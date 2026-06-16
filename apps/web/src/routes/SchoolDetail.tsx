@@ -8,9 +8,11 @@ import {
   ADMISSION_COLORS,
   getSchoolBySlug,
 } from "../data/schools";
+import { getSchoolText } from "../data/schools.i18n";
 import { getSchoolCareers } from "../data/careers";
 import { getSchoolCampusInfo } from "../data/campusData";
 import { useCompareStore } from "../stores/compareStore";
+import { useProgressStore } from "../stores/progressStore";
 
 function getDomainFromUrl(url?: string): string | null {
   if (!url) return null;
@@ -325,8 +327,11 @@ export default function SchoolDetail() {
   const { t, i18n } = useTranslation();
   const lang = (["fr", "ar", "en"].includes(i18n.language) ? i18n.language : "fr") as "fr" | "ar" | "en";
   const school = getSchoolBySlug(slug ?? "");
+  const schoolText = school ? getSchoolText(school, lang) : null;
   const careers = getSchoolCareers(slug ?? "");
   const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
+  const viewedJobFamilies = useProgressStore((s) => s.viewedJobFamilies);
+  const markJobFamilyViewed = useProgressStore((s) => s.markJobFamilyViewed);
 
   if (!school) {
     return (
@@ -417,7 +422,7 @@ export default function SchoolDetail() {
                         : "bg-white/10 border border-white/20 text-white hover:bg-white/20"
                   }`}
                 >
-                  ⚖ {inCompare(school.slug) ? "Ajouté à la comparaison" : compareSchools.length >= 3 ? "Comparaison pleine (3/3)" : "Ajouter à comparer"}
+                  ⚖ {inCompare(school.slug) ? t("compare.added") : compareSchools.length >= 3 ? t("compare.full") : t("compare.add")}
                 </button>
               </div>
             </div>
@@ -485,7 +490,7 @@ export default function SchoolDetail() {
             {/* Description */}
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.presentation")}</h2>
-              <p className="text-navy-600 leading-relaxed text-base">{school.description}</p>
+              <p className="text-navy-600 leading-relaxed text-base">{schoolText?.description ?? school.description}</p>
 
               {school.history && (
                 <div className="mt-4 p-4 bg-parchment/60 border border-gold-100 rounded-2xl">
@@ -502,7 +507,7 @@ export default function SchoolDetail() {
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
               <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.programs")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {school.programs.map((prog, i) => (
+                {(schoolText?.programs ?? school.programs).map((prog, i) => (
                   <div key={i} className="flex items-center gap-3 bg-white border border-parchment rounded-xl p-3">
                     <div className="w-7 h-7 rounded-lg bg-gold-50 border border-gold-200 flex items-center justify-center flex-shrink-0">
                       <span className="text-gold-600 text-xs font-bold">{i + 1}</span>
@@ -584,11 +589,24 @@ export default function SchoolDetail() {
                   <div>
                     <div className="text-xs font-bold uppercase tracking-wider text-navy-500 mb-2">{t("school.careers.jobs")}</div>
                     <div className="flex flex-wrap gap-2">
-                      {careers.jobFamilies.map((job) => (
-                        <span key={job} className="px-3 py-1.5 bg-white border border-gold-200 text-navy-700 text-sm rounded-full font-medium">
-                          {job}
-                        </span>
-                      ))}
+                      {careers.jobFamilies.map((job) => {
+                        const viewed = viewedJobFamilies.includes(job);
+                        return (
+                          <button
+                            key={job}
+                            type="button"
+                            onClick={() => markJobFamilyViewed(job)}
+                            className={`px-3 py-1.5 border text-sm rounded-full font-medium transition-colors flex items-center gap-1.5 ${
+                              viewed
+                                ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                                : "bg-white border-gold-200 text-navy-700 hover:border-gold-400"
+                            }`}
+                          >
+                            {viewed && <span className="text-emerald-500">✓</span>}
+                            {job}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 

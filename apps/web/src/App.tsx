@@ -4,7 +4,6 @@ import { AnimatePresence } from "framer-motion";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import SlimaneChat from "./components/slimane/SlimaneChat";
-import { LevelUpModal, BadgeNotification } from "./components/gamification/XPBar";
 import CompareBar from "./components/ui/CompareBar";
 
 const Home = lazy(() => import("./routes/Home"));
@@ -14,6 +13,7 @@ const Privacy = lazy(() => import("./routes/Privacy"));
 const Schools = lazy(() => import("./routes/Schools"));
 const SchoolDetail = lazy(() => import("./routes/SchoolDetail"));
 const Compare = lazy(() => import("./routes/Compare"));
+const Contact = lazy(() => import("./routes/Contact"));
 
 function App() {
   return (
@@ -37,6 +37,7 @@ function App() {
               <Route path="/ecoles" element={<Schools />} />
               <Route path="/ecoles/:slug" element={<SchoolDetail />} />
               <Route path="/comparer" element={<Compare />} />
+              <Route path="/contact" element={<Contact />} />
             </Routes>
           </AnimatePresence>
         </Suspense>
@@ -44,8 +45,6 @@ function App() {
       <Footer />
       <SlimaneChat />
       <CompareBar />
-      <LevelUpModal />
-      <BadgeNotification />
     </div>
   );
 }

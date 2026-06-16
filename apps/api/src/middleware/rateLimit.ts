@@ -2,10 +2,10 @@ import { createMiddleware } from "hono/factory";
 import type { Env } from "../types/env";
 
 // Limits: requests per window per IP
-const LIMITS: Record<string, number> = { b2c: 60, b2b: 120, evaluate: 8, chat: 30 };
-const WINDOWS: Record<string, number> = { b2c: 60, b2b: 60, evaluate: 60, chat: 60 };
+const LIMITS: Record<string, number> = { b2c: 60, b2b: 120, evaluate: 8, chat: 30, contact: 5 };
+const WINDOWS: Record<string, number> = { b2c: 60, b2b: 60, evaluate: 60, chat: 60, contact: 600 };
 
-export function rateLimit(type: "b2c" | "b2b" | "evaluate" | "chat") {
+export function rateLimit(type: "b2c" | "b2b" | "evaluate" | "chat" | "contact") {
   return createMiddleware<{ Bindings: Env }>(async (c, next) => {
     const ip = c.req.header("CF-Connecting-IP") || "unknown";
 

@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useGameStore } from "../stores/gameStore";
 import { useFormStore } from "../stores/formStore";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -10,29 +9,29 @@ import SchoolLogo from "../components/ui/SchoolLogo";
 import { API_URL } from "../lib/api";
 
 const BAC_TRACKS = [
-  { key: "SM", label: "Sciences Maths", icon: "🧮", color: "from-blue-600 to-blue-800", light: "bg-blue-50 border-blue-200 text-blue-800" },
-  { key: "PC", label: "Physique-Chimie", icon: "⚛️", color: "from-indigo-600 to-indigo-800", light: "bg-indigo-50 border-indigo-200 text-indigo-800" },
-  { key: "SVT", label: "Sciences Vie & Terre", icon: "🧬", color: "from-emerald-600 to-emerald-800", light: "bg-emerald-50 border-emerald-200 text-emerald-800" },
-  { key: "SE", label: "Sciences Économiques", icon: "📊", color: "from-amber-600 to-amber-800", light: "bg-amber-50 border-amber-200 text-amber-800" },
-  { key: "SH", label: "Sciences Humaines", icon: "📚", color: "from-rose-600 to-rose-800", light: "bg-rose-50 border-rose-200 text-rose-800" },
-  { key: "STI", label: "Sciences Techniques", icon: "🔧", color: "from-slate-600 to-slate-800", light: "bg-slate-50 border-slate-200 text-slate-800" },
-  { key: "L", label: "Lettres", icon: "✍️", color: "from-purple-600 to-purple-800", light: "bg-purple-50 border-purple-200 text-purple-800" },
+  { key: "SM", icon: "🧮", color: "from-blue-600 to-blue-800" },
+  { key: "PC", icon: "⚛️", color: "from-indigo-600 to-indigo-800" },
+  { key: "SVT", icon: "🧬", color: "from-emerald-600 to-emerald-800" },
+  { key: "SE", icon: "📊", color: "from-amber-600 to-amber-800" },
+  { key: "SH", icon: "📚", color: "from-rose-600 to-rose-800" },
+  { key: "STI", icon: "🔧", color: "from-slate-600 to-slate-800" },
+  { key: "L", icon: "✍️", color: "from-purple-600 to-purple-800" },
 ];
 
 const STATS = [
-  { value: `${SCHOOLS.length}+`, label: "Établissements référencés", icon: "🏛️" },
-  { value: "12", label: "Régions du Maroc", icon: "🇲🇦" },
-  { value: "7", label: "Filières Bac couvertes", icon: "🎓" },
-  { value: "100%", label: "Gratuit & indépendant", icon: "✅" },
+  { value: `${SCHOOLS.length}+`, labelKey: "stats.schools", icon: "🏛️" },
+  { value: "12", labelKey: "stats.regions", icon: "🇲🇦" },
+  { value: "7", labelKey: "stats.tracks", icon: "🎓" },
+  { value: "100%", labelKey: "stats.free", icon: "✅" },
 ];
 
 const SCHOOL_TYPE_FILTERS = [
-  { key: "all", label: "Tous" },
-  { key: "engineering", label: "Ingénierie" },
-  { key: "business", label: "Business" },
-  { key: "medicine", label: "Médecine" },
-  { key: "preparatory", label: "Prépas" },
-  { key: "university", label: "Universités" },
+  { key: "all", labelKey: "filter.all" },
+  { key: "engineering", labelKey: "filter.engineering" },
+  { key: "business", labelKey: "filter.business" },
+  { key: "medicine", labelKey: "filter.medicine" },
+  { key: "preparatory", labelKey: "filter.preparatory" },
+  { key: "university", labelKey: "filter.university" },
 ];
 
 const FEATURED_SCHOOLS = SCHOOLS.filter((s) =>
@@ -40,42 +39,9 @@ const FEATURED_SCHOOLS = SCHOOLS.filter((s) =>
 );
 
 const HOW_IT_WORKS = [
-  {
-    step: "01",
-    icon: "🎯",
-    image: "/images/step-01-profile.jpeg",
-    title: "Choisis ta filière",
-    desc: "Indique ton Bac, tes notes et ta ville. 2 minutes, top chrono.",
-    color: "from-navy-700 to-navy-800",
-    xp: "+10 XP",
-  },
-  {
-    step: "02",
-    icon: "🤖",
-    image: "/images/step-02-processing.jpeg",
-    title: "Slimane t'analyse",
-    desc: "Notre IA calcule ta probabilité d'admission dans chaque école de ta région.",
-    color: "from-gold-600 to-gold-700",
-    xp: "+15 XP",
-  },
-  {
-    step: "03",
-    icon: "🏆",
-    image: "/images/step-03-match.jpeg",
-    title: "Découvre tes matchs",
-    desc: "Tu reçois une liste personnalisée d'écoles avec les chances d'admission et les coûts.",
-    color: "from-emerald-600 to-emerald-700",
-    xp: "+30 XP",
-  },
-];
-
-const GAMIFICATION_BADGES = [
-  { icon: "🌟", name: "Nouveau", desc: "Début de l'aventure" },
-  { icon: "🔍", name: "Explorateur", desc: "Questionnaire complété" },
-  { icon: "🎯", name: "Matcheur", desc: "Premier match trouvé" },
-  { icon: "🔓", name: "Héros", desc: "Dossier transmis" },
-  { icon: "♟️", name: "Stratège", desc: "3 écoles comparées" },
-  { icon: "🏅", name: "Champion", desc: "Niveau 5 atteint" },
+  { step: "01", icon: "🎯", image: "/images/step-01-profile.jpeg", titleKey: "how.step1.title", descKey: "how.step1.desc", color: "from-navy-700 to-navy-800" },
+  { step: "02", icon: "🤖", image: "/images/step-02-processing.jpeg", titleKey: "how.step2.title", descKey: "how.step2.desc", color: "from-gold-600 to-gold-700" },
+  { step: "03", icon: "🏆", image: "/images/step-03-match.jpeg", titleKey: "how.step3.title", descKey: "how.step3.desc", color: "from-emerald-600 to-emerald-700" },
 ];
 
 // Slug mapping for hero school tags
@@ -87,7 +53,6 @@ const HERO_SCHOOL_SLUGS: Record<string, string> = {
 
 export default function Home() {
   const { t } = useTranslation();
-  const checkStreak = useGameStore((s) => s.checkStreak);
   const [activeTrack, setActiveTrack] = useState("SM");
   const [activeFilter, setActiveFilter] = useState("all");
   const heroRef = useRef<HTMLElement>(null);
@@ -180,7 +145,7 @@ export default function Home() {
           >
             <Link
               to="/orientation"
-              onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
+              onClick={() => { useFormStore.getState().reset(); }}
               className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-base shadow-lg shadow-gold-500/25 hover:shadow-gold-500/50 hover:scale-105 transition-all duration-300 touch-target"
             >
               <span>{t("hero.cta.discover")}</span>
@@ -221,7 +186,7 @@ export default function Home() {
                     <div className="w-3 h-3 rounded-full bg-emerald-500/60" />
                   </div>
                   <div className="flex-1 text-center">
-                    <span className="text-[11px] text-navy-400 font-medium">Résultats d'orientation · Slimane IA</span>
+                    <span className="text-[11px] text-navy-400 font-medium">{t("home.mockup.title")}</span>
                   </div>
                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 </div>
@@ -238,16 +203,15 @@ export default function Home() {
                       <div className="text-navy-400 text-[11px]">Casablanca · Budget 3000-8000 MAD/mois</div>
                     </div>
                     <div className="ml-auto text-right">
-                      <div className="text-gold-300 text-xs font-bold">+55 XP</div>
-                      <div className="text-navy-500 text-[10px]">analyse complète</div>
+                      <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     </div>
                   </div>
 
                   {/* Match cards */}
                   {[
-                    { school: "ENSIAS", city: "Rabat", type: "Ingénierie publique", prob: 91, tier: "Sélectif", color: "emerald" },
-                    { school: "INPT", city: "Rabat", type: "Ingénierie Télécoms", prob: 84, tier: "Sélectif", color: "blue" },
-                    { school: "ENCG Casablanca", city: "Casablanca", type: "Commerce & Gestion", prob: 78, tier: "Accessible", color: "gold" },
+                    { school: "ENSIAS", city: "Rabat", typeKey: "type.engineering", prob: 91, color: "emerald" },
+                    { school: "INPT", city: "Rabat", typeKey: "type.engineering", prob: 84, color: "blue" },
+                    { school: "ENCG Casablanca", city: "Casablanca", typeKey: "type.business", prob: 78, color: "gold" },
                   ].map((m, i) => (
                     <motion.div
                       key={m.school}
@@ -265,13 +229,13 @@ export default function Home() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-white font-bold text-sm">{m.school}</div>
-                        <div className="text-navy-400 text-[11px]">{m.type} · {m.city}</div>
+                        <div className="text-navy-400 text-[11px]">{t(m.typeKey)} · {m.city}</div>
                       </div>
                       <div className="text-right flex-shrink-0">
                         <div className={`font-heading font-bold text-base ${
                           m.prob >= 85 ? "text-emerald-400" : m.prob >= 75 ? "text-gold-300" : "text-amber-400"
                         }`}>{m.prob}%</div>
-                        <div className="text-[10px] text-navy-500">de match</div>
+                        <div className="text-[10px] text-navy-500">{t("home.mockup.match")}</div>
                       </div>
                       <div className="w-1.5 h-8 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
                         <motion.div
@@ -287,10 +251,10 @@ export default function Home() {
 
                   {/* Bottom hint */}
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-[11px] text-navy-500">+ 12 autres établissements analysés</span>
+                    <span className="text-[11px] text-navy-500">{t("home.mockup.more", { count: 12 })}</span>
                     <span className="text-[11px] text-gold-500 font-semibold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse" />
-                      Résultats en temps réel
+                      {t("home.mockup.realtime")}
                     </span>
                   </div>
                 </div>
@@ -298,11 +262,62 @@ export default function Home() {
             </div>
           </motion.div>
 
+          {/* Quick utility actions — under the Best Match mockup */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.75, duration: 0.6 }}
+            className="mt-6 flex flex-wrap items-center justify-center gap-3"
+          >
+            <Link
+              to="/orientation"
+              onClick={() => { useFormStore.getState().reset(); }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/8 border border-white/15 text-white text-sm font-semibold rounded-full hover:bg-white/15 hover:border-gold-400/40 transition-all duration-300 backdrop-blur-sm touch-target"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              {t("hero.quick.new_gen")}
+            </Link>
+            <button
+              type="button"
+              onClick={() => { (window as any).__slimaneOpen?.(); }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500/15 border border-gold-500/30 text-gold-200 text-sm font-semibold rounded-full hover:bg-gold-500/25 transition-all duration-300 backdrop-blur-sm touch-target"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              {t("hero.quick.talk_slimane")}
+            </button>
+          </motion.div>
+
+          {/* Comparator callout */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85, duration: 0.6 }}
+            className="mt-4 flex justify-center"
+          >
+            <Link
+              to="/comparer"
+              className="group inline-flex items-center gap-3 px-5 py-3 bg-white/8 border border-white/15 rounded-2xl backdrop-blur-sm hover:bg-white/12 hover:border-gold-400/40 transition-all duration-300"
+            >
+              <span className="w-9 h-9 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-lg flex-shrink-0">⚖️</span>
+              <span className="text-left">
+                <span className="block text-white text-sm font-bold">{t("hero.compare.title")}</span>
+                <span className="block text-white/60 text-xs">{t("hero.compare.subtitle")}</span>
+              </span>
+              <svg className="w-4 h-4 text-gold-300 group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          </motion.div>
+
           {/* Floating school tags */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 1 }}
+            transition={{ delay: 0.95, duration: 1 }}
             className="mt-8 flex flex-wrap justify-center gap-2"
           >
             {["EMI", "ENSIAS", "EHTP", "UM6P", "UIR", "ISCAE", "HEM", "INPT", "ENCG", "IAV", "ENSA"].map((school, i) => (
@@ -349,7 +364,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {STATS.map((stat, i) => (
               <motion.div
-                key={stat.label}
+                key={stat.labelKey}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -360,7 +375,7 @@ export default function Home() {
                 <div className="font-heading text-4xl md:text-5xl font-bold text-navy-800 group-hover:text-gold-600 transition-colors">
                   {stat.value}
                 </div>
-                <div className="text-sm text-navy-400 mt-1 font-medium">{stat.label}</div>
+                <div className="text-sm text-navy-400 mt-1 font-medium">{t(stat.labelKey)}</div>
               </motion.div>
             ))}
           </div>
@@ -396,22 +411,17 @@ export default function Home() {
                 <div className="bg-white rounded-3xl border border-gold-100/60 overflow-hidden hover:shadow-xl hover:shadow-navy-900/5 hover:border-gold-200 transition-all duration-300 h-full">
                   {/* Step illustration */}
                   <div className="relative h-40 overflow-hidden">
-                    <img src={step.image} alt={step.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={step.image} alt={t(step.titleKey)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-white/80 to-transparent" />
                     <div className="absolute top-3 left-3">
                       <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white font-heading font-bold text-sm shadow-lg`}>
                         {step.step}
                       </div>
                     </div>
-                    <div className="absolute top-3 right-3">
-                      <span className="text-xs font-bold text-gold-600 bg-white/90 border border-gold-200 px-2.5 py-1 rounded-full shadow-sm">
-                        {step.xp}
-                      </span>
-                    </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="font-heading text-xl font-bold text-navy-800 mb-3">{step.title}</h3>
-                    <p className="text-navy-400 text-sm leading-relaxed">{step.desc}</p>
+                    <h3 className="font-heading text-xl font-bold text-navy-800 mb-3">{t(step.titleKey)}</h3>
+                    <p className="text-navy-400 text-sm leading-relaxed">{t(step.descKey)}</p>
                   </div>
                 </div>
               </motion.div>
@@ -421,10 +431,10 @@ export default function Home() {
           <div className="text-center mt-10">
             <Link
               to="/orientation"
-              onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
+              onClick={() => { useFormStore.getState().reset(); }}
               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-navy-700 to-navy-800 text-gold-200 rounded-full font-bold hover:from-navy-800 hover:to-navy-900 transition-all shadow-lg shadow-navy-900/15 hover:shadow-navy-900/30 touch-target"
             >
-              Commencer maintenant — Gratuit
+              {t("how.cta")}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -460,7 +470,7 @@ export default function Home() {
                     : "bg-white/8 text-navy-300 hover:bg-white/15 hover:text-white border border-white/10"
                 }`}
               >
-                {f.label}
+                {t(f.labelKey)}
               </button>
             ))}
           </div>
@@ -495,9 +505,9 @@ export default function Home() {
                     <p className="text-navy-400 text-xs leading-relaxed mb-4 line-clamp-2">{school.description}</p>
 
                     <div className="flex flex-wrap gap-1">
-                      {school.tracks.slice(0, 4).map((t) => (
-                        <span key={t} className="text-[10px] px-2 py-0.5 bg-navy-800/80 text-navy-300 rounded-full border border-navy-700/50">
-                          Bac {t}
+                      {school.tracks.slice(0, 4).map((track) => (
+                        <span key={track} className="text-[10px] px-2 py-0.5 bg-navy-800/80 text-navy-300 rounded-full border border-navy-700/50">
+                          Bac {track}
                         </span>
                       ))}
                     </div>
@@ -561,8 +571,8 @@ export default function Home() {
           >
             <div className="mb-6 text-center">
               <span className="text-gold-600 font-semibold">
-                {BAC_TRACKS.find((t) => t.key === activeTrack)?.icon} Bac{" "}
-                {activeTrack} — {BAC_TRACKS.find((t) => t.key === activeTrack)?.label}
+                {BAC_TRACKS.find((tr) => tr.key === activeTrack)?.icon} Bac{" "}
+                {activeTrack} — {t(`track.${activeTrack}`)}
               </span>
               <h3 className="font-heading text-2xl font-bold text-navy-800 mt-1">
                 {t("tracks.top")}
@@ -599,10 +609,10 @@ export default function Home() {
                       </div>
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-navy-400">
-                          Note min: <strong className="text-navy-700">{school.minGrade}/20</strong>
+                          {t("school.quick.min_grade")} : <strong className="text-navy-700">{school.minGrade}/20</strong>
                         </span>
                         <span className={`px-2 py-0.5 rounded-full ${school.access === "public" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
-                          {school.access === "public" ? "Public" : school.access === "semi-public" ? "Semi-pub." : "Privé"}
+                          {school.access === "public" ? t("access.public") : school.access === "semi-public" ? t("access.semi-public") : t("access.private")}
                         </span>
                       </div>
                     </motion.div>
@@ -624,7 +634,7 @@ export default function Home() {
             </Link>
             <Link
               to="/orientation"
-              onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
+              onClick={() => { useFormStore.getState().reset(); }}
               className="inline-flex items-center gap-2 px-8 py-4 border border-gold-300 text-gold-700 rounded-full font-bold hover:bg-gold-50 transition-all duration-300 touch-target"
             >
               {t("tracks.cta.recommendations")}
@@ -659,33 +669,33 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <span className="text-gold-400 text-sm font-bold uppercase tracking-[0.15em] block mb-4">Ton conseiller personnel</span>
+              <span className="text-gold-400 text-sm font-bold uppercase tracking-[0.15em] block mb-4">{t("slimane.section.label")}</span>
               <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-6">
-                Rencontre <span className="text-gold-300">Slimane</span>
+                {t("slimane.section.heading")} <span className="text-gold-300">Slimane</span>
               </h2>
               <p className="text-navy-200 text-base leading-relaxed mb-6">
-                Slimane est ton conseiller académique IA, disponible 24h/24. Il connaît tous les établissements marocains, les seuils d'admission, les frais de scolarité et les débouchés de chaque filière.
+                {t("slimane.section.desc")}
               </p>
               <div className="space-y-4 mb-8">
                 {[
-                  { icon: "🎯", text: "Analyse ton profil Bac en temps réel" },
-                  { icon: "🏛️", text: `Connaît ${SCHOOLS.length}+ établissements marocains` },
-                  { icon: "💬", text: "Répond à toutes tes questions en FR/AR/EN" },
-                  { icon: "🗺️", text: "Guide selon ta ville et ton budget" },
+                  { icon: "🎯", textKey: "slimane.feature.profile" },
+                  { icon: "🏛️", textKey: "slimane.feature.schools", count: SCHOOLS.length },
+                  { icon: "💬", textKey: "slimane.feature.languages" },
+                  { icon: "🗺️", textKey: "slimane.feature.city" },
                 ].map((item) => (
-                  <div key={item.text} className="flex items-center gap-3">
+                  <div key={item.textKey} className="flex items-center gap-3">
                     <span className="text-xl">{item.icon}</span>
-                    <span className="text-navy-200 text-sm">{item.text}</span>
+                    <span className="text-navy-200 text-sm">{t(item.textKey, { count: item.count })}</span>
                   </div>
                 ))}
               </div>
               <div className="flex gap-3">
                 <Link
                   to="/orientation"
-                  onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
+                  onClick={() => { useFormStore.getState().reset(); }}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-sm hover:shadow-lg hover:shadow-gold-500/25 transition-all touch-target"
                 >
-                  Parler à Slimane
+                  {t("cta.chat_slimane")}
                 </Link>
                 <button
                   onClick={() => {
@@ -693,7 +703,7 @@ export default function Home() {
                   }}
                   className="inline-flex items-center gap-2 px-6 py-3 border border-white/20 text-white rounded-full font-medium text-sm hover:bg-white/8 transition-all touch-target"
                 >
-                  Ouvrir le chat
+                  {t("slimane.open_chat")}
                 </button>
               </div>
             </motion.div>
@@ -715,7 +725,7 @@ export default function Home() {
                     <div className="font-heading font-bold text-gold-300 text-sm">Slimane</div>
                     <div className="text-[10px] text-emerald-400 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                      En ligne · Conseiller IA
+                      {t("slimane.status.online")}
                     </div>
                   </div>
                 </div>
@@ -724,18 +734,18 @@ export default function Home() {
                   <div className="flex gap-2">
                     <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border border-gold-400"><img src="/images/slimane-avatar.jpeg" alt="S" className="w-full h-full object-cover object-top" /></div>
                     <div className="bg-white border border-gold-100 rounded-2xl rounded-tl-md px-3 py-2 text-xs text-navy-700 shadow-sm max-w-[200px]">
-                      Salam ! Je suis Slimane 👋 Quelle est ta filière Bac ?
+                      {t("home.mockup.chat.slimane1")}
                     </div>
                   </div>
                   <div className="flex justify-end">
                     <div className="bg-navy-700 text-white rounded-2xl rounded-tr-md px-3 py-2 text-xs max-w-[160px]">
-                      Bac SM, mention Bien (14.7)
+                      {t("home.mockup.chat.user1")}
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border border-gold-400"><img src="/images/slimane-avatar.jpeg" alt="S" className="w-full h-full object-cover object-top" /></div>
                     <div className="bg-white border border-gold-100 rounded-2xl rounded-tl-md px-3 py-2 text-xs text-navy-700 shadow-sm max-w-[210px]">
-                      Excellent ! 🎯 Avec 14.7 en SM, tu as accès à ENSIAS, INPT, ENSA, ENCG... Dis-moi ta ville pour affiner !
+                      {t("home.mockup.chat.slimane2")}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1.5 pl-9">
@@ -749,7 +759,7 @@ export default function Home() {
                 {/* Input */}
                 <div className="p-3 bg-white border-t border-gold-100 flex gap-2">
                   <div className="flex-1 px-3 py-2 rounded-xl border border-gold-200 text-xs text-navy-400 bg-cream">
-                    Écris ta question...
+                    {t("home.mockup.chat.placeholder")}
                   </div>
                   <div className="w-8 h-8 bg-navy-700 rounded-xl flex items-center justify-center">
                     <svg className="w-4 h-4 text-gold-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -759,107 +769,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Floating XP badge */}
-              <motion.div
-                animate={{ y: [-5, 5, -5] }}
-                transition={{ repeat: Infinity, duration: 3 }}
-                className="absolute -top-4 -right-4 bg-gradient-to-br from-gold-400 to-gold-600 text-navy-900 px-3 py-2 rounded-2xl shadow-xl border border-gold-300 text-sm font-bold"
-              >
-                +25 XP ✨
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── GAMIFICATION ───────────────────────────────────────────────────── */}
-      <section className="py-24 bg-cream">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-14">
-            <span className="text-gold-600 text-sm font-bold uppercase tracking-[0.15em]">Gamification</span>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold text-navy-800 mt-3 mb-4">
-              L'orientation, c'est
-              <br />
-              <span className="bg-gradient-to-r from-gold-600 to-gold-400 bg-clip-text text-transparent">un jeu sérieux</span>
-            </h2>
-            <p className="text-navy-400 max-w-xl mx-auto">
-              Gagne des XP à chaque étape, débloque des badges et monte en niveau. L'avenir n'a jamais été aussi fun à construire.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-            {/* XP Level preview */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-navy-800 to-navy-900 rounded-3xl p-8 text-white"
-            >
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-gold-400 to-gold-600 rounded-2xl flex items-center justify-center text-2xl font-heading font-bold text-navy-900 shadow-lg">
-                  3
-                </div>
-                <div>
-                  <div className="text-xs text-gold-400 uppercase tracking-wider font-semibold mb-1">Niveau actuel</div>
-                  <div className="font-heading text-xl font-bold text-gold-300">Explorateur</div>
-                </div>
-              </div>
-
-              <div className="mb-2 flex items-center justify-between text-sm">
-                <span className="text-navy-300">Progression</span>
-                <span className="text-gold-300 font-bold">120 / 200 XP</span>
-              </div>
-              <div className="h-3 bg-navy-950 rounded-full overflow-hidden mb-6">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: "60%" }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
-                  className="h-full bg-gradient-to-r from-gold-600 to-gold-400 rounded-full"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { action: "Filière Bac choisie", xp: "+10 XP" },
-                  { action: "Notes renseignées", xp: "+15 XP" },
-                  { action: "Profil complété", xp: "+15 XP" },
-                  { action: "Résultats consultés", xp: "+30 XP" },
-                ].map((item) => (
-                  <div key={item.action} className="flex items-center justify-between bg-navy-700/50 rounded-xl p-3">
-                    <span className="text-xs text-navy-300">{item.action}</span>
-                    <span className="text-xs font-bold text-gold-400">{item.xp}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Badges */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="font-heading text-2xl font-bold text-navy-800 mb-6">
-                Badges à débloquer
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {GAMIFICATION_BADGES.map((badge, i) => (
-                  <motion.div
-                    key={badge.name}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    className="bg-white border border-gold-100 rounded-2xl p-4 text-center hover:border-gold-300 hover:shadow-lg hover:shadow-gold-500/10 transition-all duration-300"
-                  >
-                    <div className="text-3xl mb-2">{badge.icon}</div>
-                    <div className="font-bold text-navy-800 text-sm">{badge.name}</div>
-                    <div className="text-xs text-navy-400 mt-1 leading-tight">{badge.desc}</div>
-                  </motion.div>
-                ))}
-              </div>
             </motion.div>
           </div>
         </div>
@@ -877,32 +786,32 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gold-500/10 border border-gold-500/20 rounded-full text-gold-300 text-sm font-medium mb-8">
-              ✦ Outil d'orientation 100% indépendant · Gratuit
+              ✦ {t("hero.final.badge")}
             </div>
             <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Prêt à découvrir
+              {t("hero.final.title")}
               <br />
               <span className="bg-gradient-to-r from-gold-400 to-gold-300 bg-clip-text text-transparent">
-                ton école idéale ?
+                {t("hero.final.title.highlight")}
               </span>
             </h2>
             <p className="text-navy-200 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-              Gratuit, anonyme, et ça prend 2 minutes. Slimane est prêt à t'aider à trouver ta voie parmi les {SCHOOLS.length}+ établissements du Maroc.
+              {t("hero.final.desc", { count: SCHOOLS.length })}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 to="/orientation"
-                onClick={() => { useFormStore.getState().reset(); checkStreak(); }}
+                onClick={() => { useFormStore.getState().reset(); }}
                 className="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-lg shadow-xl shadow-gold-500/20 hover:shadow-gold-500/40 hover:scale-105 transition-all duration-300 touch-target"
               >
-                Commencer mon orientation
+                {t("nav.start.mobile")}
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Link>
             </div>
             <p className="text-navy-400 text-sm mt-6">
-              Aucune inscription requise · Données anonymisées · Résultats immédiats
+              {t("hero.final.disclaimer")}
             </p>
           </motion.div>
         </div>
