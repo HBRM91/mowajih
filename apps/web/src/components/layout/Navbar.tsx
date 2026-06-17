@@ -65,6 +65,19 @@ export default function Navbar() {
               <Link to="/ecoles" className={`transition-colors duration-200 ${linkColor}`}>
                 {t("nav.schools")}
               </Link>
+              <Link
+                to="/comparer"
+                className={`flex items-center gap-1.5 transition-all duration-200 font-semibold ${
+                  pathname === "/comparer"
+                    ? "text-gold-500"
+                    : isHome
+                      ? "text-white/90 hover:text-gold-300"
+                      : "text-navy-700 hover:text-gold-600"
+                }`}
+              >
+                <span className="text-sm">⚖</span>
+                {t("nav.compare")}
+              </Link>
               <Link to="/contact" className={`transition-colors duration-200 ${linkColor}`}>
                 {t("nav.contact")}
               </Link>
@@ -157,6 +170,15 @@ export default function Navbar() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
                 {t("nav.schools")}
+              </Link>
+              <Link
+                to="/comparer"
+                className="flex items-center gap-3 py-3 px-4 text-white font-medium rounded-xl bg-gold-500/10 border border-gold-500/20 hover:bg-gold-500/15 transition"
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="w-4 h-4 text-gold-400 text-base flex items-center justify-center">⚖</span>
+                {t("nav.compare")}
+                <span className="ml-auto text-[10px] font-bold px-2 py-0.5 bg-gold-500/20 text-gold-300 rounded-full">{t("home.compare.badge")}</span>
               </Link>
               <Link
                 to="/contact"

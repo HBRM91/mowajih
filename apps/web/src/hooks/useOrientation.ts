@@ -4,17 +4,13 @@ import { SCHOOLS, type School } from "../data/schools";
 export interface SimulatePayload {
   bacTrack: string;
   generalGrade: number;
-  // Core subject grades
+  // Subject grades used by local matching algorithm (biologyGrade/economicsGrade/techGrade
+  // improve client-side match scores; mathGrade/physicsGrade are also accepted by the API)
   mathGrade?: number;
   physicsGrade?: number;
-  frenchGrade?: number;
-  arabicGrade?: number;
-  philosophyGrade?: number;
   biologyGrade?: number;
   economicsGrade?: number;
-  historyGrade?: number;
   techGrade?: number;
-  englishGrade?: number;
   // Profile
   city: string;
   region: string;
@@ -443,7 +439,7 @@ function simulateLocally(payload: SimulatePayload): SimulateResult {
       }
 
       // Subject-grade boosts for more accurate matching
-      const { biologyGrade, economicsGrade, techGrade, frenchGrade } = payload;
+      const { biologyGrade, economicsGrade, techGrade } = payload;
 
       if (["engineering", "preparatory"].includes(school.type) && mathGrade !== undefined && physicsGrade !== undefined) {
         const avgSci = (mathGrade + physicsGrade) / 2;
@@ -465,9 +461,6 @@ function simulateLocally(payload: SimulatePayload): SimulateResult {
       if (school.type === "business" && economicsGrade !== undefined) {
         if (economicsGrade >= 15) probability = Math.min(0.97, probability + 0.05);
         else if (economicsGrade < 10) probability = Math.max(0.04, probability - 0.05);
-      }
-      if (school.type === "architecture" && frenchGrade !== undefined) {
-        if (frenchGrade >= 14) probability = Math.min(0.97, probability + 0.04);
       }
 
       probability = Math.round(probability * 100) / 100;
@@ -516,14 +509,6 @@ async function saveProfileAsync(payload: SimulatePayload, result: SimulateResult
         generalGrade: payload.generalGrade,
         mathGrade: payload.mathGrade,
         physicsGrade: payload.physicsGrade,
-        frenchGrade: payload.frenchGrade,
-        arabicGrade: payload.arabicGrade,
-        philosophyGrade: payload.philosophyGrade,
-        biologyGrade: payload.biologyGrade,
-        economicsGrade: payload.economicsGrade,
-        historyGrade: payload.historyGrade,
-        techGrade: payload.techGrade,
-        englishGrade: payload.englishGrade,
         city: payload.city,
         region: payload.region,
         financialBracket: payload.financialBracket,

@@ -34,11 +34,12 @@ const VALID_SCHOOL_SLUGS = new Set([
   // Arts / communication
   "isit-tanger","isic-rabat","inba-tetouan","isadac","esav-marrakech",
   // Engineering / tech private
-  "enset-mohammedia","esca-casablanca","cesem-casablanca","supdeco-maroc","ipes-casablanca",
+  "enset-mohammedia","esca-casablanca","supdeco","ipes",
   "fp-rabat",
   // Public universities
   "fs-rabat","fsjes-casablanca","fsjes-agdal","fsjes-marrakech","fsjes-agadir","fsjes-fes",
   "fst-mohammedia","fst-fes","fst-marrakech","fst-agadir","fst-beni-mellal",
+  "fst-tanger","fst-settat","fst-errachidia","fst-al-hoceima",
   "est-casablanca","est-sale","est-fes","est-meknes","est-agadir","est-oujda",
   "ista",
 ]);

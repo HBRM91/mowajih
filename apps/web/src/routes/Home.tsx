@@ -531,6 +531,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── COMPARATOR SPOTLIGHT ──────────────────────────────────────────── */}
+      <ComparatorSpotlight />
+
       {/* ─── BAC TRACK EXPLORER ─────────────────────────────────────────────── */}
       <section className="py-24 bg-cream">
         <div className="max-w-6xl mx-auto px-4">
@@ -817,6 +820,166 @@ export default function Home() {
         </div>
       </section>
     </div>
+  );
+}
+
+// ─── COMPARATOR SPOTLIGHT ───────────────────────────────────────────────────
+function ComparatorSpotlight() {
+  const { t } = useTranslation();
+
+  const PREVIEW_ROWS = [
+    { label: "Admission", values: ["CNC", "Dossier", "Dossier"] },
+    { label: "Frais/an", values: ["0–3 000 MAD", "45–100 K MAD", "67–125 K MAD"] },
+    { label: "Logement", values: ["✓ Campus", "✓ Campus", "✓ Campus"] },
+    { label: "Salaire départ", values: ["11 000 MAD", "13 000 MAD", "12 000 MAD"] },
+  ];
+
+  const PREVIEW_SCHOOLS = [
+    { name: "EMI", color: "from-violet-600 to-violet-700", icon: "⚙️", city: "Rabat" },
+    { name: "UM6P", color: "from-emerald-600 to-emerald-700", icon: "🌍", city: "Ben Guerir" },
+    { name: "UIR", color: "from-blue-600 to-blue-700", icon: "🎓", city: "Rabat" },
+  ];
+
+  return (
+    <section className="py-24 bg-navy-950 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+          {/* Left: copy */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gold-500/10 border border-gold-500/20 rounded-full text-gold-400 text-xs font-bold uppercase tracking-wider mb-6">
+              <span className="text-sm">⚖</span>
+              {t("home.compare.badge")}
+            </div>
+
+            <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+              {t("home.compare.heading")}
+              <br />
+              <span className="bg-gradient-to-r from-gold-400 to-gold-600 bg-clip-text text-transparent">
+                {t("home.compare.heading.highlight")}
+              </span>
+            </h2>
+
+            <p className="text-navy-300 text-base leading-relaxed mb-8">
+              {t("home.compare.desc")}
+            </p>
+
+            <ul className="space-y-3 mb-10">
+              {[
+                { icon: "🎓", key: "home.compare.feat.admission" },
+                { icon: "💰", key: "home.compare.feat.cost" },
+                { icon: "🏠", key: "home.compare.feat.housing" },
+                { icon: "💼", key: "home.compare.feat.careers" },
+              ].map((feat) => (
+                <li key={feat.key} className="flex items-start gap-3 text-navy-200 text-sm">
+                  <span className="text-base mt-0.5 flex-shrink-0">{feat.icon}</span>
+                  {t(feat.key)}
+                </li>
+              ))}
+            </ul>
+
+            <Link
+              to="/comparer"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-base shadow-xl shadow-gold-500/20 hover:shadow-gold-500/40 hover:scale-105 transition-all duration-300 touch-target"
+            >
+              <span className="text-lg">⚖</span>
+              {t("home.compare.cta")}
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          </motion.div>
+
+          {/* Right: comparison table preview */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            <div className="absolute -inset-8 bg-gradient-to-tr from-gold-500/5 to-blue-500/5 rounded-3xl blur-3xl" />
+            <div className="relative bg-navy-900/80 backdrop-blur-sm rounded-3xl border border-white/8 overflow-hidden shadow-2xl shadow-navy-950/80">
+
+              {/* Mock browser bar */}
+              <div className="flex items-center gap-3 px-5 py-3 border-b border-white/8 bg-navy-950/60">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-rose-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
+                </div>
+                <div className="flex-1 text-center">
+                  <span className="text-[11px] text-navy-400 font-medium">tawjih.jad2advisory.com/comparer</span>
+                </div>
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              </div>
+
+              {/* School headers */}
+              <div className="grid grid-cols-4 gap-0 border-b border-white/8">
+                <div className="py-3 px-3 text-[10px] font-bold text-navy-500 uppercase tracking-wider" />
+                {PREVIEW_SCHOOLS.map((s) => (
+                  <div key={s.name} className="py-3 px-2 text-center border-l border-white/5">
+                    <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-sm mx-auto mb-1.5 shadow-lg`}>
+                      {s.icon}
+                    </div>
+                    <div className="text-white font-bold text-xs">{s.name}</div>
+                    <div className="text-navy-400 text-[9px]">{s.city}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Comparison rows */}
+              {PREVIEW_ROWS.map((row, ri) => (
+                <div key={row.label} className={`grid grid-cols-4 gap-0 border-b border-white/5 ${ri % 2 === 1 ? "bg-white/2" : ""}`}>
+                  <div className="py-2.5 px-3 text-[10px] font-bold text-navy-400 uppercase tracking-wider flex items-center">
+                    {row.label}
+                  </div>
+                  {row.values.map((val, vi) => (
+                    <div key={vi} className="py-2.5 px-2 text-center border-l border-white/5 flex items-center justify-center">
+                      <span className={`text-[10px] font-semibold ${
+                        val.startsWith("✓") ? "text-emerald-400" : "text-white/80"
+                      }`}>
+                        {val}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+
+              {/* CTA row */}
+              <div className="p-4 grid grid-cols-4 gap-2">
+                <div />
+                {PREVIEW_SCHOOLS.map((s) => (
+                  <div key={s.name} className="flex items-center justify-center">
+                    <div className={`w-full py-1.5 rounded-lg bg-gradient-to-br ${s.color} opacity-70 text-white text-[9px] font-bold text-center`}>
+                      Voir fiche
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Floating badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="absolute -bottom-4 -right-4 bg-gradient-to-br from-gold-500 to-gold-600 text-navy-900 rounded-2xl px-4 py-2.5 shadow-xl shadow-gold-500/30 flex items-center gap-2"
+            >
+              <span className="text-lg">⚖</span>
+              <div>
+                <div className="text-xs font-bold leading-none">3 écoles</div>
+                <div className="text-[10px] opacity-75 mt-0.5">max simultanées</div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
   );
 }
 

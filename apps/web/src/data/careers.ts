@@ -331,15 +331,6 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     employmentRate: 91,
     internationalOpportunities: true,
   },
-  "cesem-casablanca": {
-    jobFamilies: ["Manager commerce international", "Directeur marketing", "DG entreprise", "Manager RH", "Consultant stratégique"],
-    avgStartSalaryMAD: 9500,
-    avgMidSalaryMAD: 26000,
-    topEmployers: ["Deloitte France", "EY Maroc", "BMCE Bank", "Multinationales", "PME privées"],
-    employmentRate: 89,
-    internationalOpportunities: true,
-  },
-
   // ─── EST NETWORK ──────────────────────────────────────────────────────────
   "est-casablanca": {
     jobFamilies: ["Technicien supérieur IT", "Technicien commercial", "Assistant manager", "Technicien qualité", "Gestionnaire PME"],
