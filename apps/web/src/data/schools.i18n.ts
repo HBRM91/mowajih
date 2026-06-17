@@ -944,27 +944,17 @@ export const SCHOOL_I18N: Record<string, SchoolI18n> = {
       programs: ["Grande École Management", "Finance", "Digital Marketing", "Entrepreneurship", "International Business"],
     },
   },
-  "cesem-casablanca": {
+  "supdeco": {
     ar: {
-      description: "مدرسة إدارة أعمال ذات شراكة فرنسية-مغربية. اعتماد AMBA. دبلوم مزدوج مع مدرسة رانس للإدارة.",
-      programs: ["ماجستير الإدارة والاستراتيجية", "المالية الدولية", "التجارة الدولية", "ماجستير تنفيذي"],
-    },
-    en: {
-      description: "Business school with a Franco-Moroccan partnership. AMBA accreditation. Double degree with Reims Management School.",
-      programs: ["Master Management & Strategy", "International Finance", "International Business", "Executive MBA"],
-    },
-  },
-  "supdeco-maroc": {
-    ar: {
-      description: "مدرسة تجارة كبرى مغربية بـ 3 حرم جامعي. شراكات جامعية مع فرنسا وكندا. قبول على الملف.",
+      description: "مدرسة تجارة كبرى مغربية بـ 3 حرم جامعي (مراكش، الدار البيضاء، الرباط). شراكات جامعية مع فرنسا وكندا. قبول على الملف.",
       programs: ["الكبرى مدرسة التجارة", "التسويق", "المالية", "الموارد البشرية", "الأعمال الرقمية"],
     },
     en: {
-      description: "Moroccan commerce school with 3 campuses. University partnerships in France and Canada. Application-based admission.",
+      description: "Moroccan commerce school with 3 campuses (Marrakech, Casablanca, Rabat). University partnerships in France and Canada. Application-based admission.",
       programs: ["Grande École Commerce", "Marketing", "Finance", "Human Resources", "Digital Business"],
     },
   },
-  "ipes-casablanca": {
+  "ipes": {
     ar: {
       description: "مؤسسة خاصة متعددة التخصصات متاحة لجميع شعب الباكالوريا. رسوم معقولة. مثالية للراغبين في تكوين خاص بأسعار مناسبة.",
       programs: ["الحقوق", "التجارة", "الإعلاميات", "تدبير المقاولة", "التواصل"],
@@ -972,6 +962,46 @@ export const SCHOOL_I18N: Record<string, SchoolI18n> = {
     en: {
       description: "Multi-disciplinary private institution open to all bac tracks. Moderate fees. Ideal for those seeking affordable private education.",
       programs: ["Law", "Commerce", "Computer Science", "Business Management", "Communication"],
+    },
+  },
+  "fst-tanger": {
+    ar: {
+      description: "كلية العلوم والتقنيات بطنجة (جامعة عبد المالك السعدي). قبول مجاني مباشر على الباكالوريا العلمية. منطقة الشمال الاستراتيجية — ميناء طنجة المتوسط.",
+      programs: ["الهندسة المعلوماتية", "الهندسة المدنية", "الهندسة الكهربائية", "الرياضيات التطبيقية"],
+    },
+    en: {
+      description: "Faculty of Science and Technology in Tanger (Abdelmalek Essaâdi University). Free direct bac admission. Strategic northern region — Tanger Med port.",
+      programs: ["Computer Engineering", "Civil Engineering", "Electrical Engineering", "Applied Mathematics"],
+    },
+  },
+  "fst-settat": {
+    ar: {
+      description: "كلية العلوم والتقنيات بسطات (جامعة الحسن الأول). قبول مجاني مباشر على الباكالوريا العلمية. قريبة من الدار البيضاء.",
+      programs: ["الرياضيات", "الفيزياء", "الكيمياء", "الإعلاميات", "الهندسة المدنية"],
+    },
+    en: {
+      description: "Faculty of Science and Technology in Settat (Hassan I University). Free direct bac admission. Close to Casablanca.",
+      programs: ["Mathematics", "Physics", "Chemistry", "Computer Science", "Civil Engineering"],
+    },
+  },
+  "fst-errachidia": {
+    ar: {
+      description: "كلية العلوم والتقنيات بالراشيدية (جامعة مولاي إسماعيل). قبول مجاني مباشر على الباكالوريا. منطقة درعة-تافيلالت. الأولوية للحاصلين على منح.",
+      programs: ["الرياضيات", "الفيزياء", "الكيمياء", "علم الأحياء", "الجيولوجيا"],
+    },
+    en: {
+      description: "Faculty of Science and Technology in Errachidia (Moulay Ismail University). Free direct bac admission. Drâa-Tafilalet region. Priority for scholarship holders.",
+      programs: ["Mathematics", "Physics", "Chemistry", "Biology", "Geology"],
+    },
+  },
+  "fst-al-hoceima": {
+    ar: {
+      description: "كلية العلوم والتقنيات بالحسيمة (جامعة عبد المالك السعدي). قبول مجاني مباشر على الباكالوريا. منطقة الريف المتوسطية. الأولوية للحاصلين على منح.",
+      programs: ["الرياضيات", "الفيزياء", "الكيمياء", "علم الأحياء", "الإعلاميات"],
+    },
+    en: {
+      description: "Faculty of Science and Technology in Al Hoceïma (Abdelmalek Essaâdi University). Free direct bac admission. Mediterranean Rif region. Priority for scholarship holders.",
+      programs: ["Mathematics", "Physics", "Chemistry", "Biology", "Computer Science"],
     },
   },
 };

@@ -30,7 +30,6 @@ const PRIVATE_SCHOOLS = [
   { slug: "emsi", name: "EMSI" },
   { slug: "mundiapolis", name: "Université Mundiapolis" },
   { slug: "um6ss", name: "UM6SS Sciences de la Santé" },
-  { slug: "cesem-casablanca", name: "CESEM" },
 ];
 
 function CopyButton({ text }: { text: string }) {

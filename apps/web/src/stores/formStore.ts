@@ -4,19 +4,15 @@ import { persist } from "zustand/middleware";
 interface FormState {
   step: number;
   bacTrack: string;
-  // Core grades
+  // Core grades (used by the matching algorithm)
   generalGrade: string;
   mathGrade: string;
   physicsGrade: string;
-  // Subject-specific grades
-  frenchGrade: string;
-  arabicGrade: string;
-  philosophyGrade: string;
+  // Track-specific contextual grades (shown in form for relevant tracks)
   biologyGrade: string;
   economicsGrade: string;
   historyGrade: string;
   techGrade: string;
-  englishGrade: string;
   // Profile
   city: string;
   region: string;
@@ -42,14 +38,10 @@ const initialState = {
   generalGrade: "",
   mathGrade: "",
   physicsGrade: "",
-  frenchGrade: "",
-  arabicGrade: "",
-  philosophyGrade: "",
   biologyGrade: "",
   economicsGrade: "",
   historyGrade: "",
   techGrade: "",
-  englishGrade: "",
   city: "",
   region: "",
   financialBracket: "",

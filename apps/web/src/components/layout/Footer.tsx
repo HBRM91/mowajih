@@ -106,6 +106,10 @@ export default function Footer() {
                 <span className="w-1 h-1 bg-navy-600 group-hover:bg-gold-400 rounded-full transition-colors" />
                 {t("nav.orientation")}
               </Link>
+              <Link to="/comparer" className="flex items-center gap-2 text-sm text-gold-400 hover:text-gold-300 transition-colors group font-semibold">
+                <span className="text-xs">⚖</span>
+                {t("footer.nav.compare")}
+              </Link>
               <Link to="/ecoles" className="flex items-center gap-2 text-sm text-navy-300 hover:text-gold-300 transition-colors group">
                 <span className="w-1 h-1 bg-navy-600 group-hover:bg-gold-400 rounded-full transition-colors" />
                 {t("footer.nav.schools")}

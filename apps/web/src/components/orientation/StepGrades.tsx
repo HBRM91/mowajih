@@ -35,32 +35,20 @@ interface GradeField {
 function getTrackFields(track: string, t: (k: string) => string): GradeField[] {
   const math: GradeField = { key: "mathGrade", label: t("grade.math"), placeholder: "15" };
   const physics: GradeField = { key: "physicsGrade", label: t("grade.physics"), placeholder: "13" };
-  const french: GradeField = { key: "frenchGrade", label: t("grade.french"), placeholder: "12" };
-  const arabic: GradeField = { key: "arabicGrade", label: t("grade.arabic"), placeholder: "13" };
-  const philosophy: GradeField = { key: "philosophyGrade", label: t("grade.philosophy"), placeholder: "11" };
   const biology: GradeField = { key: "biologyGrade", label: t("grade.biology"), placeholder: "14" };
   const economics: GradeField = { key: "economicsGrade", label: t("grade.economics"), placeholder: "15" };
   const history: GradeField = { key: "historyGrade", label: t("grade.history"), placeholder: "12" };
   const tech: GradeField = { key: "techGrade", label: t("grade.tech_sciences"), placeholder: "14" };
-  const english: GradeField = { key: "englishGrade", label: t("grade.english"), placeholder: "13" };
 
   switch (track) {
-    case "SM":
-      return [math, physics, french, arabic, philosophy, english];
-    case "PC":
-      return [physics, math, biology, french, arabic, philosophy, english];
-    case "SVT":
-      return [biology, physics, math, french, arabic, philosophy, english];
-    case "SE":
-      return [economics, math, history, french, arabic, philosophy, english];
-    case "SH":
-      return [french, arabic, philosophy, history, economics, english];
-    case "STI":
-      return [tech, math, physics, french, arabic, english];
-    case "L":
-      return [french, arabic, philosophy, history, english];
-    default:
-      return [math, physics, french];
+    case "SM":  return [math, physics];
+    case "PC":  return [physics, math];
+    case "SVT": return [biology, physics];
+    case "SE":  return [economics, math];
+    case "SH":  return [history, economics];
+    case "STI": return [tech, physics, math];
+    case "L":   return [];
+    default:    return [math, physics];
   }
 }
 
@@ -72,9 +60,13 @@ interface GradeInputProps {
   required?: boolean;
 }
 
+function normalizeDecimal(raw: string): string {
+  return raw.replace(",", ".");
+}
+
 function GradeInput({ label, value, onChange, placeholder = "0", required }: GradeInputProps) {
   const { t } = useTranslation();
-  const numVal = value ? parseFloat(value) : null;
+  const numVal = value ? parseFloat(normalizeDecimal(value)) : null;
   const isValid = numVal !== null && numVal >= 0 && numVal <= 20;
 
   return (
@@ -91,13 +83,10 @@ function GradeInput({ label, value, onChange, placeholder = "0", required }: Gra
       </div>
       <div className="flex items-center gap-2">
         <input
-          type="number"
+          type="text"
           inputMode="decimal"
-          min={0}
-          max={20}
-          step={0.25}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange(normalizeDecimal(e.target.value))}
           className={`flex-1 px-3 py-2.5 rounded-lg border-2 text-sm font-bold text-navy-800 bg-cream outline-none transition ${
             value && !isValid
               ? "border-rose-300 focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
@@ -121,8 +110,8 @@ function GradeInput({ label, value, onChange, placeholder = "0", required }: Gra
 export default function StepGrades() {
   const { t } = useTranslation();
   const form = useFormStore();
-  const mention = form.generalGrade ? computeMention(parseFloat(form.generalGrade)) : null;
-  const isValid = !!form.generalGrade && parseFloat(form.generalGrade) >= 0 && parseFloat(form.generalGrade) <= 20;
+  const mention = form.generalGrade ? computeMention(parseFloat(normalizeDecimal(form.generalGrade))) : null;
+  const isValid = !!form.generalGrade && parseFloat(normalizeDecimal(form.generalGrade)) >= 0 && parseFloat(normalizeDecimal(form.generalGrade)) <= 20;
 
   const handleNext = () => {
     form.nextStep();
@@ -152,13 +141,10 @@ export default function StepGrades() {
           </label>
           <div className="flex items-center gap-3">
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              min={0}
-              max={20}
-              step={0.25}
               value={form.generalGrade}
-              onChange={(e) => form.setField("generalGrade", e.target.value)}
+              onChange={(e) => form.setField("generalGrade", normalizeDecimal(e.target.value))}
               className="flex-1 px-4 py-3.5 rounded-xl border-2 border-parchment focus:border-gold-400 focus:ring-2 focus:ring-gold-200 outline-none transition text-xl font-bold text-navy-800 bg-white"
               placeholder="Ex: 14.50"
             />
