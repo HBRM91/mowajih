@@ -1,10 +1,18 @@
-import { Routes, Route } from "react-router-dom";
-import { Suspense, lazy } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { Suspense, lazy, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import SlimaneChat from "./components/slimane/SlimaneChat";
 import CompareBar from "./components/ui/CompareBar";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+  return null;
+}
 
 const Home = lazy(() => import("./routes/Home"));
 const Orientation = lazy(() => import("./routes/Orientation"));
@@ -18,6 +26,7 @@ const Contact = lazy(() => import("./routes/Contact"));
 function App() {
   return (
     <div className="flex flex-col min-h-screen bg-cream">
+      <ScrollToTop />
       <Navbar />
       <main className="flex-1">
         <Suspense fallback={
