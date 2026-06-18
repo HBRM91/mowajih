@@ -866,7 +866,6 @@ export const SCHOOLS: School[] = [
     admission: "concours",
     highlights: ["CHU Tanger", "Région Nord", "Seuil 12/20 (2025)"],
     website: "https://fmp.uae.ac.ma",
-    logoPath: "/assets/schools/fm-tanger.png",
   },
   {
     slug: "fm-agadir",
@@ -886,7 +885,6 @@ export const SCHOOLS: School[] = [
     admission: "concours",
     highlights: ["Ibn Zohr", "Région Sud", "Seuil 12/20 (2025)"],
     website: "https://fmp.uiz.ac.ma",
-    logoPath: "/assets/schools/fm-agadir.png",
   },
 
   // ─── MÉDECINE DENTAIRE — 3 facultés publiques ────────────────────────────
@@ -928,7 +926,6 @@ export const SCHOOLS: School[] = [
     admission: "concours",
     highlights: ["Hassan II Casablanca", "Gratuit", "Cursus 6 ans"],
     website: "https://fmd-uh2c.ac.ma",
-    logoPath: "/assets/schools/fmd-casablanca.png",
   },
   {
     slug: "fmd-fes",
@@ -948,7 +945,6 @@ export const SCHOOLS: School[] = [
     admission: "concours",
     highlights: ["USMBA Fès", "Gratuit", "Cursus 6 ans"],
     website: "https://fmd.usmba.ac.ma",
-    logoPath: "/assets/schools/fmd-fes.png",
   },
 
   // ─── PARAMÉDICAL — ISPITS ────────────────────────────────────────────────
@@ -971,7 +967,6 @@ export const SCHOOLS: School[] = [
     admission: "concours",
     highlights: ["20+ instituts nationaux", "Débouchés garantis CHU & cliniques", "Gratuit"],
     website: "https://ispits.sante.gov.ma",
-    logoPath: "/assets/schools/ispits.png",
   },
 
   // ─── ENCG NETWORK (12 campus) — TAFEM concours ───────────────────────────
@@ -1150,7 +1145,6 @@ export const SCHOOLS: School[] = [
     description: "ENCG El Jadida. Admission via TAFEM. Région côtière avec industries chimiques (OCP Jorf Lasfar) et pôle portuaire.",
     admission: "tafem",
     highlights: ["OCP Jorf Lasfar", "Côte atlantique", "Frais réduits"],
-    logoPath: "/assets/schools/encg-el-jadida.png",
   },
   {
     slug: "encg-beni-mellal",
@@ -1169,7 +1163,6 @@ export const SCHOOLS: School[] = [
     description: "ENCG Béni Mellal. Admission via TAFEM. Région agricole et agro-industrielle à fort potentiel.",
     admission: "tafem",
     highlights: ["Agribusiness", "Région Béni Mellal", "Frais réduits"],
-    logoPath: "/assets/schools/encg-beni-mellal.png",
   },
   {
     slug: "encg-dakhla",
@@ -1188,7 +1181,6 @@ export const SCHOOLS: School[] = [
     description: "ENCG Dakhla dans la capitale du Sahara marocain. Admission via TAFEM. Pôle touristique, halieutique et en plein développement.",
     admission: "tafem",
     highlights: ["Sahara marocain", "Tourisme & pêche", "Potentiel de croissance"],
-    logoPath: "/assets/schools/encg-dakhla.png",
   },
 
   // ─── TOURISME — ISIT Tanger ──────────────────────────────────────────────
@@ -1210,7 +1202,6 @@ export const SCHOOLS: School[] = [
     admission: "concours",
     highlights: ["Tourisme 1er revenu Maroc", "Secteur en croissance", "Gratuit"],
     website: "https://www.isittanger.ma",
-    logoPath: "/assets/schools/isit-tanger.png",
   },
 
   // ─── CPGE — Classes Préparatoires ────────────────────────────────────────
@@ -1232,7 +1223,6 @@ export const SCHOOLS: School[] = [
     admission: "dossier",
     highlights: ["Top nationale", "Passerelle Polytechnique", "Gratuit"],
     website: "https://www.cpge.ac.ma",
-    logoPath: "/assets/schools/cpge-moulay-youssef.png",
   },
   {
     slug: "cpge-ferhat-hachad",
@@ -1252,7 +1242,6 @@ export const SCHOOLS: School[] = [
     admission: "dossier",
     highlights: ["Gratuit", "Filière TSI disponible", "Kénitra"],
     website: "https://www.cpge.ac.ma",
-    logoPath: "/assets/schools/cpge-ferhat-hachad.png",
   },
   {
     slug: "cpge-alkindi-tanger",
@@ -1272,7 +1261,6 @@ export const SCHOOLS: School[] = [
     admission: "dossier",
     highlights: ["Gratuit", "Région Nord", "Tanger"],
     website: "https://www.cpge.ac.ma",
-    logoPath: "/assets/schools/cpge-alkindi-tanger.png",
   },
   {
     slug: "cpge-ibn-youssef",
@@ -1292,7 +1280,6 @@ export const SCHOOLS: School[] = [
     admission: "dossier",
     highlights: ["Gratuit", "Marrakech", "CNC + grandes écoles"],
     website: "https://www.cpge.ac.ma",
-    logoPath: "/assets/schools/cpge-ibn-youssef.png",
   },
   {
     slug: "cpge-oujda",
@@ -1312,7 +1299,6 @@ export const SCHOOLS: School[] = [
     admission: "dossier",
     highlights: ["Gratuit", "Région Orientale"],
     website: "https://www.cpge.ac.ma",
-    logoPath: "/assets/schools/cpge-oujda.png",
   },
 
   // ─── PREMIUM ENGINEERING — Dossier (privé/PPP) ───────────────────────────
@@ -1381,7 +1367,6 @@ export const SCHOOLS: School[] = [
     description: "L'université américaine du Maroc, campus « Little America » d'Ifrane. Enseignement 100% anglais, système américain. Admission sur dossier + SAT/Tests. Frais ~80 760 MAD/an. Bourses très généreuses (50-100%).",
     admission: "dossier",
     highlights: ["100% anglais", "Campus américain", "Bourses 50-100%", "~80K MAD/an"],
-    logoPath: "/assets/schools/al-akhawayn.jpg",
     hasCampus: true,
     campusDetails: {
       size: "90 ha",
@@ -1420,7 +1405,6 @@ export const SCHOOLS: School[] = [
     description: "Première Business School privée du Maroc. Accréditée AACSB. Admission dossier + entretien. 5 campus, réseau alumni 12 000+ dirigeants. Frais 70 000–79 000 MAD/an.",
     admission: "dossier",
     highlights: ["Accréditation AACSB", "12K+ alumni dirigeants", "70-79K MAD/an"],
-    logoPath: "/assets/schools/hem.jpg",
     hasCampus: true,
     campusDetails: {
       size: "Bâtiment urbain moderne",
@@ -1450,7 +1434,6 @@ export const SCHOOLS: School[] = [
     admission: "dossier",
     highlights: ["Secteur textile en croissance", "Partenaires H&M, Zara, Inditex", "Casa"],
     website: "http://www.esith.ac.ma",
-    logoPath: "/assets/schools/esith.jpg",
   },
   {
     slug: "enset-mohammedia",
@@ -1470,7 +1453,6 @@ export const SCHOOLS: School[] = [
     admission: "concours",
     highlights: ["Formation ingénieur & enseignant", "Gratuit", "Hassan II Mohammedia"],
     website: "https://enset-media.ac.ma",
-    logoPath: "/assets/schools/enset-mohammedia.png",
   },
 
   // ─── SÉLECTIF — Privé ─────────────────────────────────────────────────────
@@ -1493,7 +1475,6 @@ export const SCHOOLS: School[] = [
     admissionNote: "Dossier + entretien. Pas de concours écrit. Direct du bac.",
     highlights: ["Multi-filières", "Partenariats Europe", "~33K MAD/an", "Accréditée État"],
     website: "https://www.mundiapolis.ma",
-    logoPath: "/assets/schools/mundiapolis.png",
     hasCampus: true,
     campusDetails: { size: "4 ha", housing: true, sports: true, description: "Campus à Casablanca. Salles de cours, bibliothèque, résidence universitaire, terrains de sport, partenariats internationaux." },
     jobFamilies: ["Informatique & Développement", "Business & Management", "Communication & Médias", "Droit & Juridique", "Architecture & Design", "Sciences Politiques"],
@@ -1522,7 +1503,6 @@ export const SCHOOLS: School[] = [
     feeNote: "Frais : 20 000–40 000 MAD/an selon campus et filière. Bourses partielles disponibles.",
     highlights: ["5 villes, 18-19 campus", "13 000 étudiants", "Direct bac sans CPGE", "21K+ alumni"],
     website: "https://www.emsi.ma",
-    logoPath: "/assets/schools/emsi.png",
     hasCampus: true,
     campusDetails: { size: "Variable", housing: false, sports: true, description: "Réseau de 18-19 campus dans 5 villes (Casablanca, Rabat, Marrakech, Fès, Tanger). Salles informatiques, labos, bibliothèques, terrains de sport." },
     jobFamilies: ["Développement Logiciel", "Génie Civil", "Électrotechnique", "Data Science", "Cybersécurité", "Réseaux & Systèmes"],
@@ -1664,7 +1644,6 @@ export const SCHOOLS: School[] = [
     admission: "direct",
     highlights: ["Gratuit", "Passerelle masters", "Prestige UMV"],
     website: "https://www.fsr.ac.ma",
-    logoPath: "/assets/schools/fs-rabat.webp",
   },
   {
     slug: "fsjes-casablanca",
@@ -1683,7 +1662,6 @@ export const SCHOOLS: School[] = [
     description: "Grande faculté de droit et d'économie de Casablanca. Accès libre sur bac. Porte d'entrée gratuite vers le secteur juridique et économique.",
     admission: "direct",
     website: "https://www.univh2c.ma",
-    logoPath: "/assets/schools/fsjes-casablanca.webp",
     highlights: ["Gratuit", "Droit public", "Économie & gestion"],
   },
   {
@@ -2109,7 +2087,6 @@ export const SCHOOLS: School[] = [
     admission: "concours",
     highlights: ["Arts du spectacle unique", "Auditions", "Gratuit"],
     website: "https://isadac.ma",
-    logoPath: "/assets/schools/isadac.png",
   },
   {
     slug: "esav-marrakech",
@@ -2173,7 +2150,6 @@ export const SCHOOLS: School[] = [
     admission: "dossier",
     highlights: ["Accréditation EFMD", "150+ partenaires mondiaux", "Double diplôme"],
     founded: 1992,
-    logoPath: "/assets/schools/esca-casablanca.jpg",
   },
   {
     slug: "supdeco",
@@ -2223,7 +2199,6 @@ export const SCHOOLS: School[] = [
     admissionNote: "Dossier + entretien. Très accessible. Toutes filières bac.",
     highlights: ["Toutes filières", "12-25K MAD/an", "Casablanca & Rabat", "Accessible"],
     website: "https://www.ipes.ac.ma",
-    logoPath: "/assets/schools/ipes.jpg",
     hasCampus: true,
     campusDetails: { size: "2 ha", housing: false, sports: false, description: "2 campus (Casablanca, Rabat). Salles de cours, bibliothèque, espace coworking, accessible et abordable." },
     jobFamilies: ["Droit & Juridique", "Commerce & Vente", "Informatique & Digital", "Gestion & Management", "Communication & Médias"],
@@ -2252,7 +2227,6 @@ export const SCHOOLS: School[] = [
     admissionNote: "Accès direct sur bac scientifique. Pas de sélection.",
     highlights: ["Gratuit", "Région Nord stratégique", "Tanger Med", "Abdelmalek Essaâdi"],
     website: "https://www.fst-tanger.ac.ma",
-    logoPath: "/assets/schools/fst-tanger.png",
     hasCampus: true,
     campusDetails: { size: "6 ha", housing: true, sports: true, description: "Campus Tanger. Labos scientifiques, bibliothèque, résidence universitaire, terrains de sport, proximité avec Tanger Med." },
     jobFamilies: ["Informatique", "Génie Civil", "Électrotechnique", "Mathématiques", "Logistique & Portuaire"],
@@ -2279,7 +2253,6 @@ export const SCHOOLS: School[] = [
     admissionNote: "Accès direct sur bac scientifique. Pas de sélection.",
     highlights: ["Gratuit", "Proche Casablanca", "Hassan Ier", "Région agricole et industrielle"],
     website: "https://www.fst-settat.ac.ma",
-    logoPath: "/assets/schools/fst-settat.png",
     hasCampus: true,
     campusDetails: { size: "5 ha", housing: true, sports: true, description: "Campus Settat. Labos scientifiques, bibliothèque, résidence universitaire, terrains de sport, proximité avec Casablanca." },
     jobFamilies: ["Mathématiques", "Physique", "Chimie", "Informatique", "Génie Civil"],
@@ -2306,7 +2279,6 @@ export const SCHOOLS: School[] = [
     admissionNote: "Accès direct sur bac scientifique. Pas de sélection. Boursiers CNOUS prioritaires.",
     highlights: ["Gratuit", "Région Drâa-Tafilalet", "Boursiers prioritaires", "Moulay Ismaïl"],
     website: "https://www.fst-errachidia.ac.ma",
-    logoPath: "/assets/schools/fst-errachidia.png",
     hasCampus: true,
     campusDetails: { size: "4 ha", housing: true, sports: true, description: "Campus Errachidia. Labos scientifiques, bibliothèque, résidence universitaire, terrains de sport, région du Sud-Est." },
     jobFamilies: ["Mathématiques", "Physique", "Chimie", "Biologie", "Géologie"],
@@ -2333,7 +2305,6 @@ export const SCHOOLS: School[] = [
     admissionNote: "Accès direct sur bac scientifique. Pas de sélection. Boursiers CNOUS prioritaires.",
     highlights: ["Gratuit", "Région Rif", "Boursiers prioritaires", "Abdelmalek Essaâdi"],
     website: "https://www.fst-alhoceima.ac.ma",
-    logoPath: "/assets/schools/fst-al-hoceima.png",
     hasCampus: true,
     campusDetails: { size: "4 ha", housing: true, sports: true, description: "Campus Al Hoceïma. Labos scientifiques, bibliothèque, résidence universitaire, terrains de sport, Rif méditerranéen." },
     jobFamilies: ["Mathématiques", "Physique", "Chimie", "Biologie", "Informatique"],
