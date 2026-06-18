@@ -27,6 +27,12 @@ const CITY_HOUSING: Record<string, HousingData> = {
   "El Jadida":      { coloc: [700, 1200],  studio: [1000, 1800] },
   "Tétouan":        { coloc: [600, 1200],  studio: [900, 1500]  },
   "Meknès":         { coloc: [700, 1200],  studio: [1000, 1600] },
+  "Nador":          { coloc: [500, 1000],  studio: [800, 1500]  },
+  "Errachidia":     { coloc: [500, 900],   studio: [800, 1400]  },
+  "Al Hoceïma":     { coloc: [500, 900],   studio: [800, 1400]  },
+  "Khouribga":      { coloc: [500, 900],   studio: [800, 1300]  },
+  "Safi":           { coloc: [500, 900],   studio: [800, 1300]  },
+  "Berrechid":      { coloc: [600, 1000],  studio: [800, 1400]  },
 };
 
 const TIER_SALARY: Record<string, { start: [number, number]; senior: [number, number] }> = {
