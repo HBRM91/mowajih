@@ -194,9 +194,17 @@ function CampusSection({ slug, city, lang }: { slug: string; city: string; lang:
       <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4 flex items-center gap-2">
         🏠 {t("campus.section.title")}
         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-          isIntegrated ? "bg-emerald-100 text-emerald-700 border border-emerald-200" : "bg-blue-50 text-blue-700 border border-blue-200"
+          isIntegrated && integrated?.type === "integrated"
+            ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+            : isIntegrated
+              ? "bg-teal-50 text-teal-700 border border-teal-200"
+              : "bg-blue-50 text-blue-700 border border-blue-200"
         }`}>
-          {isIntegrated ? t("campus.integrated.badge") : city ? t("campus.urban.badge") : t("campus.regional.badge")}
+          {isIntegrated && integrated?.type === "integrated"
+            ? t("campus.integrated.badge")
+            : isIntegrated
+              ? t("campus.oncampus_dorm.badge")
+              : city ? t("campus.urban.badge") : t("campus.regional.badge")}
         </span>
       </h2>
 

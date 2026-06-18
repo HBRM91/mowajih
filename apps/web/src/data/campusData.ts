@@ -375,9 +375,339 @@ export const CITY_HOUSING: Record<string, CityHousingData> = {
   },
 };
 
+// ─── GRANDES ÉCOLES with on-campus residences ─────────────────────────────────
+// These schools have their own dorms but were not in the original INTEGRATED_CAMPUSES.
+// Housing is ONOUSC-managed (~400 MAD/year) unless noted otherwise.
+
+// Shared Rabat city housing appended to each school's own housing
+const RABAT_OFFCAMPUS: HousingRange[] = [
+  { label: { fr: "Résidence privée (Bayt Al Maarif, RU Rabat)", ar: "إقامة خاصة (بيت المعارف، RU الرباط)", en: "Private residence (Bayt Al Maarif, RU Rabat)" }, cost: "2 500 – 4 000 MAD/mois" },
+  { label: { fr: "Colocation (Agdal / Al Irfane)", ar: "مشاركة سكن (أكدال / العرفان)", en: "Flat-share (Agdal / Al Irfane)" }, cost: "1 800 – 3 000 MAD/pers/mois" },
+];
+
+const CASA_OFFCAMPUS: HousingRange[] = [
+  { label: { fr: "Résidence privée (Oasis, Maarif)", ar: "إقامة خاصة (واحة، المعاريف)", en: "Private residence (Oasis, Maarif)" }, cost: "2 500 – 4 000 MAD/mois" },
+  { label: { fr: "Colocation (Oasis / Route El Jadida)", ar: "مشاركة سكن (واحة / طريق الجديدة)", en: "Flat-share (Oasis / Route El Jadida)" }, cost: "2 000 – 4 000 MAD/pers/mois" },
+];
+
+const MEKNES_OFFCAMPUS: HousingRange[] = [
+  { label: { fr: "Colocation privée (Hamria, Al Qods)", ar: "مشاركة سكن خاصة (حمرية، القدس)", en: "Private flat-share (Hamria, Al Qods)" }, cost: "800 – 2 000 MAD/pers/mois" },
+];
+
+const RABAT_SAFETY: I18nText = {
+  fr: "Rabat est globalement sûre. Al Irfane (cité universitaire) est encadré. Résidences privées recommandées pour les étudiantes seules : digicode, gardien. Tramway sûr.",
+  ar: "الرباط آمنة بشكل عام. العرفان (مدينة جامعية) منظم. الإقامات الخاصة موصى بها للطالبات وحدهن: شفرة دخول، حارس. الترامواي آمن.",
+  en: "Rabat is broadly safe. Al Irfane (university city) is well-supervised. Private residences recommended for female students living alone: keypad, guard. Tram is safe.",
+};
+
+const RABAT_TRANSPORT: I18nText = {
+  fr: "Tramway de Rabat dessert Agdal et Al Irfane. Budget transport ~300–500 MAD/mois.",
+  ar: "ترامواي الرباط يخدم أكدال والعرفان. ميزانية النقل ~300-500 درهم/شهر.",
+  en: "Rabat tram serves Agdal and Al Irfane. Transport budget ~300–500 MAD/month.",
+};
+
+const CASA_SAFETY: I18nText = {
+  fr: "Casablanca est grande et animée. Quartiers universitaires (Oasis, El Jadida) habitués aux étudiantes. Résidences privées recommandées. Tramway sûr. Évite les trajets tardifs en solo.",
+  ar: "الدار البيضاء كبيرة وحيوية. أحياء جامعية (واحة، الجديدة) معتادة على الطالبات. الإقامات الخاصة موصى بها. الترامواي آمن. تجنبي التنقل المتأخر وحدك.",
+  en: "Casablanca is large and lively. University areas (Oasis, El Jadida) are accustomed to female students. Private residences recommended. Tram is safe. Avoid late-night solo travel.",
+};
+
+const CASA_TRANSPORT: I18nText = {
+  fr: "Tramway Casablanca (T1 & T2). Budget transport ~400–600 MAD/mois.",
+  ar: "ترامواي الدار البيضاء (T1 وT2). ميزانية النقل ~400-600 درهم/شهر.",
+  en: "Casablanca tram (T1 & T2). Transport budget ~400–600 MAD/month.",
+};
+
+INTEGRATED_CAMPUSES["emi"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "~400 MAD/an (ONOUSC)",
+    facilities: [
+      { fr: "Résidence universitaire sur site (places limitées — demande tôt)", ar: "مسكن جامعي داخل الحرم (أماكن محدودة — سجّل مبكراً)", en: "On-site university residence (limited places — apply early)" },
+      { fr: "Terrains de sport, cafétéria, bibliothèque centrale", ar: "ملاعب رياضية، مقصف، مكتبة مركزية", en: "Sports grounds, cafeteria, central library" },
+      { fr: "Campus historique de 12 ha au cœur de Rabat-Agdal", ar: "حرم تاريخي 12 هكتار في قلب الرباط-أكدال", en: "12-hectare historic campus in the heart of Rabat-Agdal" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus — résidence ONOUSC (places limitées)", ar: "داخل الحرم — إقامة ONOUSC (أماكن محدودة)", en: "On campus — ONOUSC residence (limited places)" }, cost: "~400 MAD/an" },
+    ...RABAT_OFFCAMPUS,
+  ],
+  neighborhoods: ["Agdal", "Al Irfane", "Hay Riad"],
+  safety: RABAT_SAFETY,
+  transport: RABAT_TRANSPORT,
+};
+
+INTEGRATED_CAMPUSES["ehtp"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "~400 MAD/an (ONOUSC)",
+    facilities: [
+      { fr: "Résidence universitaire sur campus (places limitées)", ar: "إقامة جامعية داخل الحرم (أماكن محدودة)", en: "University residence on campus (limited places)" },
+      { fr: "Laboratoires BTP, transport et infrastructure", ar: "مختبرات البناء والنقل والبنية التحتية", en: "BTP, transport and infrastructure laboratories" },
+      { fr: "Campus de 8 ha à Casablanca-Aïn Sebaâ", ar: "حرم 8 هكتار بالدار البيضاء-عين السبع", en: "8-hectare campus in Casablanca-Aïn Sebaâ" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus — résidence ONOUSC (places limitées)", ar: "داخل الحرم — إقامة ONOUSC (أماكن محدودة)", en: "On campus — ONOUSC residence (limited places)" }, cost: "~400 MAD/an" },
+    ...CASA_OFFCAMPUS,
+  ],
+  neighborhoods: ["Aïn Sebaâ", "Oasis", "Maarif"],
+  safety: CASA_SAFETY,
+  transport: CASA_TRANSPORT,
+};
+
+INTEGRATED_CAMPUSES["enim"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "~400 MAD/an (ONOUSC)",
+    facilities: [
+      { fr: "Résidence universitaire sur campus (places limitées)", ar: "إقامة جامعية داخل الحرم (أماكن محدودة)", en: "University residence on campus (limited places)" },
+      { fr: "Terrain de sport, campus de 5 ha à Rabat-Agdal", ar: "ملعب رياضي، حرم 5 هكتار بالرباط-أكدال", en: "Sports ground, 5-hectare campus in Rabat-Agdal" },
+      { fr: "Laboratoires géologie et chimie de pointe", ar: "مختبرات جيولوجيا وكيمياء متطورة", en: "Advanced geology and chemistry laboratories" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus — résidence ONOUSC (places limitées)", ar: "داخل الحرم — إقامة ONOUSC (أماكن محدودة)", en: "On campus — ONOUSC residence (limited places)" }, cost: "~400 MAD/an" },
+    ...RABAT_OFFCAMPUS,
+  ],
+  neighborhoods: ["Agdal", "Al Irfane", "Souissi"],
+  safety: RABAT_SAFETY,
+  transport: RABAT_TRANSPORT,
+};
+
+INTEGRATED_CAMPUSES["insea"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "~400 MAD/an (ONOUSC, très limité)",
+    facilities: [
+      { fr: "Résidence universitaire possible via ONOUSC (places très limitées)", ar: "إقامة جامعية ممكنة عبر ONOUSC (أماكن محدودة جداً)", en: "University residence possible via ONOUSC (very limited places)" },
+      { fr: "Salles informatiques & statistiques spécialisées, bibliothèque", ar: "قاعات معلوماتية وإحصاء متخصصة، مكتبة", en: "Specialist IT & statistics labs, library" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus — résidence ONOUSC (très peu de places)", ar: "داخل الحرم — إقامة ONOUSC (أماكن قليلة جداً)", en: "On campus — ONOUSC residence (very few places)" }, cost: "~400 MAD/an" },
+    ...RABAT_OFFCAMPUS,
+  ],
+  neighborhoods: ["Agdal", "Hay Riad", "Al Irfane"],
+  safety: RABAT_SAFETY,
+  transport: RABAT_TRANSPORT,
+};
+
+INTEGRATED_CAMPUSES["iscae"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "3 700 MAD/an (~310 MAD/mois)",
+    facilities: [
+      { fr: "Résidence universitaire sur campus (places limitées) — tarif très avantageux", ar: "إقامة جامعية داخل الحرم (أماكن محدودة) — سعر مغري جداً", en: "On-campus university residence (limited places) — very affordable rate" },
+      { fr: "2 500 MAD (loyer) + 700 MAD (inscription) + 500 MAD (charges) = 3 700 MAD/an", ar: "2500 درهم (إيجار) + 700 درهم (تسجيل) + 500 درهم (مصاريف) = 3700 درهم/سنة", en: "2,500 MAD (rent) + 700 MAD (registration) + 500 MAD (charges) = 3,700 MAD/year" },
+      { fr: "Campus Aïn Sebaâ (Casa) + antenne Rabat", ar: "حرم عين السبع (كازا) + فرع الرباط", en: "Aïn Sebaâ campus (Casa) + Rabat branch" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus — résidence ISCAE (places limitées)", ar: "داخل الحرم — إقامة ISCAE (أماكن محدودة)", en: "On campus — ISCAE residence (limited places)" }, cost: "3 700 MAD/an" },
+    ...CASA_OFFCAMPUS,
+  ],
+  neighborhoods: ["Aïn Sebaâ", "Oasis", "Maarif"],
+  safety: CASA_SAFETY,
+  transport: CASA_TRANSPORT,
+};
+
+INTEGRATED_CAMPUSES["iav-hassan-ii"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "~400 MAD/an (ONOUSC)",
+    facilities: [
+      { fr: "Résidences étudiantes sur le grand campus agronomique de 70 ha", ar: "مساكن طلابية داخل الحرم الزراعي الكبير 70 هكتار", en: "Student residences on the 70-hectare agronomic campus" },
+      { fr: "1 500 lits actuels — extension à 2 300 lits en cours", ar: "1500 سرير حالياً — توسيع إلى 2300 سرير قيد الإنجاز", en: "1,500 beds currently — expansion to 2,300 beds underway" },
+      { fr: "Fermes pédagogiques, clinique vétérinaire, restaurant universitaire", ar: "مزارع تعليمية، عيادة بيطرية، مطعم جامعي", en: "Teaching farms, veterinary clinic, university restaurant" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus — résidence ONOUSC (large capacité)", ar: "داخل الحرم — إقامة ONOUSC (سعة كبيرة)", en: "On campus — ONOUSC residence (large capacity)" }, cost: "~400 MAD/an" },
+    ...RABAT_OFFCAMPUS,
+  ],
+  neighborhoods: ["Agdal", "Al Irfane", "Hay Riad"],
+  safety: RABAT_SAFETY,
+  transport: RABAT_TRANSPORT,
+};
+
+INTEGRATED_CAMPUSES["ensam-casablanca"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "1 050 MAD/mois",
+    facilities: [
+      { fr: "Chambres individuelles avec douche, armoire et cuisine partagée", ar: "غرف فردية مع دش وخزانة ومطبخ مشترك", en: "Individual rooms with shower, wardrobe and shared kitchen" },
+      { fr: "Restaurant universitaire sur campus — 26 MAD/repas (menus variés)", ar: "مطعم جامعي داخل الحرم — 26 درهم/وجبة (قوائم متنوعة)", en: "Campus restaurant — 26 MAD/meal (varied menus)" },
+      { fr: "Machines à laver disponibles sur place", ar: "غسالات متاحة في الموقع", en: "Washing machines available on site" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus — résidence ENSAM (disponible)", ar: "داخل الحرم — إقامة ENSAM (متاحة)", en: "On campus — ENSAM residence (available)" }, cost: "1 050 MAD/mois" },
+    ...CASA_OFFCAMPUS,
+  ],
+  neighborhoods: ["Aïn Sebaâ", "Oasis", "Maarif"],
+  safety: CASA_SAFETY,
+  transport: CASA_TRANSPORT,
+};
+
+INTEGRATED_CAMPUSES["ensam-meknes"] = {
+  type: "urban_secondary",
+  onCampus: {
+    available: true,
+    cost: "1 050 MAD/mois",
+    facilities: [
+      { fr: "Chambres individuelles avec douche, armoire et cuisine partagée", ar: "غرف فردية مع دش وخزانة ومطبخ مشترك", en: "Individual rooms with shower, wardrobe and shared kitchen" },
+      { fr: "Restaurant universitaire — 26 MAD/repas (traditionnel, grill, asiatique, italien)", ar: "مطعم جامعي — 26 درهم/وجبة (تقليدي، شواء، آسيوي، إيطالي)", en: "Campus restaurant — 26 MAD/meal (traditional, grill, Asian, Italian)" },
+      { fr: "Machines à laver, terrains de sport", ar: "غسالات، ملاعب رياضية", en: "Washing machines, sports grounds" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus — résidence ENSAM (disponible)", ar: "داخل الحرم — إقامة ENSAM (متاحة)", en: "On campus — ENSAM residence (available)" }, cost: "1 050 MAD/mois" },
+    ...MEKNES_OFFCAMPUS,
+  ],
+  neighborhoods: ["Hamria", "Al Qods", "Centre ville"],
+  safety: {
+    fr: "Meknès est très sûre et peu chère. Excellente ville étudiante.",
+    ar: "مكناس آمنة جداً وغير مكلفة. مدينة جامعية ممتازة.",
+    en: "Meknès is very safe and inexpensive. Excellent student city.",
+  },
+  transport: {
+    fr: "Bus locaux. Budget transport ~150–250 MAD/mois.",
+    ar: "حافلات محلية. ميزانية النقل ~150-250 درهم/شهر.",
+    en: "Local buses. Transport budget ~150–250 MAD/month.",
+  },
+};
+
+INTEGRATED_CAMPUSES["ensam-rabat"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "~1 050 MAD/mois",
+    facilities: [
+      { fr: "Résidence universitaire sur campus (campus Rabat, récent)", ar: "إقامة جامعية داخل الحرم (حرم الرباط، حديث)", en: "University residence on campus (Rabat campus, recent)" },
+      { fr: "Restaurant universitaire et infrastructures sportives", ar: "مطعم جامعي ومرافق رياضية", en: "University restaurant and sports facilities" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus — résidence ENSAM Rabat", ar: "داخل الحرم — إقامة ENSAM الرباط", en: "On campus — ENSAM Rabat residence" }, cost: "~1 050 MAD/mois" },
+    ...RABAT_OFFCAMPUS,
+  ],
+  neighborhoods: ["Agdal", "Al Irfane", "Hay Riad"],
+  safety: RABAT_SAFETY,
+  transport: RABAT_TRANSPORT,
+};
+
+INTEGRATED_CAMPUSES["mundiapolis"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "2 000 – 3 500 MAD/mois",
+    facilities: [
+      { fr: "Résidence sur campus (chambres individuelles et doubles)", ar: "إقامة داخل الحرم (غرف فردية ومزدوجة)", en: "On-campus residence (single and double rooms)" },
+      { fr: "Bibliothèque, restaurant, terrains de sport, parking", ar: "مكتبة، مطعم، ملاعب رياضية، موقف سيارات", en: "Library, restaurant, sports grounds, parking" },
+      { fr: "Partenariats étudiants internationaux actifs", ar: "شراكات طلابية دولية فعّالة", en: "Active international student partnerships" },
+    ],
+    girlsWing: false,
+  },
+  housing: [
+    { label: { fr: "Sur campus (chambre individuelle)", ar: "داخل الحرم (غرفة فردية)", en: "On campus (single room)" }, cost: "2 500 – 3 500 MAD/mois" },
+    { label: { fr: "Sur campus (chambre double)", ar: "داخل الحرم (غرفة مزدوجة)", en: "On campus (double room)" }, cost: "2 000 – 2 800 MAD/mois" },
+    ...CASA_OFFCAMPUS,
+  ],
+  neighborhoods: ["Nouaceur", "Bouskoura", "Casablanca sud"],
+  safety: CASA_SAFETY,
+  transport: {
+    fr: "Navettes campus-Casablanca disponibles. Budget transport ~300–500 MAD/mois.",
+    ar: "حافلات مكوكية من الحرم إلى الدار البيضاء. ميزانية النقل ~300-500 درهم/شهر.",
+    en: "Campus-Casablanca shuttles available. Transport budget ~300–500 MAD/month.",
+  },
+};
+
+INTEGRATED_CAMPUSES["upf"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "1 800 – 2 500 MAD/mois",
+    facilities: [
+      { fr: "Résidence sur campus (Fès, route Meknès)", ar: "إقامة داخل الحرم (فاس، طريق مكناس)", en: "On-campus residence (Fès, Route Meknès)" },
+      { fr: "Restaurant universitaire, clinique médicale sur place", ar: "مطعم جامعي، عيادة طبية في الموقع", en: "University restaurant, medical clinic on site" },
+      { fr: "Sécurité 24h/24", ar: "حراسة 24/24", en: "24/7 security" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Sur campus UPF (chambre)", ar: "داخل حرم UPF (غرفة)", en: "On campus UPF (room)" }, cost: "1 800 – 2 500 MAD/mois" },
+    { label: { fr: "Colocation privée (Aïn Chkef, Imouzzer)", ar: "مشاركة سكن خاصة (عين الشكف، أمزكان)", en: "Private flat-share (Aïn Chkef, Imouzzer)" }, cost: "1 200 – 2 500 MAD/pers/mois" },
+  ],
+  neighborhoods: ["Aïn Chkef", "Route d'Imouzzer", "Narjiss"],
+  safety: {
+    fr: "Fès est une ville étudiante calme et sûre. Campus UPF sécurisé 24h/24.",
+    ar: "فاس مدينة جامعية هادئة وآمنة. حرم UPF محمي 24/24.",
+    en: "Fès is a quiet, safe student city. UPF campus secured 24/7.",
+  },
+  transport: {
+    fr: "Bus universitaires. Budget transport ~200–350 MAD/mois.",
+    ar: "حافلات جامعية. ميزانية النقل ~200-350 درهم/شهر.",
+    en: "University buses. Transport budget ~200–350 MAD/month.",
+  },
+};
+
+INTEGRATED_CAMPUSES["upm"] = {
+  type: "urban_major",
+  onCampus: {
+    available: true,
+    cost: "3 333 – 4 500 MAD/mois",
+    facilities: [
+      { fr: "My Campus In — résidence premium sur campus de 32 ha (13 km de Marrakech)", ar: "My Campus In — إقامة مميزة داخل حرم 32 هكتار (13 كلم من مراكش)", en: "My Campus In — premium residence on 32-hectare campus (13 km from Marrakech)" },
+      { fr: "Bungalow, studio ou Riad — 25 m², AC réversible, salle de bain privative", ar: "بنغالو، استوديو أو رياض — 25 م²، تكييف عكسي، حمام خاص", en: "Bungalow, studio or Riad — 25 m², reversible A/C, private bathroom" },
+      { fr: "Restaurant, buanderie, infirmerie, mosquée, piscine couverte, padel, tennis", ar: "مطعم، مغسلة، مستوصف، مسجد، مسبح مغطى، بادل، تنس", en: "Restaurant, laundry, infirmary, mosque, covered pool, padel, tennis" },
+      { fr: "Navettes gratuites campus-Marrakech", ar: "حافلات مكوكية مجانية بين الحرم ومراكش", en: "Free campus-Marrakech shuttles" },
+    ],
+    girlsWing: true,
+  },
+  housing: [
+    { label: { fr: "Studio individuel My Campus In", ar: "استوديو فردي في My Campus In", en: "Individual studio at My Campus In" }, cost: "4 000 MAD/mois (48 000 MAD/an)" },
+    { label: { fr: "Studio double My Campus In", ar: "استوديو مزدوج في My Campus In", en: "Double studio at My Campus In" }, cost: "3 333 MAD/mois (40 000 MAD/an)" },
+    { label: { fr: "Riad individuel (premium)", ar: "رياض فردي (مميز)", en: "Individual Riad (premium)" }, cost: "4 500 MAD/mois (54 000 MAD/an)" },
+    { label: { fr: "Colocation privée Guéliz/Massira (off-campus)", ar: "مشاركة سكن كيليز/مسيرة (خارج الحرم)", en: "Private flat-share Guéliz/Massira (off-campus)" }, cost: "1 500 – 3 000 MAD/pers/mois" },
+  ],
+  neighborhoods: ["Marrakech (13 km)", "Guéliz", "Massira"],
+  safety: {
+    fr: "Campus entièrement sécurisé 24h/24. Résidences mixtes et non-mixtes. Navette gratuite vers Marrakech.",
+    ar: "حرم مؤمَّن بالكامل 24/24. مساكن مختلطة وغير مختلطة. حافلة مجانية نحو مراكش.",
+    en: "Fully secured campus 24/7. Mixed and non-mixed residences. Free shuttle to Marrakech.",
+  },
+  transport: {
+    fr: "Navettes gratuites UPM vers Marrakech centre. Budget transport external ~200 MAD/mois.",
+    ar: "حافلات مجانية من UPM إلى مركز مراكش. ميزانية النقل الخارجي ~200 درهم/شهر.",
+    en: "Free UPM shuttles to Marrakech centre. External transport budget ~200 MAD/month.",
+  },
+};
+
 // ─── Helper: get campus info for a school ────────────────────────────────────
 
-const INTEGRATED_SLUGS = new Set(["um6p", "uir", "um6ss", "aui"]);
+const INTEGRATED_SLUGS = new Set([
+  "um6p", "uir", "um6ss", "aui",
+  "emi", "ehtp", "enim", "insea", "iscae", "iav-hassan-ii",
+  "ensam-casablanca", "ensam-meknes", "ensam-rabat",
+  "mundiapolis", "upf", "upm",
+]);
 
 export function getSchoolCampusInfo(slug: string, city: string): {
   isIntegrated: boolean;
