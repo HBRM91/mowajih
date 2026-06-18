@@ -139,7 +139,7 @@ export default function Navbar() {
 
         {/* Mobile menu — always LTR layout */}
         {menuOpen && (
-          <div dir="ltr" className="md:hidden border-t border-white/10 bg-navy-900/98 backdrop-blur-xl">
+          <div dir="ltr" className="md:hidden border-t border-navy-800 bg-navy-900">
             <div className="max-w-6xl mx-auto px-4 py-4 space-y-1">
               <Link
                 to="/"
