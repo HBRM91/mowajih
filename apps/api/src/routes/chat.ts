@@ -59,7 +59,7 @@ const app = new Hono<{ Bindings: Env }>();
 app.use(rateLimit("chat"));
 
 app.post("/", async (c) => {
-  let body: { messages: ChatMessage[]; lang?: string };
+  let body: { messages: ChatMessage[]; lang?: string; userContext?: string };
   try {
     body = await c.req.json();
   } catch {
@@ -70,22 +70,27 @@ app.post("/", async (c) => {
 
   const history = body.messages.slice(-10);
 
+  // Inject user profile context into system prompt when available
+  const systemPrompt = body.userContext
+    ? `${SYSTEM_PROMPT}\n\n🎯 PROFIL DE L'UTILISATEUR (contexte prioritaire — personnalise TOUTES tes réponses en fonction) :\n${body.userContext}\nUtilise CE PROFIL pour des recommandations immédiatement personnalisées. Ne demande pas les infos déjà connues.`
+    : SYSTEM_PROMPT;
+
   // Primary: OpenRouter free Llama 3.1 8B
   try {
-    const reply = await fetchOpenRouterChat(c.env.OPENROUTER_API_KEY, history);
+    const reply = await fetchOpenRouterChat(c.env.OPENROUTER_API_KEY, history, systemPrompt);
     if (reply) return c.json({ reply: reply.trim() });
   } catch { /* fall through to Gemini */ }
 
   // Fallback: Gemini 2.5 Flash
   try {
-    const reply = await fetchGeminiChat(c.env.GEMINI_API_KEY, history);
+    const reply = await fetchGeminiChat(c.env.GEMINI_API_KEY, history, systemPrompt);
     if (reply) return c.json({ reply: reply.trim() });
   } catch { /* fall through */ }
 
   return c.json({ reply: null });
 });
 
-async function fetchOpenRouterChat(apiKey: string, messages: ChatMessage[]): Promise<string | null> {
+async function fetchOpenRouterChat(apiKey: string, messages: ChatMessage[], systemPrompt: string = SYSTEM_PROMPT): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 10000);
 
@@ -101,7 +106,7 @@ async function fetchOpenRouterChat(apiKey: string, messages: ChatMessage[]): Pro
       body: JSON.stringify({
         model: "meta-llama/llama-3.1-8b-instruct:free",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: systemPrompt },
           ...messages.map((m) => ({
             role: m.role === "slimane" ? "assistant" : "user",
             content: m.content,
@@ -120,7 +125,7 @@ async function fetchOpenRouterChat(apiKey: string, messages: ChatMessage[]): Pro
   }
 }
 
-async function fetchGeminiChat(apiKey: string, messages: ChatMessage[]): Promise<string | null> {
+async function fetchGeminiChat(apiKey: string, messages: ChatMessage[], systemPrompt: string = SYSTEM_PROMPT): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 8000);
 
@@ -136,7 +141,7 @@ async function fetchGeminiChat(apiKey: string, messages: ChatMessage[]): Promise
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          system_instruction: { parts: [{ text: systemPrompt }] },
           contents,
           generationConfig: { maxOutputTokens: 650, temperature: 0.75 },
         }),

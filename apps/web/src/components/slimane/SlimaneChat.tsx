@@ -666,14 +666,66 @@ function generateSlimaneReply(userText: string, lang: Lang): { text: string; qui
 let openCallback: (() => void) | null = null;
 export function openSlimane() { openCallback?.(); }
 
+// ── Build user profile context from form store (no PII — orientation data only) ──
+function buildUserContext(bacTrack: string, grade: string, city: string, budget: string): string | null {
+  const parts: string[] = [];
+  if (bacTrack) parts.push(`Filière Bac : ${bacTrack}`);
+  if (grade) parts.push(`Moyenne générale : ${grade}/20`);
+  if (city) parts.push(`Ville/région : ${city}`);
+  if (budget) parts.push(`Situation financière : ${budget}`);
+  return parts.length ? parts.join(" · ") : null;
+}
+
+function getContextAwareGreeting(lang: Lang, bacTrack: string, grade: string, city: string): { text: string; quickReplies: string[] } {
+  if (!bacTrack && !grade) return getInitialGreeting(lang);
+
+  const gradeNum = parseFloat(grade);
+  const isHighAchiever = !isNaN(gradeNum) && gradeNum >= 15;
+  const isModerate = !isNaN(gradeNum) && gradeNum >= 12 && gradeNum < 15;
+
+  return {
+    text: tx(lang,
+      `Salut ! Je vois ton profil${bacTrack ? ` **Bac ${bacTrack}**` : ""}${grade ? ` · **${grade}/20**` : ""}${city ? ` · ${city}` : ""}. Je connais déjà tes données — pose ta question directement, je te réponds avec des recommandations personnalisées !`,
+      `مرحباً ! أرى ملفك${bacTrack ? ` **بكالوريا ${bacTrack}**` : ""}${grade ? ` · **${grade}/20**` : ""}${city ? ` · ${city}` : ""}. لديّ بياناتك بالفعل — اطرح سؤالك مباشرة وسأجيبك بتوصيات مخصصة !`,
+      `Hi! I can see your profile${bacTrack ? ` **Bac ${bacTrack}**` : ""}${grade ? ` · **${grade}/20**` : ""}${city ? ` · ${city}` : ""}. I already have your data — ask me directly and I'll give you personalised recommendations!`
+    ),
+    quickReplies: qx(lang,
+      [
+        bacTrack ? `Meilleures écoles Bac ${bacTrack} ${grade ? grade + "/20" : ""}`.trim() : "Voir mes options",
+        isHighAchiever ? "Options élite pour mon niveau" : isModerate ? "Options accessibles sans CPGE" : "Toutes mes options",
+        city ? `Écoles à ${city}` : "Écoles par ville",
+        "Passer le questionnaire complet",
+      ],
+      [
+        bacTrack ? `أفضل مدارس بكالوريا ${bacTrack} ${grade ? grade + "/20" : ""}`.trim() : "مشاهدة خياراتي",
+        isHighAchiever ? "خيارات نخبوية لمستواي" : isModerate ? "خيارات بدون أقسام تحضيرية" : "جميع خياراتي",
+        city ? `مدارس في ${city}` : "المدارس حسب المدينة",
+        "إكمال الاستبيان الكامل",
+      ],
+      [
+        bacTrack ? `Best schools Bac ${bacTrack} ${grade ? grade + "/20" : ""}`.trim() : "See my options",
+        isHighAchiever ? "Elite options for my level" : isModerate ? "Accessible options without CPGE" : "All my options",
+        city ? `Schools in ${city}` : "Schools by city",
+        "Complete the full questionnaire",
+      ]
+    ),
+  };
+}
+
 // ── Main component ───────────────────────────────────────────────────────────
 export default function SlimaneChat() {
   const { t, i18n } = useTranslation();
   const lang = (["fr", "ar", "en"].includes(i18n.language) ? i18n.language : "fr") as Lang;
   const isRtl = lang === "ar";
 
+  // Read orientation data from form store (no PII)
+  const bacTrack = useFormStore((s) => s.bacTrack);
+  const generalGrade = useFormStore((s) => s.generalGrade);
+  const city = useFormStore((s) => s.city);
+  const financialBracket = useFormStore((s) => s.financialBracket);
+
   const makeInitial = (l: Lang): Message => {
-    const g = getInitialGreeting(l);
+    const g = getContextAwareGreeting(l, bacTrack, generalGrade, city);
     return { role: "slimane", content: g.text, quickReplies: g.quickReplies, timestamp: new Date() };
   };
 
@@ -687,10 +739,10 @@ export default function SlimaneChat() {
   const inputRef = useRef<HTMLInputElement>(null);
   const setSlimaneMode = useFormStore((s) => s.setSlimaneMode);
 
-  // Reset greeting when language changes (deliberately omits other deps — only `lang` should retrigger this)
+  // Reset greeting when language or profile changes
   useEffect(() => {
     setMessages([makeInitial(lang)]);
-  }, [lang]);
+  }, [lang, bacTrack, generalGrade, city]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     openCallback = () => { setOpen(true); setUnread(0); };
@@ -737,10 +789,15 @@ export default function SlimaneChat() {
           role: m.role as "user" | "slimane",
           content: m.content,
         }));
+        const userContext = buildUserContext(bacTrack, generalGrade, city, financialBracket);
         const res = await fetch(`${API_BASE}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: history, lang }),
+          body: JSON.stringify({
+            messages: history,
+            lang,
+            ...(userContext ? { userContext } : {}),
+          }),
         });
         const data = await res.json() as { reply: string | null };
         const aiReply = data.reply?.trim() ?? null;
