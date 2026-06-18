@@ -16,7 +16,7 @@ export default function CompareBar() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-navy-900 border border-white/10 rounded-2xl shadow-2xl px-5 py-3 flex items-center gap-4"
+          className="fixed bottom-24 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 bg-navy-900 border border-white/10 rounded-2xl shadow-2xl px-5 py-3 flex items-center gap-4"
           style={{ maxWidth: "calc(100vw - 2rem)" }}
         >
           <div className="flex items-center gap-2">

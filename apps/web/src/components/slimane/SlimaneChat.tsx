@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useFormStore } from "../../stores/formStore";
 import { useProgressStore } from "../../stores/progressStore";
@@ -779,10 +779,13 @@ export default function SlimaneChat() {
   }, [isThinking, open, lang, messages]);
 
   const posClass = isRtl ? "left-6 right-auto" : "right-6 left-auto";
+  const dragX = useMotionValue(0);
+  const dragY = useMotionValue(0);
+  const dragMovedRef = useRef(false);
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — draggable to reposition */}
       <AnimatePresence>
         {!open && (
           <motion.button
@@ -791,9 +794,16 @@ export default function SlimaneChat() {
             exit={{ scale: 0, opacity: 0 }}
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            onClick={() => { setOpen(true); setUnread(0); }}
-            className={`fixed bottom-6 z-50 group flex items-center gap-3 ${posClass}`}
-            style={{ flexDirection: isRtl ? "row-reverse" : "row" }}
+            drag
+            dragMomentum={false}
+            style={{ x: dragX, y: dragY, flexDirection: isRtl ? "row-reverse" : "row" }}
+            onDrag={() => { dragMovedRef.current = true; }}
+            onDragStart={() => { dragMovedRef.current = false; }}
+            onClick={() => {
+              if (!dragMovedRef.current) { setOpen(true); setUnread(0); }
+              dragMovedRef.current = false;
+            }}
+            className={`fixed bottom-6 z-50 group flex items-center gap-3 cursor-grab active:cursor-grabbing ${posClass}`}
           >
             <motion.div
               initial={{ opacity: 0, x: isRtl ? -10 : 10 }}
