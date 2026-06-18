@@ -291,21 +291,25 @@ export default function Home() {
             </button>
           </motion.div>
 
-          {/* Comparator callout */}
+          {/* Comparator callout — 1er au Maroc */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.85, duration: 0.6 }}
-            className="mt-4 flex justify-center"
+            className="mt-5 flex justify-center"
           >
             <Link
               to="/comparer"
-              className="group inline-flex items-center gap-3 px-5 py-3 bg-white/8 border border-white/15 rounded-2xl backdrop-blur-sm hover:bg-white/12 hover:border-gold-400/40 transition-all duration-300"
+              className="group relative inline-flex items-center gap-3 px-5 py-3.5 bg-gradient-to-r from-gold-500/12 to-white/5 border border-gold-400/35 rounded-2xl backdrop-blur-sm hover:from-gold-500/20 hover:border-gold-400/60 transition-all duration-300 shadow-lg shadow-gold-500/10"
             >
-              <span className="w-9 h-9 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-lg flex-shrink-0">⚖️</span>
+              {/* PREMIER badge */}
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md whitespace-nowrap">
+                🇲🇦 1er comparateur au Maroc
+              </span>
+              <span className="w-10 h-10 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-xl flex-shrink-0">⚖️</span>
               <span className="text-left">
                 <span className="block text-white text-sm font-bold">{t("hero.compare.title")}</span>
-                <span className="block text-white/60 text-xs">{t("hero.compare.subtitle")}</span>
+                <span className="block text-white/55 text-xs">{t("hero.compare.subtitle")}</span>
               </span>
               <svg className="w-4 h-4 text-gold-300 group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -443,6 +447,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── COMPARATOR SPOTLIGHT ──────────────────────────────────────────── */}
+      <ComparatorSpotlight />
+
       {/* ─── SCHOOLS SHOWCASE ───────────────────────────────────────────────── */}
       <section className="py-24 bg-navy-950">
         <div className="max-w-6xl mx-auto px-4">
@@ -530,9 +537,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* ─── COMPARATOR SPOTLIGHT ──────────────────────────────────────────── */}
-      <ComparatorSpotlight />
 
       {/* ─── BAC TRACK EXPLORER ─────────────────────────────────────────────── */}
       <section className="py-24 bg-cream">
@@ -828,21 +832,46 @@ function ComparatorSpotlight() {
   const { t } = useTranslation();
 
   const PREVIEW_ROWS = [
-    { label: "Admission", values: ["CNC", "Dossier", "Dossier"] },
-    { label: "Frais/an", values: ["0–3 000 MAD", "45–100 K MAD", "67–125 K MAD"] },
+    { label: "Admission", values: ["CNC", "Dossier", "TAFEM"] },
+    { label: "Frais/an", values: ["0–3 000 MAD", "45–100 K MAD", "5–12 K MAD"] },
     { label: "Logement", values: ["✓ Campus", "✓ Campus", "✓ Campus"] },
-    { label: "Salaire départ", values: ["11 000 MAD", "13 000 MAD", "12 000 MAD"] },
+    { label: "Salaire départ", values: ["11 000 MAD", "15 000 MAD", "7 500 MAD"] },
   ];
 
   const PREVIEW_SCHOOLS = [
     { name: "EMI", color: "from-violet-600 to-violet-700", icon: "⚙️", city: "Rabat" },
     { name: "UM6P", color: "from-emerald-600 to-emerald-700", icon: "🌍", city: "Ben Guerir" },
-    { name: "UIR", color: "from-blue-600 to-blue-700", icon: "🎓", city: "Rabat" },
+    { name: "ENCG", color: "from-blue-600 to-blue-700", icon: "📊", city: "Casablanca" },
   ];
 
   return (
     <section className="py-24 bg-navy-950 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4">
+
+        {/* Full-width first-in-Morocco banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <div className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-gradient-to-r from-gold-500/15 to-gold-400/10 border border-gold-500/30 rounded-full text-gold-300 text-sm font-bold mb-6 shadow-lg shadow-gold-500/10">
+            <span className="text-xl">🇲🇦</span>
+            <span className="uppercase tracking-widest text-xs font-black">Exclusivité — 1er comparateur d'écoles supérieures au Maroc</span>
+            <span className="w-2 h-2 bg-gold-400 rounded-full animate-pulse" />
+          </div>
+          <h2 className="font-heading text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
+            Comparez côte à côte
+            <br />
+            <span className="bg-gradient-to-r from-gold-400 via-gold-300 to-gold-500 bg-clip-text text-transparent">
+              toutes les grandes écoles
+            </span>
+          </h2>
+          <p className="text-navy-300 text-lg max-w-2xl mx-auto">
+            Pour la première fois au Maroc — frais, admission, logement, carrières : tout, côte à côte, en un clic.
+          </p>
+        </motion.div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
           {/* Left: copy */}
@@ -851,47 +880,42 @@ function ComparatorSpotlight() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gold-500/10 border border-gold-500/20 rounded-full text-gold-400 text-xs font-bold uppercase tracking-wider mb-6">
-              <span className="text-sm">⚖</span>
-              {t("home.compare.badge")}
-            </div>
-
-            <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
-              {t("home.compare.heading")}
-              <br />
-              <span className="bg-gradient-to-r from-gold-400 to-gold-600 bg-clip-text text-transparent">
-                {t("home.compare.heading.highlight")}
-              </span>
-            </h2>
-
-            <p className="text-navy-300 text-base leading-relaxed mb-8">
-              {t("home.compare.desc")}
-            </p>
-
-            <ul className="space-y-3 mb-10">
+            <ul className="space-y-4 mb-10">
               {[
-                { icon: "🎓", key: "home.compare.feat.admission" },
-                { icon: "💰", key: "home.compare.feat.cost" },
-                { icon: "🏠", key: "home.compare.feat.housing" },
-                { icon: "💼", key: "home.compare.feat.careers" },
+                { icon: "🎓", label: "Critères d'admission côte à côte", desc: "CPGE/CNC, TAFEM, dossier — comparez les voies d'accès en un coup d'œil" },
+                { icon: "💰", label: "Frais réels sans surprise", desc: "De 0 MAD (écoles publiques) à 150 000 MAD/an (médecine privée)" },
+                { icon: "🏠", label: "Logement & campus", desc: "Résidence sur campus, cité U, foyer — tout ce qu'il faut savoir" },
+                { icon: "💼", label: "Débouchés & salaires", desc: "Familles de métiers, salaires de départ, taux d'emploi par école" },
+                { icon: "📍", label: "Localisation & ville", desc: "Casablanca, Rabat, Fès, Marrakech — trouvez l'école dans votre région" },
               ].map((feat) => (
-                <li key={feat.key} className="flex items-start gap-3 text-navy-200 text-sm">
-                  <span className="text-base mt-0.5 flex-shrink-0">{feat.icon}</span>
-                  {t(feat.key)}
+                <li key={feat.label} className="flex items-start gap-3.5">
+                  <span className="text-xl mt-0.5 flex-shrink-0">{feat.icon}</span>
+                  <div>
+                    <span className="text-white font-bold text-sm block">{feat.label}</span>
+                    <span className="text-navy-400 text-xs leading-relaxed">{feat.desc}</span>
+                  </div>
                 </li>
               ))}
             </ul>
 
-            <Link
-              to="/comparer"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-base shadow-xl shadow-gold-500/20 hover:shadow-gold-500/40 hover:scale-105 transition-all duration-300 touch-target"
-            >
-              <span className="text-lg">⚖</span>
-              {t("home.compare.cta")}
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                to="/comparer"
+                className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-base shadow-xl shadow-gold-500/20 hover:shadow-gold-500/40 hover:scale-105 transition-all duration-300 touch-target"
+              >
+                <span className="text-lg">⚖</span>
+                {t("home.compare.cta")}
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
+              <Link
+                to="/ecoles"
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 border border-white/15 text-white/70 rounded-full font-medium text-sm hover:bg-white/8 hover:text-white transition-all"
+              >
+                Voir toutes les écoles
+              </Link>
+            </div>
           </motion.div>
 
           {/* Right: comparison table preview */}
@@ -962,18 +986,18 @@ function ComparatorSpotlight() {
               </div>
             </div>
 
-            {/* Floating badge */}
+            {/* Floating badge — 1er */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 10, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
-              className="absolute -bottom-4 -right-4 bg-gradient-to-br from-gold-500 to-gold-600 text-navy-900 rounded-2xl px-4 py-2.5 shadow-xl shadow-gold-500/30 flex items-center gap-2"
+              className="absolute -bottom-4 -right-4 bg-gradient-to-br from-gold-500 to-gold-600 text-navy-900 rounded-2xl px-4 py-3 shadow-xl shadow-gold-500/30 flex items-center gap-2.5"
             >
-              <span className="text-lg">⚖</span>
+              <span className="text-2xl">🥇</span>
               <div>
-                <div className="text-xs font-bold leading-none">3 écoles</div>
-                <div className="text-[10px] opacity-75 mt-0.5">max simultanées</div>
+                <div className="text-xs font-black leading-none uppercase tracking-wide">1er au Maroc</div>
+                <div className="text-[10px] opacity-75 mt-0.5 font-semibold">comparateur d'écoles</div>
               </div>
             </motion.div>
           </motion.div>
