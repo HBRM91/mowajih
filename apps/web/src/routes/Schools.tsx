@@ -10,6 +10,7 @@ import {
   type SchoolTier,
   type SchoolType,
 } from "../data/schools";
+import { getSchoolCareers } from "../data/careers";
 import SchoolLogo from "../components/ui/SchoolLogo";
 import { useCompareStore } from "../stores/compareStore";
 import { useMergedSchools } from "../hooks/useSchoolOverrides";
@@ -464,6 +465,7 @@ export default function Schools() {
                       school.annualCostMAD[0] === 0 && school.annualCostMAD[1] <= 3000
                         ? t("match.cost.free")
                         : t("school.cost.range", { min: school.annualCostMAD[0].toLocaleString("fr-FR"), max: school.annualCostMAD[1].toLocaleString("fr-FR") });
+                    const careerInfo = getSchoolCareers(school.slug);
                     return (
                       <motion.div
                         key={school.slug}
@@ -542,7 +544,21 @@ export default function Schools() {
                               </div>
                             )}
 
-                            <div className="flex items-center justify-between pt-3 border-t border-parchment">
+                            {/* Salary row */}
+                            {careerInfo && (
+                              <div className="flex items-center gap-3 py-2 border-t border-parchment text-[10px]">
+                                <div className="flex items-center gap-1">
+                                  <span className="text-navy-400">💰 Départ :</span>
+                                  <span className="font-bold text-emerald-700">{careerInfo.avgStartSalaryMAD.toLocaleString("fr-FR")} MAD</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-navy-400">Emploi :</span>
+                                  <span className="font-bold text-emerald-700">{careerInfo.employmentRate}%</span>
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="flex items-center justify-between pt-2 border-t border-parchment">
                               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-lg border ${admColors.bg} ${admColors.text} ${admColors.border}`}>
                                 {t(`admission.${school.admission}.label`)}
                               </span>

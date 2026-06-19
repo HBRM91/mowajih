@@ -661,6 +661,14 @@ export default function SchoolDetail() {
                     </div>
                   </div>
 
+                  {/* Key insight */}
+                  {careers.keyInsight && (
+                    <div className="bg-navy-900 rounded-xl px-4 py-3.5 flex items-start gap-3">
+                      <span className="text-gold-400 text-lg flex-shrink-0 mt-0.5">💡</span>
+                      <p className="text-navy-200 text-sm leading-relaxed">{careers.keyInsight}</p>
+                    </div>
+                  )}
+
                   {/* International */}
                   {careers.internationalOpportunities !== undefined && (
                     <div className={`flex items-center gap-2 text-sm rounded-xl px-4 py-3 border ${careers.internationalOpportunities ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-600"}`}>

@@ -10,6 +10,7 @@ export interface SchoolCareers {
   topEmployers: string[];
   employmentRate: number;
   internationalOpportunities?: boolean;
+  keyInsight?: string;
 }
 
 export const CAREERS_DATA: Record<string, SchoolCareers> = {
@@ -22,7 +23,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["OCP Group", "Maroc Telecom", "CDG", "BMCE Bank", "McKinsey Maroc", "Capgemini Maroc", "Attijariwafa Bank", "Royal Air Maroc"],
     employmentRate: 96,
     internationalOpportunities: true,
+    "keyInsight": "La plus ancienne grande école d'ingénieurs du Maroc. Ses diplômés dominent les directions IT des grands groupes publics (OCP, CDG, ONEE) et les cabinets de conseil internationaux. Réseau alumni très actif en Afrique francophone."
   },
+
   "ehtp": {
     jobFamilies: ["Ingénieur génie civil", "Chef de chantier BTP", "Ingénieur transport", "Directeur de projets", "Urbaniste", "Ingénieur hydraulique", "BIM Manager"],
     avgStartSalaryMAD: 10000,
@@ -30,7 +33,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["OCP Group", "ONCF", "ADM (Autoroutes)", "Lydec", "Groupe Holcim", "TGCC", "Al Omrane", "Bouygues Maroc", "EGIS"],
     employmentRate: 95,
     internationalOpportunities: true,
+    "keyInsight": "Référence nationale pour les grands travaux publics — autoroutes, ports, TGV. Les diplômés pilotent les plus grands chantiers d'infrastructure du Maroc. Double diplôme avec écoles françaises possible."
   },
+
   "ensias": {
     jobFamilies: ["Ingénieur logiciel", "Cybersécurité", "Data Scientist", "Architecte cloud", "Product Manager", "AI Engineer", "Blockchain Developer"],
     avgStartSalaryMAD: 12000,
@@ -38,7 +43,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["Capgemini Maroc", "Sqli", "Maroc Telecom", "OCP Digital", "CGI", "Oracle Maroc", "IBM", "Google (remote)", "startups tech"],
     employmentRate: 97,
     internationalOpportunities: true,
+    "keyInsight": "#1 informatique au Maroc. Les profils IA/ML d'ENSIAS sont les plus recherchés par les multinationales tech. Salaire départ pour profils IA : 12 000–18 000 MAD. Seniors IA : 35 000–60 000 MAD. Forte culture CTF et cybersécurité."
   },
+
   "inpt": {
     jobFamilies: ["Ingénieur télécoms", "Ingénieur réseaux", "Cybersécurité", "Ingénieur cloud", "IoT Engineer", "5G Specialist", "Network Architect"],
     avgStartSalaryMAD: 11000,
@@ -46,7 +53,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["Maroc Telecom", "Orange Maroc", "Inwi", "Nokia", "Ericsson Maroc", "Huawei Maroc", "Cisco", "AWS", "Azure"],
     employmentRate: 96,
     internationalOpportunities: true,
+    "keyInsight": "Dominant en télécoms et réseaux. Les diplômés pilotent le déploiement 5G et la fibre optique au Maroc. Partenariats directs avec Nokia, Ericsson, Huawei, Cisco, AWS et Azure."
   },
+
   "enim": {
     jobFamilies: ["Ingénieur minier", "Ingénieur chimiste", "Géologue de production", "Ingénieur environnement", "Ingénieur procédés", "HSE Manager"],
     avgStartSalaryMAD: 9000,
@@ -54,7 +63,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["OCP Group", "MANAGEM Group", "CMH", "COSUMAR", "LafargeHolcim", "MASEN", "ONEE", "Managem"],
     employmentRate: 93,
     internationalOpportunities: false,
+    "keyInsight": "L'école de référence pour l'industrie minière et chimique marocaine. OCP Group est l'employeur dominant. Carrières stables mais concentrées géographiquement (Khouribga, Benguerir, Laâyoune)."
   },
+
   "insea": {
     jobFamilies: ["Actuaire", "Data Scientist", "Économètre", "Analyste risques", "Statisticien", "Quantitative Analyst", "Risk Modeler"],
     avgStartSalaryMAD: 10000,
@@ -62,7 +73,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["Bank Al-Maghrib", "Wafa Assurance", "HCP", "CDG", "CIH Bank", "AXA Maroc", "Saham Assurance", "BCP Group"],
     employmentRate: 94,
     internationalOpportunities: true,
+    "keyInsight": "Seule école nationale de statistique et d'actuariat au Maroc. Les diplômés sont indispensables aux départements risques des banques et aux équipes pricing des assurances. Les certifications actuarielles (IA) ouvrent des salaires de 40 000+ MAD."
   },
+
 
   // ─── TIER 2 — ELITE BUSINESS ──────────────────────────────────────────────
   "iscae": {
@@ -72,7 +85,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["Deloitte Maroc", "KPMG", "PwC", "Attijariwafa Bank", "BMCE Bank", "ONA Group", "CDG", "Crédit du Maroc", "Saham"],
     employmentRate: 94,
     internationalOpportunities: true,
+    "keyInsight": "La grande école de commerce publique du Maroc, accréditée AACSB. Les Big 4 (Deloitte, KPMG, PwC, EY) recrutent massivement. Le MBA Executive alimente le pipeline des directeurs généraux et DAF des plus grandes entreprises."
   },
+
 
   // ─── UM6P ─────────────────────────────────────────────────────────────────
   "um6p": {
@@ -82,7 +97,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["OCP Group", "McKinsey", "CERN", "Google", "Startups tech", "MASEN", "IRESEN", "African Development Bank"],
     employmentRate: 92,
     internationalOpportunities: true,
+    "keyInsight": "L'université la plus orientée recherche d'Afrique, adossée à OCP. Enseignement 100% anglais. Bourses très généreuses (jusqu'à 100% pour les profils excellence). Les diplômés data/greentech commandent des salaires premium dès la sortie."
   },
+
 
   // ─── ENSAM NETWORK ────────────────────────────────────────────────────────
   "ensam-casablanca": {
@@ -92,7 +109,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["PSA Maroc", "Renault Tanger", "Safran", "Yazaki", "Valeo Maroc", "Stellantis", "LEONI", "SOMACA"],
     employmentRate: 91,
     internationalOpportunities: false,
+    "keyInsight": "Pipeline direct vers les équipementiers automobiles et aéronautiques (PSA/Stellantis, Renault, Safran, Yazaki). L'ingénierie industrielle et la qualité sont les points forts historiques."
   },
+
   "ensam-meknes": {
     jobFamilies: ["Ingénieur industriel", "Responsable qualité", "Ingénieur méthodes", "Ingénieur HSE", "Responsable logistique", "Production Manager"],
     avgStartSalaryMAD: 7000,
@@ -118,7 +137,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["CGI Maroc", "Capgemini", "Lydec", "OCP", "IBM Maroc", "Sqli", "IT Factory", "startups Casa"],
     employmentRate: 91,
     internationalOpportunities: true,
+    "keyInsight": "L'ENSA la plus orientée tech. Forte filière logiciel et cloud computing. La localisation Casablanca donne accès aux multinationales IT en offshoring vers l'Europe."
   },
+
   "ensa-agadir": {
     jobFamilies: ["Ingénieur génie civil", "Ingénieur électrique", "Développeur logiciel", "Ingénieur agroalimentaire", "Chef de projet", "Ingénieur énergie renouvelable"],
     avgStartSalaryMAD: 6500,
@@ -232,7 +253,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["Attijariwafa Bank", "OCP", "L'Oréal Maroc", "P&G Maroc", "Nestlé Maroc", "Unilever", "Danone", "Marjane"],
     employmentRate: 92,
     internationalOpportunities: false,
+    "keyInsight": "La meilleure ENCG du réseau. Forte insertion dans les FMCG (L'Oréal, P&G, Nestlé, Unilever) et le secteur bancaire. Marketing et finance sont les filières les plus compétitives."
   },
+
   "encg-agadir": {
     jobFamilies: ["Manager commercial", "Responsable marketing", "Gestionnaire PME", "Contrôleur de gestion", "Chargé export", "Agro-business Manager"],
     avgStartSalaryMAD: 6500,
@@ -322,7 +345,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["CHU Ibn Sina", "Cliniques privées", "Ministère de la Santé", "OCP", "CNSS", "Hôpitaux militaires", "Recherche internationale"],
     employmentRate: 99,
     internationalOpportunities: true,
+    "keyInsight": "Première faculté de médecine du Maroc. Les diplômés dominent les postes de spécialistes à Rabat et Casablanca. La migration internationale (France, Belgique, Golfe) est courante pour les médecins marocains."
   },
+
   "fm-casablanca": {
     jobFamilies: ["Médecin généraliste", "Spécialiste hospitalier", "Chirurgien", "Dentiste", "Pharmacien", "Biologiste médical"],
     avgStartSalaryMAD: 7500,
@@ -330,7 +355,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["CHU Ibn Rochd", "Clinique Casablanca", "Polyclinique privée", "Ministère Santé", "CNOPS", "Pharma industry"],
     employmentRate: 99,
     internationalOpportunities: true,
+    "keyInsight": "Plus grande faculté de médecine par volume. Riche écosystème de cliniques privées à Casablanca. Un spécialiste établi en secteur privé peut atteindre 50 000+ MAD/mois."
   },
+
   "fm-fes": {
     jobFamilies: ["Médecin généraliste", "Spécialiste", "Chirurgien", "Médecin urgentiste", "Pharmacien", "Biologiste"],
     avgStartSalaryMAD: 7500,
@@ -466,7 +493,9 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["OCP Africa", "Al Moutmir", "FNADMV", "INRA Maroc", "FAO/ONU Maroc", "Ministère Agriculture", "ONSSA", "Cosumar", "Centrale Danone"],
     employmentRate: 92,
     internationalOpportunities: true,
+    "keyInsight": "Seule école combinant agronomie et médecine vétérinaire au Maroc. Critique pour la sécurité alimentaire nationale. Les vétérinaires en pratique libérale gagnent 25 000+ MAD."
   },
+
 
   // ─── TOURISM ──────────────────────────────────────────────────────────────
   "isit-tanger": {
@@ -529,6 +558,7 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["Boeing Maroc", "Airbus Africa", "OCP", "Capgemini", "Orange Digital Center", "Safran", "Thales", "Dassault Systèmes"],
     employmentRate: 90,
     internationalOpportunities: true,
+    keyInsight: "Programmes bilingues/trilingues accrédités CTI. Forte filière aéronautique (partenariat Airbus). Tuition élevée mais ROI rapide via placement multinational. Partenariats de recherche avec MIT et Georgia Tech.",
   },
   "al-akhawayn": {
     jobFamilies: ["Manager international", "Diplomate", "Consultant", "Entrepreneur", "Chercheur", "Data Analyst", "Finance Analyst"],
@@ -537,6 +567,7 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["Deloitte", "BCG", "Ambassades", "Multinationales", "ONG internationales", "Banques internationales", "USAID", "World Bank"],
     employmentRate: 88,
     internationalOpportunities: true,
+    keyInsight: "L'université américaine du Maroc — modèle liberal arts, 100% anglais. Les diplômés dominent le corps diplomatique, le conseil international et les organisations multilatérales. Bourses très généreuses (50–100% pour profils méritants).",
   },
   "hem": {
     jobFamilies: ["Manager marketing", "Directeur commercial", "Responsable RH", "Analyste financier", "Entrepreneur", "Consultant management"],
@@ -545,6 +576,7 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["Attijariwafa Bank", "Crédit du Maroc", "L'Oréal", "Total Maroc", "Philip Morris", "P&G", "Nestlé", "Unilever", "Groupe OCP"],
     employmentRate: 89,
     internationalOpportunities: false,
+    keyInsight: "Première business school privée accréditée AACSB au Maroc. 12 000+ alumni dans les cercles dirigeants de Casablanca. Les FMCG (L'Oréal, P&G, Nestlé) recrutent massivement. Réseau alumni très actif.",
   },
   "mundiapolis": {
     jobFamilies: ["Manager international", "Ingénieur logiciel", "Juriste international", "Responsable RH", "Commercial export", "Compliance Officer"],
@@ -577,6 +609,7 @@ export const CAREERS_DATA: Record<string, SchoolCareers> = {
     topEmployers: ["Deloitte", "EY", "Multinationales France", "BMCE Bank", "Crédit Agricole", "BNP Paribas Maroc", "Société Générale", "Mazars"],
     employmentRate: 91,
     internationalOpportunities: true,
+    keyInsight: "Grande école de management accréditée EFMD avec 150+ partenaires universitaires mondiaux. Conseil et finance sont les filières les plus fortes. Réseau français de corporate finance très dense.",
   },
   "upf": {
     jobFamilies: ["Médecin généraliste", "Pharmacien", "Juriste d'entreprise", "Manager", "Ingénieur logiciel", "Infirmier spécialisé"],
