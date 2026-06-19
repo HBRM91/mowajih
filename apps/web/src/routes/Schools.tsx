@@ -29,6 +29,163 @@ const TYPE_ICONS: Record<string, string> = {
 const TRACK_LIST = ["SM", "PC", "SVT", "SE", "SH", "STI", "L"];
 const TIER_ORDER: SchoolTier[] = ["elite", "premium", "selective", "standard", "accessible"];
 
+const BUDGET_RANGES = [
+  { key: "all",   label: "Tous les budgets" },
+  { key: "free",  label: "Gratuit",           max: 3000 },
+  { key: "15k",   label: "< 15 000 MAD/an",  max: 15000 },
+  { key: "50k",   label: "< 50 000 MAD/an",  max: 50000 },
+  { key: "any",   label: "Premium (50K+)" },
+] as const;
+type BudgetKey = typeof BUDGET_RANGES[number]["key"];
+
+function FilterPanelContent({
+  filterTier, setFilterTier, filterTrack, setFilterTrack,
+  filterAccess, setFilterAccess, filterCity, setFilterCity,
+  filterBudget, setFilterBudget, filterCampus, setFilterCampus,
+  sortBy, setSortBy, cities, hasActiveFilter, resetFilters, t,
+}: {
+  filterTier: SchoolTier | "all"; setFilterTier: (v: SchoolTier | "all") => void;
+  filterTrack: string; setFilterTrack: (v: string) => void;
+  filterAccess: "all" | "public" | "private"; setFilterAccess: (v: "all" | "public" | "private") => void;
+  filterCity: string; setFilterCity: (v: string) => void;
+  filterBudget: BudgetKey; setFilterBudget: (v: BudgetKey) => void;
+  filterCampus: boolean; setFilterCampus: (v: boolean) => void;
+  sortBy: "tier" | "alpha" | "cost"; setSortBy: (v: "tier" | "alpha" | "cost") => void;
+  cities: string[]; hasActiveFilter: boolean; resetFilters: () => void;
+  t: (key: string) => string;
+}) {
+  return (
+    <div className="space-y-5">
+      {/* Ville */}
+      <div>
+        <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-2">🏙️ Ville</div>
+        <select
+          value={filterCity}
+          onChange={(e) => setFilterCity(e.target.value)}
+          className="w-full px-3 py-2 rounded-xl border border-parchment text-sm text-navy-700 bg-cream focus:border-gold-400 focus:outline-none transition-colors"
+        >
+          <option value="all">Toutes les villes</option>
+          {cities.map((city) => (
+            <option key={city} value={city}>{city}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Budget */}
+      <div>
+        <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-2">💰 Budget annuel</div>
+        <div className="space-y-1">
+          {BUDGET_RANGES.map((r) => (
+            <button
+              key={r.key}
+              onClick={() => setFilterBudget(r.key)}
+              className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                filterBudget === r.key ? "bg-navy-800 text-white" : "text-navy-600 hover:bg-parchment"
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Niveau */}
+      <div>
+        <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-2">{t("schools.sidebar.tier")}</div>
+        <div className="space-y-1">
+          {(["all", ...TIER_ORDER] as const).map((tier) => (
+            <button
+              key={tier}
+              onClick={() => setFilterTier(tier as SchoolTier | "all")}
+              className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                filterTier === tier ? "bg-navy-800 text-white" : "text-navy-600 hover:bg-parchment"
+              }`}
+            >
+              {tier === "all" ? t("schools.filter.tier.all") : t(`tier.${tier}`)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Filière Bac */}
+      <div>
+        <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-2">{t("schools.sidebar.track")}</div>
+        <div className="flex flex-wrap gap-1.5">
+          {["all", ...TRACK_LIST].map((track) => (
+            <button
+              key={track}
+              onClick={() => setFilterTrack(filterTrack === track ? "all" : track)}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                filterTrack === track ? "bg-gold-500 text-navy-900" : "bg-parchment text-navy-500 hover:bg-gold-50"
+              }`}
+            >
+              {track === "all" ? "Tous" : track}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Accès */}
+      <div>
+        <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-2">{t("schools.sidebar.access")}</div>
+        <div className="space-y-1">
+          {(["all", "public", "private"] as const).map((access) => (
+            <button
+              key={access}
+              onClick={() => setFilterAccess(access)}
+              className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                filterAccess === access ? "bg-navy-800 text-white" : "text-navy-600 hover:bg-parchment"
+              }`}
+            >
+              {access === "all" ? t("schools.filter.access.all") : access === "public" ? t("schools.filter.access.public") : t("schools.filter.access.private")}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Campus */}
+      <div>
+        <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-2">Campus</div>
+        <button
+          onClick={() => setFilterCampus(!filterCampus)}
+          className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+            filterCampus ? "bg-teal-600 text-white" : "text-navy-600 hover:bg-parchment"
+          }`}
+        >
+          🏫 Campus dédié uniquement
+        </button>
+      </div>
+
+      {/* Trier */}
+      <div>
+        <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-2">{t("schools.sidebar.sort")}</div>
+        <div className="space-y-1">
+          {(["tier", "alpha", "cost"] as const).map((key) => (
+            <button
+              key={key}
+              onClick={() => setSortBy(key)}
+              className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                sortBy === key ? "bg-navy-800 text-white" : "text-navy-600 hover:bg-parchment"
+              }`}
+            >
+              {t(`schools.sort.${key}`)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {hasActiveFilter && (
+        <button
+          onClick={resetFilters}
+          className="w-full py-2 text-xs text-gold-600 hover:text-gold-700 font-semibold border border-gold-200 rounded-xl hover:bg-gold-50 transition-all"
+        >
+          {t("schools.reset")}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function Schools() {
   const { t } = useTranslation();
   const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
@@ -38,8 +195,20 @@ export default function Schools() {
   const [filterTier, setFilterTier] = useState<SchoolTier | "all">("all");
   const [filterTrack, setFilterTrack] = useState<string>("all");
   const [filterAccess, setFilterAccess] = useState<"all" | "public" | "private">("all");
+  const [filterCity, setFilterCity] = useState<string>("all");
+  const [filterBudget, setFilterBudget] = useState<BudgetKey>("all");
   const [filterCampus, setFilterCampus] = useState(false);
   const [sortBy, setSortBy] = useState<"tier" | "alpha" | "cost">("tier");
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Derive unique cities sorted by school count
+  const cities = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allSchools.forEach((s) => { counts[s.city] = (counts[s.city] ?? 0) + 1; });
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([city]) => city);
+  }, [allSchools]);
 
   const filtered = useMemo(() => {
     let result = allSchools.filter((s) => {
@@ -57,6 +226,11 @@ export default function Schools() {
       if (filterTrack !== "all" && !s.tracks.includes(filterTrack)) return false;
       if (filterAccess === "public" && s.access !== "public" && s.access !== "semi-public") return false;
       if (filterAccess === "private" && s.access !== "private" && s.access !== "semi-public") return false;
+      if (filterCity !== "all" && s.city !== filterCity) return false;
+      if (filterBudget === "free" && s.annualCostMAD[0] > 3000) return false;
+      if (filterBudget === "15k" && s.annualCostMAD[0] >= 15000) return false;
+      if (filterBudget === "50k" && s.annualCostMAD[0] >= 50000) return false;
+      if (filterBudget === "any" && s.annualCostMAD[0] < 50000) return false;
       if (filterCampus && !s.hasCampus) return false;
       return true;
     });
@@ -70,7 +244,7 @@ export default function Schools() {
     }
 
     return result;
-  }, [allSchools, search, filterType, filterTier, filterTrack, filterAccess, sortBy]);
+  }, [allSchools, search, filterType, filterTier, filterTrack, filterAccess, filterCity, filterBudget, filterCampus, sortBy]);
 
   const typeGroups = useMemo(() => {
     const counts: Partial<Record<SchoolType | "all", number>> = { all: allSchools.length };
@@ -86,11 +260,14 @@ export default function Schools() {
     setFilterTier("all");
     setFilterTrack("all");
     setFilterAccess("all");
+    setFilterCity("all");
+    setFilterBudget("all");
     setFilterCampus(false);
     setSortBy("tier");
   };
 
-  const hasActiveFilter = search || filterType !== "all" || filterTier !== "all" || filterTrack !== "all" || filterAccess !== "all" || filterCampus;
+  const hasActiveFilter = !!(search || filterType !== "all" || filterTier !== "all" || filterTrack !== "all" || filterAccess !== "all" || filterCity !== "all" || filterBudget !== "all" || filterCampus);
+  const activeFilterCount = [filterType !== "all", filterTier !== "all", filterTrack !== "all", filterAccess !== "all", filterCity !== "all", filterBudget !== "all", filterCampus].filter(Boolean).length;
 
   return (
     <div className="min-h-screen bg-cream">
@@ -125,29 +302,80 @@ export default function Schools() {
               {t("schools.subtitle", { count: allSchools.length })}
             </p>
 
-            {/* Search bar */}
-            <div className="relative max-w-xl">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t("schools.search.placeholder")}
-                className="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-navy-400 focus:outline-none focus:border-gold-400/60 focus:bg-white/15 transition-all text-sm backdrop-blur-sm"
-              />
-              {search && (
-                <button onClick={() => setSearch("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-navy-400 hover:text-white transition-colors">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
+            {/* Search bar + mobile filter button */}
+            <div className="flex gap-3 max-w-xl">
+              <div className="relative flex-1">
+                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t("schools.search.placeholder")}
+                  className="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-navy-400 focus:outline-none focus:border-gold-400/60 focus:bg-white/15 transition-all text-sm backdrop-blur-sm"
+                />
+                {search && (
+                  <button onClick={() => setSearch("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-navy-400 hover:text-white transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              {/* Mobile filter toggle */}
+              <button
+                onClick={() => setShowMobileFilters(true)}
+                className="lg:hidden flex items-center gap-2 px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white text-sm font-semibold hover:bg-white/15 transition-all backdrop-blur-sm flex-shrink-0"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+                </svg>
+                Filtres
+                {activeFilterCount > 0 && (
+                  <span className="w-5 h-5 bg-gold-500 text-navy-900 rounded-full text-[10px] font-black flex items-center justify-center">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
             </div>
           </motion.div>
         </div>
       </div>
+
+      {/* Mobile filter drawer */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-navy-950/60 backdrop-blur-sm" onClick={() => setShowMobileFilters(false)} />
+          <div className="absolute right-0 top-0 bottom-0 w-80 max-w-full bg-cream shadow-2xl overflow-y-auto p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-heading font-bold text-navy-800 text-lg">Filtres</h3>
+              <button onClick={() => setShowMobileFilters(false)} className="p-2 rounded-xl hover:bg-parchment transition-colors">
+                <svg className="w-5 h-5 text-navy-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <FilterPanelContent
+              filterTier={filterTier} setFilterTier={setFilterTier}
+              filterTrack={filterTrack} setFilterTrack={setFilterTrack}
+              filterAccess={filterAccess} setFilterAccess={setFilterAccess}
+              filterCity={filterCity} setFilterCity={setFilterCity}
+              filterBudget={filterBudget} setFilterBudget={setFilterBudget}
+              filterCampus={filterCampus} setFilterCampus={setFilterCampus}
+              sortBy={sortBy} setSortBy={setSortBy}
+              cities={cities} hasActiveFilter={hasActiveFilter} resetFilters={resetFilters}
+              t={t}
+            />
+            <button
+              onClick={() => setShowMobileFilters(false)}
+              className="w-full mt-6 py-3 bg-navy-800 text-white rounded-2xl font-bold"
+            >
+              Voir {filtered.length} école{filtered.length !== 1 ? "s" : ""}
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-6xl mx-auto px-4 py-10">
         {/* Type filter pills */}
@@ -180,112 +408,20 @@ export default function Schools() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar filters */}
-          <aside className="lg:w-56 flex-shrink-0">
-            <div className="bg-white rounded-2xl border border-parchment p-5 space-y-6 sticky top-20">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">{t("schools.sidebar.tier")}</div>
-                <div className="space-y-1.5">
-                  {(["all", ...TIER_ORDER] as const).map((tier) => {
-                    const isAll = tier === "all";
-                    return (
-                      <button
-                        key={tier}
-                        onClick={() => setFilterTier(tier as SchoolTier | "all")}
-                        className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                          filterTier === tier
-                            ? "bg-navy-800 text-white"
-                            : "text-navy-600 hover:bg-parchment"
-                        }`}
-                      >
-                        {isAll ? t("schools.filter.tier.all") : t(`tier.${tier}`)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">{t("schools.sidebar.track")}</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {["all", ...TRACK_LIST].map((track) => (
-                    <button
-                      key={track}
-                      onClick={() => setFilterTrack(filterTrack === track ? "all" : track)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                        filterTrack === track
-                          ? "bg-gold-500 text-navy-900"
-                          : "bg-parchment text-navy-500 hover:bg-gold-50"
-                      }`}
-                    >
-                      {track === "all" ? t("schools.filter.all") : track}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">{t("schools.sidebar.access")}</div>
-                <div className="space-y-1.5">
-                  {(["all", "public", "private"] as const).map((access) => (
-                    <button
-                      key={access}
-                      onClick={() => setFilterAccess(access)}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                        filterAccess === access
-                          ? "bg-navy-800 text-white"
-                          : "text-navy-600 hover:bg-parchment"
-                      }`}
-                    >
-                      {access === "all"
-                        ? t("schools.filter.access.all")
-                        : access === "public"
-                          ? t("schools.filter.access.public")
-                          : t("schools.filter.access.private")}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">Campus</div>
-                <button
-                  onClick={() => setFilterCampus(!filterCampus)}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
-                    filterCampus ? "bg-teal-600 text-white" : "text-navy-600 hover:bg-parchment"
-                  }`}
-                >
-                  🏫 Campus dédié uniquement
-                </button>
-              </div>
-
-              <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-navy-400 mb-3">{t("schools.sidebar.sort")}</div>
-                <div className="space-y-1.5">
-                  {(["tier", "alpha", "cost"] as const).map((key) => (
-                    <button
-                      key={key}
-                      onClick={() => setSortBy(key)}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                        sortBy === key
-                          ? "bg-navy-800 text-white"
-                          : "text-navy-600 hover:bg-parchment"
-                      }`}
-                    >
-                      {t(`schools.sort.${key}`)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {hasActiveFilter && (
-                <button
-                  onClick={resetFilters}
-                  className="w-full py-2 text-xs text-gold-600 hover:text-gold-700 font-semibold border border-gold-200 rounded-xl hover:bg-gold-50 transition-all"
-                >
-                  {t("schools.reset")}
-                </button>
-              )}
+          {/* Sidebar filters — desktop only */}
+          <aside className="hidden lg:block lg:w-60 flex-shrink-0">
+            <div className="bg-white rounded-2xl border border-parchment p-5 sticky top-20">
+              <FilterPanelContent
+                filterTier={filterTier} setFilterTier={setFilterTier}
+                filterTrack={filterTrack} setFilterTrack={setFilterTrack}
+                filterAccess={filterAccess} setFilterAccess={setFilterAccess}
+                filterCity={filterCity} setFilterCity={setFilterCity}
+                filterBudget={filterBudget} setFilterBudget={setFilterBudget}
+                filterCampus={filterCampus} setFilterCampus={setFilterCampus}
+                sortBy={sortBy} setSortBy={setSortBy}
+                cities={cities} hasActiveFilter={hasActiveFilter} resetFilters={resetFilters}
+                t={t}
+              />
             </div>
           </aside>
 
