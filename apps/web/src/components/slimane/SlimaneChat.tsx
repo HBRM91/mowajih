@@ -722,7 +722,6 @@ export default function SlimaneChat() {
   const bacTrack = useFormStore((s) => s.bacTrack);
   const generalGrade = useFormStore((s) => s.generalGrade);
   const city = useFormStore((s) => s.city);
-  const financialBracket = useFormStore((s) => s.financialBracket);
 
   const makeInitial = (l: Lang): Message => {
     // Use .getState() to always get current values, avoiding Zustand rehydration timing issues

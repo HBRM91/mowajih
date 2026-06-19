@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
+import { Helmet } from "react-helmet-async";
 import {
   TIER_COLORS,
   ADMISSION_COLORS,
@@ -93,6 +94,14 @@ export default function Schools() {
 
   return (
     <div className="min-h-screen bg-cream">
+      <Helmet>
+        <title>Toutes les écoles supérieures au Maroc — {allSchools.length}+ établissements | TAWJIH</title>
+        <meta name="description" content={`Annuaire complet de ${allSchools.length}+ écoles supérieures au Maroc : EMI, EHTP, ENSIAS, ENSA, ENCG, ISCAE, UM6P, UIR, médecine, architecture. Filtrez par ville, filière Bac, budget. Tawjihi 2026.`} />
+        <link rel="canonical" href="https://tawjih.jad2advisory.com/ecoles" />
+        <meta property="og:title" content={`${allSchools.length}+ écoles supérieures au Maroc | TAWJIH`} />
+        <meta property="og:description" content="Annuaire complet des grandes écoles, universités et instituts marocains. Frais, admission, programmes, carrières." />
+        <meta property="og:url" content="https://tawjih.jad2advisory.com/ecoles" />
+      </Helmet>
       {/* Header */}
       <div className="bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 text-white pt-24 pb-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/hero-campus.jpeg')] bg-cover bg-center opacity-15" />

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import { useCompareStore } from "../stores/compareStore";
 import { TIER_COLORS, ADMISSION_COLORS, type School } from "../data/schools";
 import { getSchoolText } from "../data/schools.i18n";
@@ -335,8 +336,21 @@ export default function Compare() {
   const { schools, remove, clear } = useCompareStore();
   const lang = i18n.language;
 
+  const schoolNames = schools.map((s) => s.shortName).join(" vs ");
+  const compareTitle = schoolNames
+    ? `${schoolNames} — Comparatif détaillé | TAWJIH`
+    : "Comparateur d'écoles supérieures au Maroc — 1er comparateur | TAWJIH";
+
   return (
     <div className="min-h-screen bg-cream pt-6 pb-20">
+      <Helmet>
+        <title>{compareTitle}</title>
+        <meta name="description" content="Premier et unique comparateur d'écoles supérieures au Maroc. Comparez EMI, EHTP, ENSIAS, UM6P, UIR, ENSA, ENCG, ISCAE côte à côte : frais, admission, logement, carrières, salaires." />
+        <link rel="canonical" href="https://tawjih.jad2advisory.com/comparer" />
+        <meta property="og:title" content={compareTitle} />
+        <meta property="og:description" content="1er comparateur d'écoles supérieures au Maroc. Admissions, frais, débouchés — tout côte à côte." />
+        <meta property="og:url" content="https://tawjih.jad2advisory.com/comparer" />
+      </Helmet>
       <div className="max-w-6xl mx-auto px-4">
 
         {/* ── Hero header ─────────────────────────────────────────────────── */}

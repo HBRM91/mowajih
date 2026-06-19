@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
+import { HelmetProvider } from "react-helmet-async";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import SlimaneChat from "./components/slimane/SlimaneChat";
@@ -25,6 +26,7 @@ const Contact = lazy(() => import("./routes/Contact"));
 
 function App() {
   return (
+    <HelmetProvider>
     <div className="flex flex-col min-h-screen bg-cream">
       <ScrollToTop />
       <Navbar />
@@ -55,6 +57,7 @@ function App() {
       <SlimaneChat />
       <CompareBar />
     </div>
+    </HelmetProvider>
   );
 }
 

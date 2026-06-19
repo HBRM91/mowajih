@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet-async";
 import {
   SCHOOLS,
   TIER_COLORS,
@@ -13,6 +14,8 @@ import { getSchoolCareers } from "../data/careers";
 import { getSchoolCampusInfo } from "../data/campusData";
 import { useCompareStore } from "../stores/compareStore";
 import { useProgressStore } from "../stores/progressStore";
+
+const BASE_URL = "https://tawjih.jad2advisory.com";
 
 function getDomainFromUrl(url?: string): string | null {
   if (!url) return null;
@@ -365,8 +368,36 @@ export default function SchoolDetail() {
     (s) => s.slug !== school.slug && s.type === school.type && s.tier === school.tier
   ).slice(0, 4);
 
+  // SEO
+  const pageUrl = `${BASE_URL}/ecoles/${school.slug}`;
+  const metaTitle = `${school.shortName} — ${school.name} | Admission ${new Date().getFullYear()}, Frais, Carrières | TAWJIH`;
+  const metaDesc = `${school.description.slice(0, 155).trimEnd()}… Frais : ${costText}. Filières : ${school.programs.slice(0, 3).join(", ")}.`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": school.name,
+    "alternateName": school.shortName,
+    "url": school.website ?? pageUrl,
+    "description": school.description,
+    "address": { "@type": "PostalAddress", "addressLocality": school.city, "addressCountry": "MA" },
+    "sameAs": school.website ? [school.website] : [],
+    ...(school.founded ? { "foundingDate": String(school.founded) } : {}),
+  };
+
   return (
     <div className="min-h-screen bg-cream">
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDesc} />
+        <link rel="canonical" href={pageUrl} />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDesc} />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
       {/* Header */}
       <div className="bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 text-white pt-24 pb-10 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/hero-campus.jpeg')] bg-cover bg-center opacity-10" />
