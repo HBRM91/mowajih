@@ -54,7 +54,12 @@ export default function Results() {
 
   const sortedMatches = hasMatches
     ? [...state!.matches].sort((a, b) => {
-        if (sort === "cost") return a.estimated_annual_cost_mad - b.estimated_annual_cost_mad;
+        if (sort === "cost") {
+          // Prefer API cost; fall back to school data minimum
+          const ca = a.estimated_annual_cost_mad || (getSchoolBySlug(a.university_slug)?.annualCostMAD[0] ?? 0);
+          const cb = b.estimated_annual_cost_mad || (getSchoolBySlug(b.university_slug)?.annualCostMAD[0] ?? 0);
+          return ca - cb;
+        }
         if (sort === "tier") {
           const ta = getSchoolBySlug(a.university_slug)?.tier ?? "standard";
           const tb = getSchoolBySlug(b.university_slug)?.tier ?? "standard";
@@ -280,10 +285,10 @@ export default function Results() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
               {sortedMatches.map((match, idx) => (
                 <motion.div
-                  key={match.university_slug}
-                  initial={{ opacity: 0, y: 24 }}
+                  key={`${sort}-${match.university_slug}`}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.06 }}
+                  transition={{ delay: idx * 0.04, duration: 0.3 }}
                   className="h-full"
                 >
                   <MatchCard match={match} rank={idx} />

@@ -64,6 +64,13 @@ function normalizeDecimal(raw: string): string {
   return raw.replace(",", ".");
 }
 
+function clampGrade(raw: string): string {
+  const normalized = normalizeDecimal(raw);
+  const num = parseFloat(normalized);
+  if (!isNaN(num) && num > 20) return "20";
+  return normalized;
+}
+
 function GradeInput({ label, value, onChange, placeholder = "0", required }: GradeInputProps) {
   const { t } = useTranslation();
   const numVal = value ? parseFloat(normalizeDecimal(value)) : null;
@@ -86,7 +93,8 @@ function GradeInput({ label, value, onChange, placeholder = "0", required }: Gra
           type="text"
           inputMode="decimal"
           value={value}
-          onChange={(e) => onChange(normalizeDecimal(e.target.value))}
+          onChange={(e) => onChange(clampGrade(e.target.value))}
+          onBlur={(e) => onChange(clampGrade(e.target.value))}
           className={`flex-1 px-3 py-2.5 rounded-lg border-2 text-sm font-bold text-navy-800 bg-cream outline-none transition ${
             value && !isValid
               ? "border-rose-300 focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
@@ -144,7 +152,8 @@ export default function StepGrades() {
               type="text"
               inputMode="decimal"
               value={form.generalGrade}
-              onChange={(e) => form.setField("generalGrade", normalizeDecimal(e.target.value))}
+              onChange={(e) => form.setField("generalGrade", clampGrade(e.target.value))}
+              onBlur={(e) => form.setField("generalGrade", clampGrade(e.target.value))}
               className="flex-1 px-4 py-3.5 rounded-xl border-2 border-parchment focus:border-gold-400 focus:ring-2 focus:ring-gold-200 outline-none transition text-xl font-bold text-navy-800 bg-white"
               placeholder="Ex: 14.50"
             />

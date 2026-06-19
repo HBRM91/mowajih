@@ -11,6 +11,7 @@ import {
   type SchoolType,
 } from "../data/schools";
 import { getSchoolCareers } from "../data/careers";
+import { getSchoolText } from "../data/schools.i18n";
 import { useWishlistStore } from "../stores/wishlistStore";
 import SchoolLogo from "../components/ui/SchoolLogo";
 import { useCompareStore } from "../stores/compareStore";
@@ -189,7 +190,8 @@ function FilterPanelContent({
 }
 
 export default function Schools() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = (["fr", "ar", "en"].includes(i18n.language) ? i18n.language : "fr") as "fr" | "ar" | "en";
   const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
   const { toggle: wishToggle, has: inWishlist } = useWishlistStore();
   const allSchools = useMergedSchools();
@@ -468,6 +470,7 @@ export default function Schools() {
                         ? t("match.cost.free")
                         : t("school.cost.range", { min: school.annualCostMAD[0].toLocaleString("fr-FR"), max: school.annualCostMAD[1].toLocaleString("fr-FR") });
                     const careerInfo = getSchoolCareers(school.slug);
+                    const schoolI18n = getSchoolText(school, lang);
                     return (
                       <motion.div
                         key={school.slug}
@@ -503,7 +506,7 @@ export default function Schools() {
                               </span>
                             </div>
 
-                            <p className="text-navy-500 text-xs leading-relaxed mb-3 line-clamp-2">{school.description}</p>
+                            <p className="text-navy-500 text-xs leading-relaxed mb-3 line-clamp-2">{schoolI18n.description}</p>
 
                             <div className="flex flex-wrap gap-1 mb-3">
                               {school.tracks.slice(0, 4).map((tr) => (
