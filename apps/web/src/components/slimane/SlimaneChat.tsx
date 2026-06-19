@@ -725,7 +725,9 @@ export default function SlimaneChat() {
   const financialBracket = useFormStore((s) => s.financialBracket);
 
   const makeInitial = (l: Lang): Message => {
-    const g = getContextAwareGreeting(l, bacTrack, generalGrade, city);
+    // Use .getState() to always get current values, avoiding Zustand rehydration timing issues
+    const { bacTrack: bt, generalGrade: gg, city: ct } = useFormStore.getState();
+    const g = getContextAwareGreeting(l, bt, gg, ct);
     return { role: "slimane", content: g.text, quickReplies: g.quickReplies, timestamp: new Date() };
   };
 
@@ -739,9 +741,12 @@ export default function SlimaneChat() {
   const inputRef = useRef<HTMLInputElement>(null);
   const setSlimaneMode = useFormStore((s) => s.setSlimaneMode);
 
-  // Reset greeting when language or profile changes
+  // Update greeting when language or profile changes — but never wipe an active conversation
   useEffect(() => {
-    setMessages([makeInitial(lang)]);
+    setMessages((prev) => {
+      if (prev.some((m) => m.role === "user")) return prev; // user has chatted, keep history
+      return [makeInitial(lang)];
+    });
   }, [lang, bacTrack, generalGrade, city]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -789,7 +794,9 @@ export default function SlimaneChat() {
           role: m.role as "user" | "slimane",
           content: m.content,
         }));
-        const userContext = buildUserContext(bacTrack, generalGrade, city, financialBracket);
+        // Read from store directly — avoids stale closure (useCallback deps don't include profile fields)
+        const { bacTrack: bt, generalGrade: gg, city: ct, financialBracket: fb } = useFormStore.getState();
+        const userContext = buildUserContext(bt, gg, ct, fb);
         const res = await fetch(`${API_BASE}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
