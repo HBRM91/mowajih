@@ -68,12 +68,25 @@ app.post("/", async (c) => {
 
   if (!body.messages?.length) return c.json({ error: "messages required" }, 400);
 
-  const history = body.messages.slice(-10);
+  const rawHistory = body.messages.slice(-10);
 
-  // Inject user profile context into system prompt when available
-  const systemPrompt = body.userContext
-    ? `${SYSTEM_PROMPT}\n\n🎯 PROFIL DE L'UTILISATEUR (contexte prioritaire — personnalise TOUTES tes réponses en fonction) :\n${body.userContext}\nUtilise CE PROFIL pour des recommandations immédiatement personnalisées. Ne demande pas les infos déjà connues.`
-    : SYSTEM_PROMPT;
+  // Inject user profile via BOTH system prompt AND conversation history
+  // Dual injection needed because free/small LLMs often ignore system prompt additions
+  let systemPrompt = SYSTEM_PROMPT;
+  let history = rawHistory;
+
+  if (body.userContext) {
+    // 1. Strengthen system prompt
+    systemPrompt = `${SYSTEM_PROMPT}\n\n🚨 PROFIL ÉTUDIANT CONNU — NE JAMAIS REDEMANDER CES INFORMATIONS :\n${body.userContext}\n→ Réponds IMMÉDIATEMENT en tenant compte de ce profil. Tu CONNAIS déjà la filière, la moyenne et la ville. Ne pose aucune question déjà répondue.`;
+
+    // 2. Prepend a pinned profile exchange at the start of history
+    const profileExchange: ChatMessage[] = [
+      { role: "user", content: `Mon profil : ${body.userContext}` },
+      { role: "slimane", content: `Parfait, j'ai bien noté ton profil. Pose ta question, je réponds directement.` },
+    ];
+    // Keep total history within 12 messages
+    history = [...profileExchange, ...rawHistory].slice(-12);
+  }
 
   // Primary: OpenRouter free Llama 3.1 8B
   try {

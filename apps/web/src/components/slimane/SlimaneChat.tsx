@@ -741,11 +741,38 @@ export default function SlimaneChat() {
   const inputRef = useRef<HTMLInputElement>(null);
   const setSlimaneMode = useFormStore((s) => s.setSlimaneMode);
 
-  // Update greeting when language or profile changes — but never wipe an active conversation
+  // Update greeting when language or profile changes
   useEffect(() => {
     setMessages((prev) => {
-      if (prev.some((m) => m.role === "user")) return prev; // user has chatted, keep history
-      return [makeInitial(lang)];
+      const hasUserMessages = prev.some((m) => m.role === "user");
+      if (!hasUserMessages) {
+        // No chat yet — update greeting with profile if available
+        return [makeInitial(lang)];
+      }
+      // User has chatted — inject a profile-aware Slimane message if profile just became available
+      const { bacTrack: bt, generalGrade: gg, city: ct } = useFormStore.getState();
+      if (!bt && !gg) return prev; // no profile yet, nothing to inject
+      // Check if we already injected a profile note
+      const alreadyInjected = prev.some((m) =>
+        m.role === "slimane" && m.content.includes("profil") && m.content.includes(bt)
+      );
+      if (alreadyInjected) return prev;
+      // Add a profile awareness message at the end of existing history
+      const profileNote: Message = {
+        role: "slimane",
+        content: tx(lang,
+          `J'ai maintenant ton profil complet${bt ? ` **Bac ${bt}**` : ""}${gg ? ` · **${gg}/20**` : ""}${ct ? ` · ${ct}` : ""}. Pose ta question, je réponds directement !`,
+          `لديّ الآن ملفك${bt ? ` **بكالوريا ${bt}**` : ""}${gg ? ` · **${gg}/20**` : ""}${ct ? ` · ${ct}` : ""}. اطرح سؤالك مباشرة !`,
+          `I now have your profile${bt ? ` **Bac ${bt}**` : ""}${gg ? ` · **${gg}/20**` : ""}${ct ? ` · ${ct}` : ""}. Ask away!`
+        ),
+        quickReplies: qx(lang,
+          [bt ? `Meilleures écoles Bac ${bt}` : "Voir mes options", "Comparer mes options", "Passer le questionnaire"],
+          [bt ? `أفضل مدارس بكالوريا ${bt}` : "خياراتي", "مقارنة الخيارات", "إكمال الاستبيان"],
+          [bt ? `Best schools Bac ${bt}` : "See my options", "Compare my options", "Full questionnaire"]
+        ),
+        timestamp: new Date(),
+      };
+      return [...prev, profileNote];
     });
   }, [lang, bacTrack, generalGrade, city]); // eslint-disable-line react-hooks/exhaustive-deps
 
