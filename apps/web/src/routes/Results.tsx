@@ -45,7 +45,7 @@ export default function Results() {
       const school = getSchoolBySlug(m.university_slug);
       return `${medals[i]} ${school?.shortName ?? m.university_slug} — ${Math.round(m.probability * 100)}%`;
     }).join("\n");
-    const msg = `J'ai utilisé TAWJIH.AI pour mon orientation 2026 🎓\n\nMes meilleures correspondances :\n${lines}\n\nDécouvre tes écoles idéales gratuitement →\ntawjih.jad2advisory.com`;
+    const msg = `J'ai utilisé JAD2 TAWJIH pour mon orientation 2026 🎓\n\nMes meilleures correspondances :\n${lines}\n\nDécouvre tes écoles idéales gratuitement →\ntawjih.jad2advisory.com`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
     setShared(true);
   };

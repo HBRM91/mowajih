@@ -113,7 +113,7 @@ async function fetchOpenRouterChat(apiKey: string, messages: ChatMessage[], syst
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://tawjih.ai",
+        "HTTP-Referer": "https://tawjih.jad2advisory.com",
         "X-Title": "Slimane - JAD2 Advisory",
       },
       body: JSON.stringify({

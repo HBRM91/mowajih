@@ -124,13 +124,13 @@ async function fetchOpenRouter(apiKey: string, prompt: string): Promise<string> 
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
-      "HTTP-Referer": "https://tawjih.ai",
-      "X-Title": "TAWJIH.AI",
+      "HTTP-Referer": "https://tawjih.jad2advisory.com",
+      "X-Title": "JAD2 TAWJIH",
     },
     body: JSON.stringify({
       model: "meta-llama/llama-3-8b-instruct:free",
       messages: [
-        { role: "system", content: "Tu es TAWJIH.AI. Retourne UNIQUEMENT du JSON valide." },
+        { role: "system", content: "Tu es un assistant JAD2 TAWJIH. Retourne UNIQUEMENT du JSON valide." },
         { role: "user", content: prompt },
       ],
     }),
