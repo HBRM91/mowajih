@@ -1,8 +1,1 @@
-# Static files — must come BEFORE the SPA catch-all
-/sitemap.xml  /sitemap.xml  200
-/robots.txt   /robots.txt   200
-/og-image.jpg /og-image.jpg 200
-/logo.png     /logo.png     200
-
-# SPA fallback — all other routes serve index.html
-/*  /index.html  200
+/* /index.html 200
