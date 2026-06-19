@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormStore } from "../stores/formStore";
@@ -8,6 +8,7 @@ import AlternativeList from "../components/results/AlternativeList";
 import OrientationReadiness from "../components/results/OrientationReadiness";
 import { getSchoolBySlug } from "../data/schools";
 import { useCompareStore } from "../stores/compareStore";
+import { CAREERS_DATA } from "../data/careers";
 
 interface LocationState {
   matches: Array<{
@@ -21,10 +22,20 @@ interface LocationState {
   suggested_tracks: string[];
 }
 
-type SortKey = "compatibility" | "cost" | "tier";
+type SortKey = "compatibility" | "cost" | "tier" | "salary" | "employment";
+type FilterAccess = "all" | "public" | "semi-public" | "private";
+type FilterType = "all" | "engineering" | "business" | "medicine" | "other";
 
 const TIER_ORDER: Record<string, number> = {
   elite: 0, premium: 1, selective: 2, standard: 3, accessible: 4,
+};
+
+const TYPE_GROUPS: Record<FilterType, string[]> = {
+  all: [],
+  engineering: ["engineering", "technology", "architecture", "agriculture"],
+  business: ["business"],
+  medicine: ["medicine", "dental", "nursing"],
+  other: ["arts", "preparatory", "university"],
 };
 
 export default function Results() {
@@ -32,6 +43,9 @@ export default function Results() {
   const { t } = useTranslation();
   const state = location.state as LocationState | null;
   const [sort, setSort] = useState<SortKey>("compatibility");
+  const [filterAccess, setFilterAccess] = useState<FilterAccess>("all");
+  const [filterType, setFilterType] = useState<FilterType>("all");
+  const [showFilters, setShowFilters] = useState(false);
   const { schools: compareSchools } = useCompareStore();
   const [shared, setShared] = useState(false);
 
@@ -49,30 +63,79 @@ export default function Results() {
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
     setShared(true);
   };
+
   const topSchool = topMatch ? getSchoolBySlug(topMatch.university_slug) : null;
   const topName = topSchool?.shortName ?? topMatch?.university_slug ?? "";
 
-  const sortedMatches = hasMatches
-    ? [...state!.matches].sort((a, b) => {
-        if (sort === "cost") {
-          // Prefer API cost; fall back to school data minimum
-          const ca = a.estimated_annual_cost_mad || (getSchoolBySlug(a.university_slug)?.annualCostMAD[0] ?? 0);
-          const cb = b.estimated_annual_cost_mad || (getSchoolBySlug(b.university_slug)?.annualCostMAD[0] ?? 0);
-          return ca - cb;
+  // Apply filters first, then sort
+  const filteredMatches = hasMatches
+    ? state!.matches.filter((m) => {
+        const school = getSchoolBySlug(m.university_slug);
+        if (filterAccess !== "all") {
+          if (!school || school.access !== filterAccess) return false;
         }
-        if (sort === "tier") {
-          const ta = getSchoolBySlug(a.university_slug)?.tier ?? "standard";
-          const tb = getSchoolBySlug(b.university_slug)?.tier ?? "standard";
-          return (TIER_ORDER[ta] ?? 3) - (TIER_ORDER[tb] ?? 3);
+        if (filterType !== "all") {
+          if (!school) return false;
+          const allowedTypes = TYPE_GROUPS[filterType];
+          if (!allowedTypes.includes(school.type)) return false;
         }
-        return b.probability - a.probability;
+        return true;
       })
     : [];
 
-  const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-    { key: "compatibility", label: t("results.sort.compatibility") },
-    { key: "cost", label: t("results.sort.cost") },
-    { key: "tier", label: t("results.sort.tier") },
+  const sortedMatches = [...filteredMatches].sort((a, b) => {
+    if (sort === "cost") {
+      const ca = a.estimated_annual_cost_mad || (getSchoolBySlug(a.university_slug)?.annualCostMAD[0] ?? 0);
+      const cb = b.estimated_annual_cost_mad || (getSchoolBySlug(b.university_slug)?.annualCostMAD[0] ?? 0);
+      return ca - cb;
+    }
+    if (sort === "tier") {
+      const ta = getSchoolBySlug(a.university_slug)?.tier ?? "standard";
+      const tb = getSchoolBySlug(b.university_slug)?.tier ?? "standard";
+      return (TIER_ORDER[ta] ?? 3) - (TIER_ORDER[tb] ?? 3);
+    }
+    if (sort === "salary") {
+      const sa = CAREERS_DATA[a.university_slug]?.avgStartSalaryMAD ?? 0;
+      const sb = CAREERS_DATA[b.university_slug]?.avgStartSalaryMAD ?? 0;
+      return sb - sa;
+    }
+    if (sort === "employment") {
+      const ea = CAREERS_DATA[a.university_slug]?.employmentRate ?? 0;
+      const eb = CAREERS_DATA[b.university_slug]?.employmentRate ?? 0;
+      return eb - ea;
+    }
+    return b.probability - a.probability;
+  });
+
+  const activeFilterCount = (filterAccess !== "all" ? 1 : 0) + (filterType !== "all" ? 1 : 0);
+  const isFiltered = activeFilterCount > 0;
+
+  const clearFilters = () => {
+    setFilterAccess("all");
+    setFilterType("all");
+  };
+
+  const SORT_OPTIONS: { key: SortKey; label: string; icon: string }[] = [
+    { key: "compatibility", label: t("results.sort.compatibility"), icon: "🎯" },
+    { key: "cost", label: t("results.sort.cost"), icon: "💰" },
+    { key: "tier", label: t("results.sort.tier"), icon: "🏆" },
+    { key: "salary", label: t("results.sort.salary"), icon: "📈" },
+    { key: "employment", label: t("results.sort.employment"), icon: "✅" },
+  ];
+
+  const ACCESS_FILTERS: { key: FilterAccess; label: string }[] = [
+    { key: "all", label: t("results.filter.access.all") },
+    { key: "public", label: t("results.filter.access.public") },
+    { key: "semi-public", label: t("results.filter.access.semi-public") },
+    { key: "private", label: t("results.filter.access.private") },
+  ];
+
+  const TYPE_FILTERS: { key: FilterType; label: string }[] = [
+    { key: "all", label: t("results.filter.type.all") },
+    { key: "engineering", label: t("results.filter.type.engineering") },
+    { key: "business", label: t("results.filter.type.business") },
+    { key: "medicine", label: t("results.filter.type.medicine") },
+    { key: "other", label: t("results.filter.type.other") },
   ];
 
   return (
@@ -81,7 +144,7 @@ export default function Results() {
       animate={{ opacity: 1 }}
       className="min-h-screen bg-cream"
     >
-      {/* ─── Compact hero — no internal UUID ─── */}
+      {/* ─── Compact hero ─── */}
       <div className="bg-gradient-to-br from-navy-900 to-navy-800 text-white pt-8 pb-6 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-4">
@@ -111,9 +174,9 @@ export default function Results() {
                   transition={{ delay: 0.25 }}
                   className="text-navy-300 text-sm mt-0.5"
                 >
-                  {sortedMatches.length > 1
-                    ? t("results.count_plural", { count: sortedMatches.length })
-                    : t("results.count", { count: sortedMatches.length })}
+                  {state!.matches.length > 1
+                    ? t("results.count_plural", { count: state!.matches.length })
+                    : t("results.count", { count: state!.matches.length })}
                 </motion.p>
               )}
             </div>
@@ -225,39 +288,159 @@ export default function Results() {
         {/* ─── Matches section ─── */}
         {hasMatches ? (
           <>
-            {/* Sort bar + Compare CTA */}
+            {/* Sort + Filter bar */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="mb-5"
+              className="mb-5 space-y-2"
             >
-              {/* Sort pills */}
+              {/* Row 1: Sort pills + Filter toggle */}
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-navy-400 font-medium flex-shrink-0">{t("results.sort.label")} :</span>
-                <div className="flex gap-1.5 flex-wrap">
-                  {SORT_OPTIONS.map(({ key, label }) => (
+                <div className="flex gap-1.5 flex-wrap flex-1">
+                  {SORT_OPTIONS.map(({ key, label, icon }) => (
                     <button
                       key={key}
                       type="button"
                       onClick={() => setSort(key)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 flex items-center gap-1 ${
                         sort === key
                           ? "bg-navy-800 text-gold-200 shadow-sm"
                           : "bg-white border border-gold-100 text-navy-500 hover:border-gold-300"
                       }`}
                     >
+                      <span className="text-[10px]">{icon}</span>
                       {label}
                     </button>
                   ))}
                 </div>
+
+                {/* Filters toggle button */}
+                <button
+                  type="button"
+                  onClick={() => setShowFilters((v) => !v)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                    activeFilterCount > 0
+                      ? "bg-gold-500 text-navy-900 border-gold-400"
+                      : showFilters
+                        ? "bg-navy-100 text-navy-700 border-navy-200"
+                        : "bg-white border-gold-100 text-navy-500 hover:border-gold-300"
+                  }`}
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+                  </svg>
+                  {t("results.filter.label")}
+                  {activeFilterCount > 0 && (
+                    <span className="w-4 h-4 bg-navy-900 text-gold-300 rounded-full text-[9px] font-bold flex items-center justify-center">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
               </div>
 
-              {/* Mobile compare CTA — only show when schools in compare */}
+              {/* Row 2: Filter panels (collapsible) */}
+              <AnimatePresence>
+                {showFilters && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pt-1 pb-2 space-y-2.5 bg-white border border-gold-100 rounded-xl p-3">
+                      {/* Access filter */}
+                      <div>
+                        <span className="text-[10px] font-bold text-navy-400 uppercase tracking-wider block mb-1.5">
+                          {t("results.filter.access.label")}
+                        </span>
+                        <div className="flex gap-1.5 flex-wrap">
+                          {ACCESS_FILTERS.map(({ key, label }) => (
+                            <button
+                              key={key}
+                              type="button"
+                              onClick={() => setFilterAccess(key)}
+                              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all ${
+                                filterAccess === key
+                                  ? "bg-navy-800 text-gold-200 border-navy-700"
+                                  : "bg-white border-gray-200 text-navy-500 hover:border-gold-300"
+                              }`}
+                            >
+                              {key === "public" && "🏛️ "}
+                              {key === "semi-public" && "🏢 "}
+                              {key === "private" && "🎓 "}
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Type filter */}
+                      <div>
+                        <span className="text-[10px] font-bold text-navy-400 uppercase tracking-wider block mb-1.5">
+                          {t("results.filter.type.label")}
+                        </span>
+                        <div className="flex gap-1.5 flex-wrap">
+                          {TYPE_FILTERS.map(({ key, label }) => (
+                            <button
+                              key={key}
+                              type="button"
+                              onClick={() => setFilterType(key)}
+                              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all ${
+                                filterType === key
+                                  ? "bg-navy-800 text-gold-200 border-navy-700"
+                                  : "bg-white border-gray-200 text-navy-500 hover:border-gold-300"
+                              }`}
+                            >
+                              {key === "engineering" && "⚙️ "}
+                              {key === "business" && "📊 "}
+                              {key === "medicine" && "🩺 "}
+                              {key === "other" && "🎨 "}
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Clear filters */}
+                      {activeFilterCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={clearFilters}
+                          className="text-[11px] font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                          {t("results.filter.clear")}
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Result count when filtered */}
+              {isFiltered && (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-navy-500">
+                    {t("results.showing", { shown: sortedMatches.length, total: state!.matches.length })}
+                  </span>
+                  {sortedMatches.length === 0 && (
+                    <button type="button" onClick={clearFilters} className="text-xs font-bold text-gold-700 hover:underline">
+                      {t("results.filter.clear")} →
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Compare CTA */}
               {compareSchools.length > 0 && (
                 <Link
                   to="/comparer"
-                  className="mt-3 flex items-center gap-3 px-4 py-2.5 bg-gold-50 border border-gold-300 rounded-xl hover:bg-gold-100 transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 bg-gold-50 border border-gold-300 rounded-xl hover:bg-gold-100 transition-colors"
                 >
                   <span className="text-base">⚖</span>
                   <div className="flex-1">
@@ -270,31 +453,42 @@ export default function Results() {
                 </Link>
               )}
 
-              {/* Invite to use compare when no schools selected yet */}
               {compareSchools.length === 0 && (
-                <p className="mt-2 text-[11px] text-navy-400 flex items-center gap-1.5">
+                <p className="text-[11px] text-navy-400 flex items-center gap-1.5">
                   <span>⚖</span>
-                  <span>
-                    {t("results.compare.banner")} — {t("compare.add")} depuis chaque carte
-                  </span>
+                  <span>{t("results.compare.banner")} — {t("compare.add")} depuis chaque carte</span>
                 </p>
               )}
             </motion.div>
 
-            {/* Cards — single column on mobile, 2 on md, 3 on lg */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
-              {sortedMatches.map((match, idx) => (
-                <motion.div
-                  key={`${sort}-${match.university_slug}`}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.04, duration: 0.3 }}
-                  className="h-full"
-                >
-                  <MatchCard match={match} rank={idx} />
-                </motion.div>
-              ))}
-            </div>
+            {/* Cards grid — layout animation for smooth reordering */}
+            {sortedMatches.length > 0 ? (
+              <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+                <AnimatePresence mode="popLayout">
+                  {sortedMatches.map((match, idx) => (
+                    <motion.div
+                      key={match.university_slug}
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.25, layout: { duration: 0.35, ease: "easeInOut" } }}
+                      className="h-full"
+                    >
+                      <MatchCard match={match} rank={idx} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            ) : (
+              <div className="text-center py-12 text-navy-400">
+                <div className="text-4xl mb-3">🔍</div>
+                <div className="font-semibold text-navy-600 mb-1">Aucune école pour ces filtres</div>
+                <button type="button" onClick={clearFilters} className="text-sm font-bold text-gold-700 hover:underline">
+                  Effacer les filtres →
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <AlternativeList alternatives={state?.alternatives ?? []} />
@@ -347,7 +541,7 @@ export default function Results() {
             </div>
             <div className="p-5 space-y-3">
               {(() => {
-                const matchedSchools = sortedMatches.slice(0, 5).map((m) => getSchoolBySlug(m.university_slug)).filter(Boolean);
+                const matchedSchools = state!.matches.slice(0, 5).map((m) => getSchoolBySlug(m.university_slug)).filter(Boolean);
                 const hasCNC = matchedSchools.some((s) => s?.admission === "cnc");
                 const hasTAFEM = matchedSchools.some((s) => s?.admission === "tafem");
                 const hasConcours = matchedSchools.some((s) => s?.admission === "concours" && s.type !== "medicine");

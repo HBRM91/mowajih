@@ -5,6 +5,8 @@ import ProbabilityRing from "./ProbabilityRing";
 import { getSchoolBySlug, TIER_COLORS, ADMISSION_COLORS } from "../../data/schools";
 import { useProgressStore } from "../../stores/progressStore";
 import { useCompareStore } from "../../stores/compareStore";
+import { useWishlistStore } from "../../stores/wishlistStore";
+import { CAREERS_DATA } from "../../data/careers";
 
 interface Match {
   university_slug: string;
@@ -26,9 +28,11 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
   const viewedJobFamilies = useProgressStore((s) => s.viewedJobFamilies);
   const markJobFamilyViewed = useProgressStore((s) => s.markJobFamilyViewed);
   const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
+  const { toggle: wishlistToggle, has: wishlistHas } = useWishlistStore();
 
   const school = getSchoolBySlug(match.university_slug);
   const legacy = LEGACY_SCHOOLS[match.university_slug];
+  const careers = CAREERS_DATA[match.university_slug];
 
   const shortName = school?.shortName ?? legacy?.shortName ?? match.university_slug;
   const city = school?.city ?? legacy?.city ?? "Maroc";
@@ -49,6 +53,29 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
 
   const isCompared = school ? inCompare(school.slug) : false;
   const compareDisabled = !isCompared && compareSchools.length >= 3;
+  const inWishlist = school ? wishlistHas(school.slug) : false;
+
+  // Cost display: use API value if non-zero, else fall back to school data range
+  const apiCost = match.estimated_annual_cost_mad;
+  const schoolCost = school?.annualCostMAD;
+  const costNode = (() => {
+    if (apiCost && apiCost > 0) {
+      return <>{apiCost.toLocaleString()} <span className="text-navy-400 font-normal text-[9px]">MAD/an</span></>;
+    }
+    if (schoolCost) {
+      if (schoolCost[0] === 0) {
+        return <span className="text-emerald-600">{t("match.cost.free")}</span>;
+      }
+      return (
+        <>
+          {schoolCost[0].toLocaleString()}
+          {schoolCost[1] > schoolCost[0] && <>–{schoolCost[1].toLocaleString()}</>}
+          {" "}<span className="text-navy-400 font-normal text-[9px]">MAD/an</span>
+        </>
+      );
+    }
+    return <span className="text-navy-400 text-[10px]">—</span>;
+  })();
 
   return (
     <motion.div
@@ -62,6 +89,24 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
         </div>
       )}
 
+      {/* ── Wishlist heart ── */}
+      {school && (
+        <button
+          type="button"
+          onClick={() => wishlistToggle(school.slug)}
+          className={`absolute top-3 right-3 z-10 w-7 h-7 rounded-xl flex items-center justify-center transition-all ${
+            inWishlist
+              ? "bg-rose-500 text-white shadow-md"
+              : "bg-white/80 text-navy-300 hover:text-rose-400 border border-gray-200 hover:border-rose-200"
+          }`}
+          title={inWishlist ? "Retirer des favoris" : "Ajouter aux favoris"}
+        >
+          <svg className="w-3.5 h-3.5" fill={inWishlist ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </button>
+      )}
+
       {/* ── Header ── */}
       <div className={`px-4 pt-4 pb-3 ${tierStyle.bg} border-b ${tierStyle.border}`}>
         {/* School identity + probability ring */}
@@ -71,7 +116,7 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
               {icon}
             </div>
             <div className="min-w-0">
-              <h3 className="font-heading font-bold text-navy-800 text-sm leading-tight truncate">{shortName}</h3>
+              <h3 className="font-heading font-bold text-navy-800 text-sm leading-tight truncate pr-6">{shortName}</h3>
               <p className="text-navy-500 text-[11px] mt-0.5 flex items-center gap-1">
                 <svg className="w-2.5 h-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -110,7 +155,7 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
           )}
         </div>
 
-        {/* Campus housing summary — compact */}
+        {/* Campus housing summary */}
         {campusDetails && (campusDetails.housing || campusDetails.sports) && (
           <div className="mt-2 flex items-center gap-2 text-[10px] text-navy-500">
             <span className="font-medium text-navy-600">Campus</span>
@@ -128,7 +173,22 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
           {match.rationale}
         </p>
 
-        {/* Programs — compact */}
+        {/* Salary & employment — careers insight row */}
+        {careers && (
+          <div className="flex items-center gap-2 py-2 px-3 bg-emerald-50 rounded-xl border border-emerald-100">
+            <div className="flex-1">
+              <div className="text-[9px] font-bold text-emerald-600 uppercase tracking-wide">Salaire départ</div>
+              <div className="text-xs font-bold text-emerald-800">{careers.avgStartSalaryMAD.toLocaleString()} MAD</div>
+            </div>
+            <div className="w-px h-6 bg-emerald-200" />
+            <div className="flex-1">
+              <div className="text-[9px] font-bold text-emerald-600 uppercase tracking-wide">Taux emploi</div>
+              <div className="text-xs font-bold text-emerald-800">{careers.employmentRate}%</div>
+            </div>
+          </div>
+        )}
+
+        {/* Programs */}
         {programs.length > 0 && (
           <div>
             <div className="text-[9px] font-bold text-navy-400 uppercase tracking-wider mb-1.5">{t("match.programs")}</div>
@@ -185,10 +245,7 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
           <div>
             <div className="text-[9px] font-bold text-navy-400 uppercase tracking-wide">{t("match.cost")}</div>
             <div className="font-heading font-bold text-navy-800 text-xs mt-0.5">
-              {match.estimated_annual_cost_mad === 0
-                ? <span className="text-emerald-600">{t("match.cost.free")}</span>
-                : <>{match.estimated_annual_cost_mad.toLocaleString()} <span className="text-navy-400 font-normal text-[9px]">MAD</span></>
-              }
+              {costNode}
             </div>
           </div>
           <div className={`text-[9px] font-bold px-2 py-1 rounded-full ${
