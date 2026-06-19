@@ -325,8 +325,124 @@ export default function Results() {
           <OrientationReadiness topSchool={topSchool} />
         </div>
 
+        {/* ─── Action checklist ─── */}
+        {hasMatches && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8 bg-white rounded-2xl border border-gold-100 shadow-sm overflow-hidden"
+          >
+            <div className="bg-gradient-to-r from-navy-800 to-navy-900 px-5 py-4 flex items-center gap-3">
+              <span className="text-xl">📋</span>
+              <div>
+                <div className="font-heading font-bold text-white text-base">Ton plan d'action 2026</div>
+                <div className="text-navy-300 text-xs">Les étapes clés pour candidater à tes meilleures correspondances</div>
+              </div>
+            </div>
+            <div className="p-5 space-y-3">
+              {(() => {
+                const matchedSchools = sortedMatches.slice(0, 5).map((m) => getSchoolBySlug(m.university_slug)).filter(Boolean);
+                const hasCNC = matchedSchools.some((s) => s?.admission === "cnc");
+                const hasTAFEM = matchedSchools.some((s) => s?.admission === "tafem");
+                const hasConcours = matchedSchools.some((s) => s?.admission === "concours" && s.type !== "medicine");
+                const hasMedicine = matchedSchools.some((s) => s?.type === "medicine" || s?.type === "dental");
+                const hasPrivate = matchedSchools.some((s) => s?.access === "private");
+                const hasDossier = matchedSchools.some((s) => s?.admission === "dossier");
+
+                const steps = [
+                  hasCNC && {
+                    icon: "📐",
+                    color: "bg-violet-50 border-violet-200 text-violet-800",
+                    title: "Intégrer une CPGE",
+                    desc: "Inscris-toi en classes préparatoires (MP/PSI/TSI) — c'est le seul accès aux grandes écoles CNC.",
+                    link: "https://cpge.ac.ma", linkLabel: "cpge.ac.ma",
+                    deadline: "Avant le 15 juillet 2026",
+                  },
+                  (hasConcours || hasTAFEM) && {
+                    icon: "🖥️",
+                    color: "bg-blue-50 border-blue-200 text-blue-800",
+                    title: "Inscription cursussup.gov.ma",
+                    desc: "ENSA, ENCG, ENSAM — toutes les inscriptions passent par la plateforme nationale Tawjihi.",
+                    link: "https://cursussup.gov.ma", linkLabel: "cursussup.gov.ma",
+                    deadline: "Avant le 15 juillet 2026",
+                  },
+                  hasTAFEM && {
+                    icon: "📝",
+                    color: "bg-sky-50 border-sky-200 text-sky-800",
+                    title: "Préparer le concours TAFEM (ENCG)",
+                    desc: "Épreuve QCM écrite après présélection sur note Bac. Entraîne-toi sur les annales TAFEM.",
+                    link: "https://tafem.ma", linkLabel: "tafem.ma",
+                    deadline: "Courant août 2026",
+                  },
+                  hasMedicine && {
+                    icon: "🩺",
+                    color: "bg-rose-50 border-rose-200 text-rose-800",
+                    title: "Préparer le concours FMP médecine",
+                    desc: "Épreuve nationale SVT + Physique-Chimie + Mathématiques. Très sélectif — commence la révision maintenant.",
+                    deadline: "Concours courant août 2026",
+                  },
+                  (hasDossier || hasPrivate) && {
+                    icon: "📁",
+                    color: "bg-emerald-50 border-emerald-200 text-emerald-800",
+                    title: "Préparer ton dossier de candidature",
+                    desc: "Photos d'identité, relevés de notes, copie CNIE, lettre de motivation. Contacte directement les écoles privées.",
+                    deadline: "Avant fin juillet 2026",
+                  },
+                  {
+                    icon: "⚖️",
+                    color: "bg-gold-50 border-gold-200 text-gold-800",
+                    title: "Comparer et finaliser ton choix",
+                    desc: "Utilise le comparateur JAD2 TAWJIH pour mettre côte à côte tes meilleures options avant de décider.",
+                    link: "/comparer", linkLabel: "Ouvrir le comparateur", internal: true,
+                  },
+                ].filter(Boolean) as Array<{icon:string;color:string;title:string;desc:string;link?:string;linkLabel?:string;internal?:boolean;deadline?:string}>;
+
+                return steps.map((step, i) => (
+                  <div key={i} className={`flex items-start gap-3 p-3.5 rounded-xl border ${step.color}`}>
+                    <span className="text-lg flex-shrink-0 mt-0.5">{step.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-sm">{step.title}</div>
+                      <div className="text-xs leading-relaxed mt-0.5 opacity-80">{step.desc}</div>
+                      <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                        {step.deadline && (
+                          <span className="text-[10px] font-bold opacity-70">⏰ {step.deadline}</span>
+                        )}
+                        {step.link && step.linkLabel && (
+                          step.internal
+                            ? <a href={step.link} className="text-[10px] font-bold underline">{step.linkLabel} →</a>
+                            : <a href={step.link} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold underline">{step.linkLabel} →</a>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-lg opacity-30 flex-shrink-0">○</span>
+                  </div>
+                ));
+              })()}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Print button */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mt-4 flex justify-center"
+        >
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-5 py-2.5 border border-navy-200 text-navy-500 rounded-full text-xs font-semibold hover:bg-navy-50 transition-colors print:hidden"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Imprimer / Sauvegarder en PDF
+          </button>
+        </motion.div>
+
         {/* Legal disclaimer */}
-        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 print:hidden">
           <span className="text-amber-500 flex-shrink-0 mt-0.5 text-sm">⚠️</span>
           <p className="text-xs text-amber-800 leading-relaxed">{t("results.disclaimer")}</p>
         </div>

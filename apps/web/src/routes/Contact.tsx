@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "https://tawjih-api.hamzaelbouhali.workers.dev";
 
@@ -436,7 +437,13 @@ export default function Contact() {
   const [tab, setTab] = useState<Tab>("student");
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <>
+      <Helmet>
+        <title>Contact — JAD2 TAWJIH | Conseil Orientation Maroc</title>
+        <meta name="description" content="Contactez JAD2 Advisory pour des questions sur l'orientation universitaire au Maroc, des partenariats avec des établissements ou des conseils personnalisés." />
+        <link rel="canonical" href="https://tawjih.jad2advisory.com/contact" />
+      </Helmet>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       {/* Hero */}
       <div className="bg-gradient-to-br from-navy-900 to-navy-950 text-white py-16 px-4">
         <div className="max-w-3xl mx-auto text-center">
@@ -510,5 +517,6 @@ export default function Contact() {
         </p>
       </div>
     </motion.div>
+    </>
   );
 }

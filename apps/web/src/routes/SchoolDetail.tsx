@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import { useCurrentPageStore } from "../stores/currentPageStore";
+import { useWishlistStore } from "../stores/wishlistStore";
 import {
   SCHOOLS,
   TIER_COLORS,
@@ -357,6 +359,14 @@ export default function SchoolDetail() {
     );
   }
 
+  const { setSchool, clearSchool } = useCurrentPageStore();
+  const { toggle: wishToggle, has: inWishlist } = useWishlistStore();
+
+  useEffect(() => {
+    setSchool(school.slug, school.shortName);
+    return () => clearSchool();
+  }, [school.slug, school.shortName, setSchool, clearSchool]);
+
   const tierColors = TIER_COLORS[school.tier];
   const admColors = ADMISSION_COLORS[school.admission];
   const isFree = school.annualCostMAD[0] === 0 && school.annualCostMAD[1] <= 3000;
@@ -372,17 +382,28 @@ export default function SchoolDetail() {
   const pageUrl = `${BASE_URL}/ecoles/${school.slug}`;
   const metaTitle = `${school.shortName} — ${school.name} | Admission ${new Date().getFullYear()}, Frais, Carrières | TAWJIH`;
   const metaDesc = `${school.description.slice(0, 155).trimEnd()}… Frais : ${costText}. Filières : ${school.programs.slice(0, 3).join(", ")}.`;
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": school.name,
-    "alternateName": school.shortName,
-    "url": school.website ?? pageUrl,
-    "description": school.description,
-    "address": { "@type": "PostalAddress", "addressLocality": school.city, "addressCountry": "MA" },
-    "sameAs": school.website ? [school.website] : [],
-    ...(school.founded ? { "foundingDate": String(school.founded) } : {}),
-  };
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": school.name,
+      "alternateName": school.shortName,
+      "url": school.website ?? pageUrl,
+      "description": school.description,
+      "address": { "@type": "PostalAddress", "addressLocality": school.city, "addressCountry": "MA" },
+      "sameAs": school.website ? [school.website] : [],
+      ...(school.founded ? { "foundingDate": String(school.founded) } : {}),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://tawjih.jad2advisory.com" },
+        { "@type": "ListItem", "position": 2, "name": "Écoles", "item": "https://tawjih.jad2advisory.com/ecoles" },
+        { "@type": "ListItem", "position": 3, "name": school.shortName, "item": pageUrl },
+      ],
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-cream">
@@ -396,7 +417,8 @@ export default function SchoolDetail() {
         <meta property="og:type" content="website" />
         <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDesc} />
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(jsonLd[0])}</script>
+        <script type="application/ld+json">{JSON.stringify(jsonLd[1])}</script>
       </Helmet>
       {/* Header */}
       <div className="bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 text-white pt-24 pb-10 relative overflow-hidden">
@@ -462,6 +484,20 @@ export default function SchoolDetail() {
                   }`}
                 >
                   ⚖ {inCompare(school.slug) ? t("compare.added") : compareSchools.length >= 3 ? t("compare.full") : t("compare.add")}
+                </button>
+                {/* Wishlist */}
+                <button
+                  onClick={() => wishToggle(school.slug)}
+                  className={`inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all border ${
+                    inWishlist(school.slug)
+                      ? "bg-rose-500/20 border-rose-400/40 text-rose-300"
+                      : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill={inWishlist(school.slug) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  {inWishlist(school.slug) ? "Sauvegardé" : "Sauvegarder"}
                 </button>
               </div>
             </div>

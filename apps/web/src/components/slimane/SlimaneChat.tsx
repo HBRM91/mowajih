@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useFormStore } from "../../stores/formStore";
 import { useProgressStore } from "../../stores/progressStore";
+import { useCurrentPageStore } from "../../stores/currentPageStore";
 
 interface Message {
   role: "user" | "slimane";
@@ -820,9 +821,14 @@ export default function SlimaneChat() {
           role: m.role as "user" | "slimane",
           content: m.content,
         }));
-        // Read from store directly — avoids stale closure (useCallback deps don't include profile fields)
+        // Read from store directly — avoids stale closure
         const { bacTrack: bt, generalGrade: gg, city: ct, financialBracket: fb } = useFormStore.getState();
-        const userContext = buildUserContext(bt, gg, ct, fb);
+        const { schoolSlug, schoolName } = useCurrentPageStore.getState();
+        const profileContext = buildUserContext(bt, gg, ct, fb);
+        const schoolContext = schoolSlug
+          ? `Utilisateur actuellement sur la fiche de ${schoolName ?? schoolSlug} (slug: ${schoolSlug}). Adapte tes conseils à cette école spécifique.`
+          : null;
+        const userContext = [profileContext, schoolContext].filter(Boolean).join("\n") || null;
         const res = await fetch(`${API_BASE}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

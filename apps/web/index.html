@@ -26,6 +26,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- font-display:swap is included via display=swap param; fallbacks: Georgia → Playfair, system-ui → Inter -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" />
+  <style>
+    @media print {
+      nav, footer, .print\:hidden, button:not(.print-show) { display: none !important; }
+      body { background: white !important; }
+      .min-h-screen { min-height: unset !important; }
+    }
+  </style>
   </head>
   <body class="antialiased bg-cream text-ink font-body">
     <div id="root"></div>

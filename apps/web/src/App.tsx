@@ -23,6 +23,7 @@ const Schools = lazy(() => import("./routes/Schools"));
 const SchoolDetail = lazy(() => import("./routes/SchoolDetail"));
 const Compare = lazy(() => import("./routes/Compare"));
 const Contact = lazy(() => import("./routes/Contact"));
+const Favorites = lazy(() => import("./routes/Favorites"));
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
               <Route path="/ecoles/:slug" element={<SchoolDetail />} />
               <Route path="/comparer" element={<Compare />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/favoris" element={<Favorites />} />
             </Routes>
           </AnimatePresence>
         </Suspense>

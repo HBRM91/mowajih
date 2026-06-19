@@ -11,6 +11,7 @@ import {
   type SchoolType,
 } from "../data/schools";
 import { getSchoolCareers } from "../data/careers";
+import { useWishlistStore } from "../stores/wishlistStore";
 import SchoolLogo from "../components/ui/SchoolLogo";
 import { useCompareStore } from "../stores/compareStore";
 import { useMergedSchools } from "../hooks/useSchoolOverrides";
@@ -190,6 +191,7 @@ function FilterPanelContent({
 export default function Schools() {
   const { t } = useTranslation();
   const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
+  const { toggle: wishToggle, has: inWishlist } = useWishlistStore();
   const allSchools = useMergedSchools();
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<SchoolType | "all">("all");
@@ -568,6 +570,21 @@ export default function Schools() {
                             </div>
                           </div>
                         </Link>
+                        {/* Wishlist button */}
+                        <button
+                          onClick={(e) => { e.preventDefault(); wishToggle(school.slug); }}
+                          className={`absolute top-10 right-3 z-10 p-1.5 rounded-lg transition-all duration-200 ${
+                            inWishlist(school.slug)
+                              ? "text-rose-500 bg-rose-50 opacity-100"
+                              : "text-navy-300 hover:text-rose-400 opacity-0 group-hover/card:opacity-100 bg-white/80"
+                          }`}
+                          title={inWishlist(school.slug) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                        >
+                          <svg className="w-3.5 h-3.5" fill={inWishlist(school.slug) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </button>
+
                         {/* Compare toggle button */}
                         <button
                           onClick={(e) => { e.preventDefault(); compareToggle(school); }}

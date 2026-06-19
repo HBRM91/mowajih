@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import { useFormStore } from "../stores/formStore";
 import { useEvaluate } from "../hooks/useOrientation";
 import StepTrack from "../components/orientation/StepTrack";
@@ -42,37 +43,44 @@ export default function Orientation() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="max-w-xl mx-auto px-4 py-8"
-    >
-      <ProgressBar step={step} />
-      <div className="mt-8">
-        <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.div key="step1" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }}>
-              <StepTrack />
-            </motion.div>
-          )}
-          {step === 2 && (
-            <motion.div key="step2" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }}>
-              <StepGrades />
-            </motion.div>
-          )}
-          {step === 3 && (
-            <motion.div key="step3" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }}>
-              <StepProfile />
-            </motion.div>
-          )}
-          {step === 4 && (
-            <motion.div key="step4" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }}>
-              <StepConsent onSubmit={() => handleSubmit()} isLoading={evaluate.isPending} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+    <>
+      <Helmet>
+        <title>Questionnaire d'Orientation — Trouve ton école idéale | JAD2 TAWJIH</title>
+        <meta name="description" content="Réponds à 4 questions sur ta filière Bac, tes notes et ta ville — JAD2 TAWJIH te recommande tes meilleures écoles parmi 100+ établissements marocains. Gratuit, anonyme, résultats en 2 minutes." />
+        <link rel="canonical" href="https://tawjih.jad2advisory.com/orientation" />
+      </Helmet>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="max-w-xl mx-auto px-4 py-8"
+      >
+        <ProgressBar step={step} />
+        <div className="mt-8">
+          <AnimatePresence mode="wait">
+            {step === 1 && (
+              <motion.div key="step1" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }}>
+                <StepTrack />
+              </motion.div>
+            )}
+            {step === 2 && (
+              <motion.div key="step2" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }}>
+                <StepGrades />
+              </motion.div>
+            )}
+            {step === 3 && (
+              <motion.div key="step3" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }}>
+                <StepProfile />
+              </motion.div>
+            )}
+            {step === 4 && (
+              <motion.div key="step4" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }}>
+                <StepConsent onSubmit={() => handleSubmit()} isLoading={evaluate.isPending} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+    </>
   );
 }

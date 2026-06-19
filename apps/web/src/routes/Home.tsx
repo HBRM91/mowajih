@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import { useFormStore } from "../stores/formStore";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -64,7 +65,28 @@ export default function Home() {
   const trackSchools = getTopSchoolsByTrack(activeTrack, 6);
 
   return (
-    <div className="-mt-16 overflow-x-hidden">
+    <>
+      <Helmet>
+        <title>JAD2 TAWJIH — Orientation Universitaire Maroc 2026 | Trouve ton école après le Bac</title>
+        <meta name="description" content="1er comparateur d'écoles supérieures au Maroc. Trouve ton école idéale parmi EMI, EHTP, ENSIAS, UM6P, ENSA, ENCG, ISCAE, UIR et 100+ établissements. Questionnaire gratuit, résultats en 2 minutes. Tawjihi 2026." />
+        <link rel="canonical" href="https://tawjih.jad2advisory.com" />
+        <meta property="og:title" content="JAD2 TAWJIH — Orientation Universitaire Maroc 2026" />
+        <meta property="og:description" content="1er comparateur d'écoles supérieures au Maroc. EMI, EHTP, ENSIAS, UM6P, ENSA, ENCG, UIR, HEM, médecine et 100+ écoles. Gratuit." />
+        <meta property="og:url" content="https://tawjih.jad2advisory.com" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "JAD2 TAWJIH",
+          "url": "https://tawjih.jad2advisory.com",
+          "description": "1er comparateur d'écoles supérieures au Maroc — orientation universitaire gratuite",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://tawjih.jad2advisory.com/ecoles?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        })}</script>
+      </Helmet>
+      <div className="-mt-16 overflow-x-hidden">
 
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
       <section
@@ -824,6 +846,7 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </>
   );
 }
 
