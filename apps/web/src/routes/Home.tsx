@@ -116,19 +116,19 @@ export default function Home() {
 
         <div className="relative max-w-6xl mx-auto px-4 pt-24 md:pt-32 pb-12 md:pb-20 text-center">
 
-          {/* Urgency badge — tawjihi season */}
+          {/* Urgency + social proof badges */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-wrap items-center justify-center gap-3 mb-8"
+            className="flex flex-wrap items-center justify-center gap-2 mb-6"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 bg-gold-500/15 border border-gold-500/30 rounded-full text-gold-200 text-sm font-medium backdrop-blur-sm">
-              <span className="w-2 h-2 bg-gold-400 rounded-full animate-pulse" />
-              JAD2 Advisory · Division Orientation
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-500/20 border border-rose-400/40 rounded-full text-rose-200 text-xs font-bold backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-pulse" />
+              ⏰ Clôture cursussup dans 25 jours
             </span>
-            <span className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/15 border border-emerald-500/30 rounded-full text-emerald-200 text-sm font-bold backdrop-blur-sm">
-              🎓 {t("hero.badge.season")}
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/15 border border-emerald-500/30 rounded-full text-emerald-200 text-xs font-semibold backdrop-blur-sm">
+              🎓 Résultats Bac 2026 disponibles — commence maintenant
             </span>
           </motion.div>
 
@@ -313,6 +313,16 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
+
+          {/* Social proof */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.65, duration: 0.6 }}
+            className="mt-4 text-white/40 text-xs text-center"
+          >
+            🎓 Rejoins les bacheliers 2026 qui ont déjà trouvé leur école avec JAD2 TAWJIH
+          </motion.p>
 
           {/* Secondary utility actions — desktop only to avoid overloading mobile */}
           <motion.div

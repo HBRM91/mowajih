@@ -4,18 +4,24 @@ const steps = [
   { label: "Filière", icon: "🎓" },
   { label: "Notes", icon: "📝" },
   { label: "Profil", icon: "📍" },
-  { label: "Validation", icon: "🚀" },
 ];
 
-const XP_PER_STEP = [10, 15, 15, 20];
+const XP_PER_STEP = [10, 15, 15];
+
+const STEP_BENEFIT = [
+  "80% de tes choix dépendent de ta filière",
+  "Critère n°1 de sélection dans toutes les écoles",
+  "On optimise les recommandations pour ta ville",
+];
 
 export default function ProgressBar({ step }: { step: number }) {
   const totalXp = XP_PER_STEP.slice(0, step - 1).reduce((a, b) => a + b, 0);
+  const benefit = STEP_BENEFIT[step - 1];
 
   return (
-    <div className="mb-6">
+    <div className="mb-4">
       {/* Steps */}
-      <div className="flex items-center mb-4">
+      <div className="flex items-center mb-3">
         {steps.map((s, idx) => {
           const num = idx + 1;
           const active = num === step;
@@ -25,9 +31,7 @@ export default function ProgressBar({ step }: { step: number }) {
             <div key={s.label} className="flex-1 flex items-center">
               <div className="flex flex-col items-center relative">
                 <motion.div
-                  animate={{
-                    scale: active ? 1.15 : completed ? 1 : 0.9,
-                  }}
+                  animate={{ scale: active ? 1.15 : completed ? 1 : 0.9 }}
                   transition={{ type: "spring", damping: 12 }}
                   className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold border-2 transition-colors shadow-sm ${
                     completed
@@ -67,14 +71,15 @@ export default function ProgressBar({ step }: { step: number }) {
         })}
       </div>
 
-      {/* XP earned so far */}
+      {/* Contextual benefit + XP */}
       <div className="flex items-center justify-between text-xs">
-        <div className="flex items-center gap-1.5 text-gold-600 font-semibold">
-          <span>⚡</span>
-          <span>{totalXp} XP gagnés</span>
+        <div className="flex items-center gap-1.5 text-navy-400 italic">
+          <span>💡</span>
+          <span>{benefit}</span>
         </div>
-        <div className="text-navy-400">
-          Étape {step} sur {steps.length}
+        <div className="flex items-center gap-1 text-gold-600 font-semibold flex-shrink-0 ml-2">
+          <span>⚡</span>
+          <span>{totalXp} XP</span>
         </div>
       </div>
     </div>

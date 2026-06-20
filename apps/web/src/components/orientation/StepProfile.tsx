@@ -26,20 +26,22 @@ const FINANCIAL_ICONS: Record<string, string> = {
   ">15000": "💎",
 };
 
-export default function StepProfile() {
+interface Props {
+  onSubmit: () => void;
+  isLoading: boolean;
+}
+
+export default function StepProfile({ onSubmit, isLoading }: Props) {
   const { t, i18n } = useTranslation();
-  const { city, region, financialBracket, setField, nextStep, prevStep } = useFormStore();
+  const { city, region, financialBracket, consent, setField, prevStep } = useFormStore();
   const [selectedRegion, setSelectedRegion] = useState<string>(region || "");
+  const [agreed, setAgreed] = useState(consent);
 
   const lang = i18n.language.startsWith("ar") ? "ar" : i18n.language.startsWith("en") ? "en" : "fr";
   const regions = Object.keys(MOROCCAN_CITIES_BY_REGION);
   const citiesInRegion = selectedRegion ? MOROCCAN_CITIES_BY_REGION[selectedRegion] : [];
 
-  const isValid = city && financialBracket;
-
-  const handleNext = () => {
-    nextStep();
-  };
+  const isValid = city && financialBracket && agreed;
 
   const handleRegionSelect = (r: string) => {
     setSelectedRegion(r);
@@ -51,27 +53,32 @@ export default function StepProfile() {
     setField("city", c);
   };
 
+  const handleConsent = (checked: boolean) => {
+    setAgreed(checked);
+    setField("consent", checked);
+  };
+
   return (
     <div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-6"
       >
         <span className="inline-flex items-center gap-1.5 text-gold-600 text-sm font-bold uppercase tracking-widest">
           <span className="w-2 h-2 bg-gold-500 rounded-full" />
           {t("step.progress", { current: 3 })}
         </span>
         <h2 className="font-heading text-3xl font-bold text-navy-800 mt-2">{t("step.profile")}</h2>
-        <p className="text-navy-400 mt-2 text-sm">{t("region.label")} · {t("city.label")} · {t("financial.label")}</p>
+        <p className="text-navy-400 mt-1.5 text-sm">{t("region.label")} · {t("city.label")} · {t("financial.label")}</p>
       </motion.div>
 
-      <div className="space-y-5">
+      <div className="space-y-4">
 
         {/* Region selector */}
         <div className="bg-white p-5 rounded-2xl border border-gold-100/60 shadow-sm">
           <label className="block text-sm font-bold text-navy-700 mb-3">🗺️ {t("region.label")}</label>
-          <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1 scrollbar-thin">
+          <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin">
             {regions.map((r) => (
               <motion.button
                 key={r}
@@ -171,24 +178,72 @@ export default function StepProfile() {
           </div>
         </div>
 
+        {/* Inline consent — replaces the separate step 4 */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-navy-50 rounded-2xl border border-navy-100 p-4"
+        >
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <div className="relative flex-shrink-0 mt-0.5">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => handleConsent(e.target.checked)}
+                className="peer sr-only"
+              />
+              <div className="w-5 h-5 rounded border-2 border-navy-300 peer-checked:bg-navy-800 peer-checked:border-navy-800 transition flex items-center justify-center group-hover:border-gold-400">
+                <svg className="w-3 h-3 text-gold-300 opacity-0 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <span className="text-xs text-navy-600 leading-relaxed font-medium">
+                {t("consent.checkbox")}
+              </span>
+              <span className="block text-[10px] text-navy-400 mt-1 leading-relaxed">
+                🛡️ {t("consent.retention")} · {t("consent.transient")} · Conforme CNDP
+              </span>
+            </div>
+          </label>
+        </motion.div>
+
       </div>
 
-      <div className="flex gap-3 mt-8">
+      <div className="flex gap-3 mt-6">
         <button
           type="button"
           onClick={prevStep}
-          className="flex-1 py-3.5 rounded-xl border-2 border-parchment text-navy-600 font-semibold hover:border-gold-200 hover:bg-gold-50/50 touch-target transition"
+          className="flex-none w-16 py-3.5 rounded-xl border-2 border-parchment text-navy-600 font-semibold hover:border-gold-200 hover:bg-gold-50/50 touch-target transition text-sm"
         >
-          {t("common.back")}
+          ←
         </button>
-        <button
+        <motion.button
           type="button"
-          onClick={handleNext}
-          disabled={!isValid}
-          className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-navy-700 to-navy-800 text-gold-200 font-bold hover:from-navy-800 hover:to-navy-900 disabled:opacity-40 disabled:cursor-not-allowed touch-target transition shadow-lg shadow-navy-900/10"
+          whileTap={{ scale: 0.98 }}
+          onClick={onSubmit}
+          disabled={!isValid || isLoading}
+          className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 font-bold disabled:opacity-40 disabled:cursor-not-allowed touch-target transition shadow-lg shadow-gold-500/20 text-sm"
         >
-          {t("common.next")}
-        </button>
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Analyse en cours...
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              🔍 Voir mes résultats
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </span>
+          )}
+        </motion.button>
       </div>
     </div>
   );
