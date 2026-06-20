@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { useFormStore } from "../stores/formStore";
@@ -54,9 +54,18 @@ const HERO_SCHOOL_SLUGS: Record<string, string> = {
 
 export default function Home() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeTrack, setActiveTrack] = useState("SM");
   const [activeFilter, setActiveFilter] = useState("all");
   const heroRef = useRef<HTMLElement>(null);
+
+  const startWithTrack = (track: string) => {
+    const store = useFormStore.getState();
+    store.reset();
+    store.setField("bacTrack", track);
+    store.nextStep(); // skip to grades step
+    navigate("/orientation");
+  };
 
   const filteredSchools = activeFilter === "all"
     ? FEATURED_SCHOOLS
@@ -105,7 +114,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-navy-950/70" />
         <div className="absolute inset-0 bg-gradient-to-b from-navy-950/50 via-navy-900/40 to-navy-950/80" />
 
-        <div className="relative max-w-6xl mx-auto px-4 pt-32 pb-20 text-center">
+        <div className="relative max-w-6xl mx-auto px-4 pt-24 md:pt-32 pb-12 md:pb-20 text-center">
 
           {/* Urgency badge — tawjihi season */}
           <motion.div
@@ -128,7 +137,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-[1.05] tracking-tight drop-shadow-2xl"
+            className="font-heading text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-[1.05] tracking-tight drop-shadow-2xl"
           >
             {t("hero.title")}
             <br />
@@ -141,7 +150,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-3 leading-relaxed drop-shadow-lg"
+            className="text-sm md:text-xl text-white/90 max-w-2xl mx-auto mb-3 leading-relaxed drop-shadow-lg"
           >
             {t("hero.subtitle", { count: SCHOOLS.length })}
           </motion.p>
@@ -158,43 +167,64 @@ export default function Home() {
             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse" />{t("hero.independent")}</span>
           </motion.p>
 
-          {/* CTAs */}
+          {/* Primary CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col items-center gap-3"
           >
             <Link
               to="/orientation"
               onClick={() => { useFormStore.getState().reset(); }}
-              className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-base shadow-lg shadow-gold-500/25 hover:shadow-gold-500/50 hover:scale-105 transition-all duration-300 touch-target"
+              className="group inline-flex items-center gap-3 w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-base shadow-lg shadow-gold-500/25 hover:shadow-gold-500/50 hover:scale-105 transition-all duration-300 justify-center"
             >
               <span>{t("hero.cta.discover")}</span>
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </Link>
-            <button
-              onClick={() => {
-                const el = document.getElementById("how-it-works");
-                el?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="inline-flex items-center gap-2 px-8 py-4 border border-white/30 text-white rounded-full font-medium hover:bg-white/10 hover:border-white/50 transition-all duration-300 touch-target backdrop-blur-sm"
-            >
-              {t("hero.cta.how")}
-              <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+            {/* Friction reducers */}
+            <p className="text-white/55 text-xs flex items-center gap-2.5">
+              <span className="flex items-center gap-1"><span className="text-gold-400">⚡</span> 2 minutes</span>
+              <span className="text-white/25">·</span>
+              <span>4 questions</span>
+              <span className="text-white/25">·</span>
+              <span className="flex items-center gap-1"><span className="text-emerald-400">✓</span> 100% gratuit</span>
+            </p>
           </motion.div>
 
-          {/* Product preview — live result cards */}
+          {/* Bac track quick-start — the most direct conversion hook */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5 }}
+            className="mt-6"
+          >
+            <p className="text-white/50 text-xs text-center mb-3 uppercase tracking-wider font-medium">
+              — ou démarre directement avec ton Bac —
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {BAC_TRACKS.map(({ key, icon }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => startWithTrack(key)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white/10 border border-white/20 text-white rounded-xl font-bold text-sm hover:bg-gold-500/25 hover:border-gold-400/60 hover:text-gold-200 transition-all duration-200 backdrop-blur-sm"
+                >
+                  <span className="text-base">{icon}</span>
+                  Bac {key}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Product preview — live result cards — hidden on mobile to keep CTA visible */}
           <motion.div
             initial={{ opacity: 0, y: 40, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.6, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-14 max-w-2xl mx-auto"
+            className="hidden md:block mt-14 max-w-2xl mx-auto"
           >
             {/* Outer glow */}
             <div className="relative">
@@ -284,23 +314,13 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Quick utility actions — under the Best Match mockup */}
+          {/* Secondary utility actions — desktop only to avoid overloading mobile */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.75, duration: 0.6 }}
-            className="mt-6 flex flex-wrap items-center justify-center gap-3"
+            className="mt-5 hidden md:flex flex-wrap items-center justify-center gap-3"
           >
-            <Link
-              to="/orientation"
-              onClick={() => { useFormStore.getState().reset(); }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/8 border border-white/15 text-white text-sm font-semibold rounded-full hover:bg-white/15 hover:border-gold-400/40 transition-all duration-300 backdrop-blur-sm touch-target"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              {t("hero.quick.new_gen")}
-            </Link>
             <button
               type="button"
               onClick={() => { (window as any).__slimaneOpen?.(); }}
@@ -803,6 +823,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── STICKY MOBILE CTA ─────────────────────────────────────────────── */}
+      <StickyMobileCTA />
+
       {/* ─── FINAL CTA ──────────────────────────────────────────────────────── */}
       <section className="py-28 bg-gradient-to-br from-navy-900 via-navy-800 to-navy-950 text-white relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -847,6 +870,46 @@ export default function Home() {
       </section>
     </div>
     </>
+  );
+}
+
+// ─── STICKY MOBILE CTA ──────────────────────────────────────────────────────
+function StickyMobileCTA() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 500);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed bottom-0 left-0 right-0 z-40 sm:hidden"
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        >
+          <div className="bg-navy-950/95 backdrop-blur-md border-t border-white/10 px-4 pt-3 pb-4">
+            <Link
+              to="/orientation"
+              onClick={() => useFormStore.getState().reset()}
+              className="flex items-center justify-center gap-2.5 w-full py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-2xl font-bold text-base shadow-xl shadow-gold-500/30"
+            >
+              🎯 Commencer mon orientation
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+            <p className="text-center text-white/40 text-[11px] mt-1.5">2 minutes · Gratuit · Anonyme</p>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
