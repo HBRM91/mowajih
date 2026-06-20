@@ -8,8 +8,8 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        name: "TAWJIH.AI — Orientation Supérieure",
-        short_name: "TAWJIH",
+        name: "JAD2 TAWJIH — Orientation Supérieure",
+        short_name: "JAD2 TAWJIH",
         description: "Moteur d'orientation universitaire IA pour le Maroc",
         theme_color: "#0f172a",
         background_color: "#ffffff",

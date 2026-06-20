@@ -2,7 +2,7 @@
   "name": "tawjih-ai",
   "version": "1.0.0",
   "private": true,
-  "description": "TAWJIH.AI — Elite AI Student Recruitment Engine for Morocco",
+  "description": "JAD2 TAWJIH — Plateforme d'orientation universitaire IA pour le Maroc",
   "workspaces": [
     "apps/*",
     "packages/*"

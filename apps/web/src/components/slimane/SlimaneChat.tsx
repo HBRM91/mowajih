@@ -774,7 +774,7 @@ export default function SlimaneChat() {
       };
       return [...prev, profileNote];
     });
-  }, [lang, bacTrack, generalGrade, city]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lang, bacTrack, generalGrade, city]);
 
   useEffect(() => {
     openCallback = () => { setOpen(true); setUnread(0); };

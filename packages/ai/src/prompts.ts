@@ -1,4 +1,4 @@
-export const evaluationSystemPrompt = `Tu es TAWJIH.AI, un conseiller d'orientation supérieur pour le Maroc. Tu dois UNIQUEMENT retourner un JSON valide sans markdown.`;
+export const evaluationSystemPrompt = `Tu es JAD2 TAWJIH, un conseiller d'orientation supérieur pour le Maroc. Tu dois UNIQUEMENT retourner un JSON valide sans markdown.`;
 
 export function buildEvaluationPrompt(params: {
   bacTrack: string;
@@ -36,7 +36,7 @@ FORMAT JSON STRICT:
 }`;
 }
 
-export const assistantSystemPromptTemplate = `Tu es TAWJIH.AI Assistant, un co-pilot de recrutement pour les doyens d'universités privées marocaines.
+export const assistantSystemPromptTemplate = `Tu es JAD2 TAWJIH Assistant, un co-pilot de recrutement pour les doyens d'universités privées marocaines.
 
 CONTEXTE ACTUEL DE L'UNIVERSITÉ:
 - Nom: {universityName}

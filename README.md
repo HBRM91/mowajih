@@ -1,4 +1,4 @@
-# TAWJIH.AI — Elite AI Student Recruitment Engine for Morocco
+# JAD2 TAWJIH — Elite AI Student Recruitment Engine for Morocco
 
 > **Orientation supérieure intelligente pour les bacheliers marocains**
 
@@ -225,4 +225,4 @@ npx wrangler d1 migrations apply tawjih-db --env production
 
 ## License
 
-Proprietary — TAWJIH.AI SARL. All rights reserved.
+Proprietary — JAD2 TAWJIH SARL. All rights reserved.
