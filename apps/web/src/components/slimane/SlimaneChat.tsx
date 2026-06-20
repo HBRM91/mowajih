@@ -686,9 +686,9 @@ function getContextAwareGreeting(lang: Lang, bacTrack: string, grade: string, ci
 
   return {
     text: tx(lang,
-      `Salut ! Je vois ton profil${bacTrack ? ` **Bac ${bacTrack}**` : ""}${grade ? ` · **${grade}/20**` : ""}${city ? ` · ${city}` : ""}. Je connais déjà tes données — pose ta question directement, je te réponds avec des recommandations personnalisées !`,
-      `مرحباً ! أرى ملفك${bacTrack ? ` **بكالوريا ${bacTrack}**` : ""}${grade ? ` · **${grade}/20**` : ""}${city ? ` · ${city}` : ""}. لديّ بياناتك بالفعل — اطرح سؤالك مباشرة وسأجيبك بتوصيات مخصصة !`,
-      `Hi! I can see your profile${bacTrack ? ` **Bac ${bacTrack}**` : ""}${grade ? ` · **${grade}/20**` : ""}${city ? ` · ${city}` : ""}. I already have your data — ask me directly and I'll give you personalised recommendations!`
+      `Salut ! D'après ta session${bacTrack ? ` — **Bac ${bacTrack}**` : ""}${grade ? ` · **${grade}/20**` : ""}${city ? ` · ${city}` : ""}. Pose ta question directement, je te réponds avec des recommandations adaptées à ta situation !`,
+      `مرحباً ! بناءً على ما شاركتني في هذه الجلسة${bacTrack ? ` — **بكالوريا ${bacTrack}**` : ""}${grade ? ` · **${grade}/20**` : ""}${city ? ` · ${city}` : ""}. اطرح سؤالك مباشرة وسأجيبك بتوصيات مخصصة !`,
+      `Hi! Based on your session${bacTrack ? ` — **Bac ${bacTrack}**` : ""}${grade ? ` · **${grade}/20**` : ""}${city ? ` · ${city}` : ""}. Ask me directly and I'll give you tailored recommendations!`
     ),
     quickReplies: qx(lang,
       [
@@ -761,9 +761,9 @@ export default function SlimaneChat() {
       const profileNote: Message = {
         role: "slimane",
         content: tx(lang,
-          `J'ai maintenant ton profil complet${bt ? ` **Bac ${bt}**` : ""}${gg ? ` · **${gg}/20**` : ""}${ct ? ` · ${ct}` : ""}. Pose ta question, je réponds directement !`,
-          `لديّ الآن ملفك${bt ? ` **بكالوريا ${bt}**` : ""}${gg ? ` · **${gg}/20**` : ""}${ct ? ` · ${ct}` : ""}. اطرح سؤالك مباشرة !`,
-          `I now have your profile${bt ? ` **Bac ${bt}**` : ""}${gg ? ` · **${gg}/20**` : ""}${ct ? ` · ${ct}` : ""}. Ask away!`
+          `Tu m'as partagé en session${bt ? ` — **Bac ${bt}**` : ""}${gg ? ` · **${gg}/20**` : ""}${ct ? ` · ${ct}` : ""}. Pose ta question, je réponds directement !`,
+          `شاركتني في هذه الجلسة${bt ? ` — **بكالوريا ${bt}**` : ""}${gg ? ` · **${gg}/20**` : ""}${ct ? ` · ${ct}` : ""}. اطرح سؤالك مباشرة !`,
+          `You've shared this session${bt ? ` — **Bac ${bt}**` : ""}${gg ? ` · **${gg}/20**` : ""}${ct ? ` · ${ct}` : ""}. Ask me directly!`
         ),
         quickReplies: qx(lang,
           [bt ? `Meilleures écoles Bac ${bt}` : "Voir mes options", "Comparer mes options", "Passer le questionnaire"],
