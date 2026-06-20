@@ -7,6 +7,15 @@ import { useProgressStore } from "../../stores/progressStore";
 import { useCompareStore } from "../../stores/compareStore";
 import { useWishlistStore } from "../../stores/wishlistStore";
 import { CAREERS_DATA } from "../../data/careers";
+import { useFormStore } from "../../stores/formStore";
+
+function budgetFits(bracket: string, cost: [number, number]): boolean {
+  const maxAffordable = bracket === "<<3000" ? 5000
+    : bracket === "3000-8000" ? 30000
+    : bracket === "8000-15000" ? 80000
+    : Infinity;
+  return cost[0] <= maxAffordable;
+}
 
 interface Match {
   university_slug: string;
@@ -29,6 +38,7 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
   const markJobFamilyViewed = useProgressStore((s) => s.markJobFamilyViewed);
   const { toggle: compareToggle, has: inCompare, schools: compareSchools } = useCompareStore();
   const { toggle: wishlistToggle, has: wishlistHas } = useWishlistStore();
+  const { bacTrack: sTrack, generalGrade: sGrade, financialBracket: sBudget, city: sCity } = useFormStore.getState();
 
   const school = getSchoolBySlug(match.university_slug);
   const legacy = LEGACY_SCHOOLS[match.university_slug];
@@ -168,8 +178,30 @@ export default function MatchCard({ match, rank }: { match: Match; rank?: number
 
       {/* ── Body ── */}
       <div className="px-4 py-3 flex-1 flex flex-col gap-3">
+        {/* Compatibility scorecard — shows when student profile is available */}
+        {(sTrack || sGrade) && school && (() => {
+          const gradeNum = parseFloat(sGrade || "0");
+          const criteria = [
+            { label: "Profil Bac", ok: !sTrack || school.tracks.includes(sTrack), icon: "🎓" },
+            { label: "Notes", ok: !sGrade || gradeNum >= school.minGrade, icon: "📝" },
+            { label: "Budget", ok: !sBudget || budgetFits(sBudget, school.annualCostMAD), icon: "💰" },
+            { label: sCity ? sCity : "Localisation", ok: !sCity || school.city === sCity || (school.cities?.includes(sCity) ?? false), icon: "📍" },
+          ];
+          return (
+            <div className="flex flex-wrap gap-1">
+              {criteria.map((c) => (
+                <span key={c.label} className={`flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded-full border font-semibold ${
+                  c.ok ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-600 border-rose-200"
+                }`}>
+                  {c.ok ? "✓" : "✗"} {c.label}
+                </span>
+              ))}
+            </div>
+          );
+        })()}
+
         {/* AI rationale */}
-        <p className="text-xs text-navy-500 leading-relaxed flex-none line-clamp-3">
+        <p className="text-xs text-navy-500 leading-relaxed flex-none line-clamp-2">
           {match.rationale}
         </p>
 

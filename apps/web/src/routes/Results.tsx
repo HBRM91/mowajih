@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -9,6 +9,39 @@ import OrientationReadiness from "../components/results/OrientationReadiness";
 import { getSchoolBySlug } from "../data/schools";
 import { useCompareStore } from "../stores/compareStore";
 import { CAREERS_DATA } from "../data/careers";
+
+// ── Confetti celebration ─────────────────────────────────────────────────────
+function ConfettiBurst({ active }: { active: boolean }) {
+  if (!active) return null;
+  const COLORS = ["#F59E0B", "#3B82F6", "#10B981", "#EF4444", "#8B5CF6", "#EC4899", "#F97316"];
+  const particles = Array.from({ length: 28 }, (_, i) => {
+    const angle = (i / 28) * 360;
+    const rad = (angle * Math.PI) / 180;
+    const dist = 30 + (i % 5) * 8;
+    return {
+      id: i,
+      tx: Math.cos(rad) * dist,
+      ty: Math.sin(rad) * dist - 15,
+      color: COLORS[i % COLORS.length],
+      size: 5 + (i % 4) * 2,
+      delay: i * 0.018,
+      round: i % 3 !== 0,
+    };
+  });
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden" aria-hidden>
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          initial={{ left: "50%", top: "35%", opacity: 1, scale: 0 }}
+          animate={{ left: `calc(50% + ${p.tx}vw)`, top: `calc(35% + ${p.ty}vh)`, opacity: 0, scale: 1 }}
+          transition={{ duration: 1.6, ease: "easeOut", delay: p.delay }}
+          style={{ position: "fixed", width: p.size, height: p.size, backgroundColor: p.color, borderRadius: p.round ? "50%" : 2 }}
+        />
+      ))}
+    </div>
+  );
+}
 
 interface LocationState {
   matches: Array<{
@@ -48,9 +81,40 @@ export default function Results() {
   const [showFilters, setShowFilters] = useState(false);
   const { schools: compareSchools } = useCompareStore();
   const [shared, setShared] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "city">("list");
+  const [copied, setCopied] = useState(false);
+  const [celebrated, setCelebrated] = useState(false);
 
   const hasMatches = state?.matches && state.matches.length > 0;
   const topMatch = hasMatches ? state.matches[0] : null;
+
+  // Mark results obtained, encode URL hash for sharing, trigger celebration
+  useEffect(() => {
+    if (!hasMatches) return;
+    localStorage.setItem("jad2-results-obtained", "true");
+    try {
+      const compact = state!.matches.slice(0, 5).map((m) => ({
+        s: m.university_slug, p: Math.round(m.probability * 100), c: m.confidence,
+      }));
+      window.history.replaceState(null, "", window.location.pathname + "#" + btoa(JSON.stringify(compact)));
+    } catch { /* ignore */ }
+    setCelebrated(true);
+    const id = setTimeout(() => setCelebrated(false), 2200);
+    return () => clearTimeout(id);
+  // eslint-disable-next-line
+  }, []);
+
+  const copyUrl = async () => {
+    try { await navigator.clipboard.writeText(window.location.href); }
+    catch { /* fallback silent */ }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const openDeadlineReminder = () => {
+    const msg = "⏰ Rappels inscriptions Tawjihi 2026\n\n📅 15 juillet — Clôture cursussup.gov.ma (ENSA, ENCG, ENSAM)\n📅 8 août — Concours FMP Médecine\n📅 22 août — TAFEM ENCG\n📅 31 juillet — Dossiers écoles privées (UM6P, UIR, HEM)\n\n💡 JAD2 TAWJIH → tawjih.jad2advisory.com";
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+  };
 
   const shareOnWhatsApp = () => {
     const top3 = (state?.matches ?? []).slice(0, 3);
@@ -107,6 +171,16 @@ export default function Results() {
     return b.probability - a.probability;
   });
 
+  // Group matches by city for "Par ville" view
+  const matchesByCity = useMemo(() => {
+    const groups: Record<string, typeof sortedMatches> = {};
+    sortedMatches.forEach((m) => {
+      const city = getSchoolBySlug(m.university_slug)?.city ?? "Autre";
+      (groups[city] = groups[city] ?? []).push(m);
+    });
+    return Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
+  }, [sortedMatches]);
+
   const activeFilterCount = (filterAccess !== "all" ? 1 : 0) + (filterType !== "all" ? 1 : 0);
   const isFiltered = activeFilterCount > 0;
 
@@ -144,6 +218,8 @@ export default function Results() {
       animate={{ opacity: 1 }}
       className="min-h-screen bg-cream"
     >
+      <ConfettiBurst active={celebrated} />
+
       {/* ─── Compact hero ─── */}
       <div className="bg-gradient-to-br from-navy-900 to-navy-800 text-white pt-8 pb-6 px-4">
         <div className="max-w-5xl mx-auto">
@@ -281,6 +357,37 @@ export default function Results() {
                   Partager mes résultats sur WhatsApp
                 </>
               )}
+            </button>
+          </motion.div>
+        )}
+
+        {/* ─── Share + Deadline reminder ─── */}
+        {hasMatches && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.32 }}
+            className="mb-6 grid grid-cols-2 gap-2"
+          >
+            <button
+              type="button"
+              onClick={copyUrl}
+              className={`flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm border transition-all ${
+                copied ? "bg-emerald-50 text-emerald-700 border-emerald-300" : "bg-white border-gold-200 text-navy-700 hover:border-gold-400"
+              }`}
+            >
+              {copied ? (
+                <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg> Copié !</>
+              ) : (
+                <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg> Copier le lien</>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={openDeadlineReminder}
+              className="flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 transition-colors"
+            >
+              <span>⏰</span> Rappel dates
             </button>
           </motion.div>
         )}
@@ -453,6 +560,23 @@ export default function Results() {
                 </Link>
               )}
 
+              {/* View mode toggle */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-navy-400 font-medium">Vue :</span>
+                {(["list", "city"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setViewMode(mode)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                      viewMode === mode ? "bg-navy-800 text-gold-200 border-navy-700" : "bg-white border-gold-100 text-navy-500 hover:border-gold-300"
+                    }`}
+                  >
+                    {mode === "list" ? "📋 Liste" : "📍 Par ville"}
+                  </button>
+                ))}
+              </div>
+
               {compareSchools.length === 0 && (
                 <p className="text-[11px] text-navy-400 flex items-center gap-1.5">
                   <span>⚖</span>
@@ -461,8 +585,34 @@ export default function Results() {
               )}
             </motion.div>
 
-            {/* Cards grid — layout animation for smooth reordering */}
-            {sortedMatches.length > 0 ? (
+            {/* Cards — list or city view */}
+            {sortedMatches.length === 0 ? (
+              <div className="text-center py-12 text-navy-400">
+                <div className="text-4xl mb-3">🔍</div>
+                <div className="font-semibold text-navy-600 mb-1">Aucune école pour ces filtres</div>
+                <button type="button" onClick={clearFilters} className="text-sm font-bold text-gold-700 hover:underline">Effacer les filtres →</button>
+              </div>
+            ) : viewMode === "city" ? (
+              <div className="space-y-6">
+                {matchesByCity.map(([city, cityMatches]) => (
+                  <div key={city}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-base">📍</span>
+                      <h3 className="font-heading font-bold text-navy-800 text-sm">{city}</h3>
+                      <span className="text-[10px] bg-navy-100 text-navy-600 font-bold px-2 py-0.5 rounded-full">{cityMatches.length} école{cityMatches.length > 1 ? "s" : ""}</span>
+                      <div className="flex-1 h-px bg-gray-200" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+                      {cityMatches.map((match, idx) => (
+                        <motion.div key={match.university_slug} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="h-full">
+                          <MatchCard match={match} rank={sortedMatches.indexOf(match)} />
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
               <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
                 <AnimatePresence mode="popLayout">
                   {sortedMatches.map((match, idx) => (
@@ -480,14 +630,6 @@ export default function Results() {
                   ))}
                 </AnimatePresence>
               </motion.div>
-            ) : (
-              <div className="text-center py-12 text-navy-400">
-                <div className="text-4xl mb-3">🔍</div>
-                <div className="font-semibold text-navy-600 mb-1">Aucune école pour ces filtres</div>
-                <button type="button" onClick={clearFilters} className="text-sm font-bold text-gold-700 hover:underline">
-                  Effacer les filtres →
-                </button>
-              </div>
             )}
           </>
         ) : (

@@ -186,6 +186,86 @@ function AdmissionGuide({ school }: { school: ReturnType<typeof getSchoolBySlug>
   );
 }
 
+// ── Admission Timeline ───────────────────────────────────────────────────────
+const ADMISSION_TIMELINES: Record<string, Array<{ date: string; label: string; icon: string; hot?: boolean }>> = {
+  cnc: [
+    { date: "Avant le 15 juil. 2026", label: "Inscription CPGE sur cursussup.gov.ma", icon: "🖥️", hot: true },
+    { date: "Sept. 2026", label: "Rentrée Classes Préparatoires (MP / PSI / TSI)", icon: "📚" },
+    { date: "Avr. – Mai 2028", label: "Concours National Commun (CNC)", icon: "📐" },
+    { date: "Sept. 2028", label: "Rentrée Grande École", icon: "🏆" },
+  ],
+  tafem: [
+    { date: "Avant le 15 juil. 2026", label: "Présélection Bac sur cursussup.gov.ma", icon: "🖥️", hot: true },
+    { date: "22 août 2026", label: "Épreuve écrite TAFEM (QCM, 3h)", icon: "📝", hot: true },
+    { date: "Sept. 2026", label: "Publication des résultats et affectation", icon: "📋" },
+    { date: "Oct. 2026", label: "Rentrée ENCG", icon: "🎓" },
+  ],
+  concours: [
+    { date: "Avant le 15 juil. 2026", label: "Inscription sur cursussup.gov.ma", icon: "🖥️", hot: true },
+    { date: "Août 2026", label: "Concours d'entrée propre à l'école", icon: "📝" },
+    { date: "Sept. 2026", label: "Résultats et affectation", icon: "📋" },
+    { date: "Oct. 2026", label: "Rentrée", icon: "🎓" },
+  ],
+  dossier: [
+    { date: "Avant le 31 juil. 2026", label: "Dépôt du dossier (relevés, CV, lettre de motivation)", icon: "📁", hot: true },
+    { date: "Août 2026", label: "Entretien de sélection", icon: "🤝" },
+    { date: "Fin août 2026", label: "Résultats d'admission", icon: "📋" },
+    { date: "Oct. 2026", label: "Rentrée", icon: "🎓" },
+  ],
+  direct: [
+    { date: "Juil. – Août 2026", label: "Inscription directe sur le site de l'école", icon: "🖥️" },
+    { date: "Sept. – Oct. 2026", label: "Rentrée", icon: "🎓" },
+  ],
+};
+
+function AdmissionTimeline({ admission }: { admission: string }) {
+  const steps = ADMISSION_TIMELINES[admission];
+  if (!steps) return null;
+
+  const openReminder = (step: typeof steps[0]) => {
+    const msg = `⏰ Rappel — ${step.label}\n📅 ${step.date}\n\nJAD2 TAWJIH → tawjih.jad2advisory.com`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+  };
+
+  return (
+    <div className="mt-6">
+      <h4 className="font-bold text-navy-800 text-sm mb-4 flex items-center gap-2">
+        <span>📅</span> Calendrier 2026
+      </h4>
+      <div className="relative">
+        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
+        <div className="space-y-3">
+          {steps.map((step, i) => (
+            <div key={i} className="flex items-start gap-4 relative">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0 z-10 ${
+                step.hot ? "bg-rose-500 text-white" : i === steps.length - 1 ? "bg-emerald-500 text-white" : "bg-white border-2 border-gray-300 text-gray-500"
+              }`}>
+                {step.icon}
+              </div>
+              <div className="flex-1 min-w-0 pt-0.5">
+                <div className={`text-[10px] font-bold uppercase tracking-wide mb-0.5 ${step.hot ? "text-rose-600" : "text-navy-400"}`}>
+                  {step.hot && "⚡ "}{step.date}
+                </div>
+                <div className="text-sm font-medium text-navy-700 leading-snug">{step.label}</div>
+              </div>
+              {step.hot && (
+                <button
+                  type="button"
+                  onClick={() => openReminder(step)}
+                  className="flex-shrink-0 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-lg hover:bg-emerald-100 transition-colors"
+                  title="Enregistrer ce rappel via WhatsApp"
+                >
+                  💬 Rappel
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Campus / Housing section ─────────────────────────────────────────────────
 function CampusSection({ slug, city, lang }: { slug: string; city: string; lang: string }) {
   const { t } = useTranslation();
@@ -597,6 +677,7 @@ export default function SchoolDetail() {
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
               <h2 className="font-heading text-2xl font-bold text-navy-800 mb-4">{t("school.admission.title")}</h2>
               <AdmissionGuide school={school} />
+              <AdmissionTimeline admission={school.admission} />
 
               {school.cpgeFilières && (
                 <div className="mt-4 bg-violet-50 border border-violet-100 rounded-xl p-4">

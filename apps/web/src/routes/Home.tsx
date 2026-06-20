@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { useFormStore } from "../stores/formStore";
+import { useWishlistStore } from "../stores/wishlistStore";
+import { useCompareStore } from "../stores/compareStore";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SCHOOLS, TIER_LABELS, TIER_COLORS } from "../data/schools";
@@ -44,10 +46,98 @@ const HERO_SCHOOL_SLUGS: Record<string, string> = {
   "ENCG": "encg-casablanca", "IAV": "iav-hassan-ii", "ENSA": "ensa-casablanca",
 };
 
+// ─── READINESS SCORE ────────────────────────────────────────────────────────
+function ReadinessScore() {
+  const bacTrack = useFormStore((s) => s.bacTrack);
+  const generalGrade = useFormStore((s) => s.generalGrade);
+  const wishlistCount = useWishlistStore((s) => s.slugs.length);
+  const compareCount = useCompareStore((s) => s.schools.length);
+  const hasResults = typeof window !== "undefined" && localStorage.getItem("jad2-results-obtained") === "true";
+
+  const steps = [
+    { label: "Filière sélectionnée", done: !!bacTrack, action: "/orientation", actionLabel: "Commencer" },
+    { label: "Notes renseignées", done: !!generalGrade, action: "/orientation", actionLabel: "Ajouter" },
+    { label: "Résultats obtenus", done: hasResults, action: "/orientation", actionLabel: "Lancer" },
+    { label: "Écoles en favoris", done: wishlistCount > 0, action: "/favoris", actionLabel: "Voir" },
+    { label: "Comparateur utilisé", done: compareCount > 0, action: "/comparer", actionLabel: "Comparer" },
+  ];
+
+  const doneCount = steps.filter((s) => s.done).length;
+  if (doneCount === 0) return null; // don't show to brand new users
+  const pct = Math.round((doneCount / steps.length) * 100);
+
+  return (
+    <section className="py-12 bg-cream border-y border-gold-100">
+      <div className="max-w-2xl mx-auto px-4">
+        <div className="bg-white rounded-3xl border border-gold-100 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-heading font-bold text-navy-800 text-lg">Ton dossier d'orientation</h3>
+              <p className="text-navy-400 text-sm mt-0.5">{doneCount} étape{doneCount > 1 ? "s" : ""} complétée{doneCount > 1 ? "s" : ""} sur {steps.length}</p>
+            </div>
+            <div className="w-14 h-14 flex-shrink-0">
+              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f3f0e8" strokeWidth="3" />
+                <circle
+                  cx="18" cy="18" r="15.9" fill="none"
+                  stroke={pct === 100 ? "#10b981" : "#D97706"}
+                  strokeWidth="3"
+                  strokeDasharray={`${pct} ${100 - pct}`}
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <div className="w-full h-2 bg-gray-100 rounded-full mb-5 overflow-hidden">
+            <motion.div
+              className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-400"
+              initial={{ width: 0 }}
+              animate={{ width: `${pct}%` }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            />
+          </div>
+
+          <div className="space-y-2">
+            {steps.map((step) => (
+              <div key={step.label} className={`flex items-center gap-3 py-2 px-3 rounded-xl ${step.done ? "bg-emerald-50" : "bg-gray-50"}`}>
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${step.done ? "bg-emerald-500" : "bg-gray-200"}`}>
+                  {step.done
+                    ? <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                    : <div className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+                  }
+                </div>
+                <span className={`flex-1 text-sm font-medium ${step.done ? "text-emerald-700 line-through opacity-70" : "text-navy-700"}`}>
+                  {step.label}
+                </span>
+                {!step.done && (
+                  <Link to={step.action} className="text-[11px] font-bold text-gold-700 hover:underline flex-shrink-0">
+                    {step.actionLabel} →
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {pct === 100 && (
+            <div className="mt-4 text-center text-sm font-bold text-emerald-600">
+              🎉 Bravo ! Ton dossier d'orientation est complet.
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const heroRef = useRef<HTMLElement>(null);
+
+  const resumeTrack = useFormStore((s) => s.bacTrack);
+  const resumeStep = useFormStore((s) => s.step);
+  const showResumeBanner = !!resumeTrack && resumeStep > 1 && resumeStep <= 3;
 
   const startWithTrack = (track: string) => {
     const store = useFormStore.getState();
@@ -82,6 +172,29 @@ export default function Home() {
         })}</script>
       </Helmet>
       <div className="-mt-16 overflow-x-hidden">
+
+      {/* Resume banner */}
+      {showResumeBanner && (
+        <motion.div
+          initial={{ y: -60, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="fixed top-16 left-0 right-0 z-30 flex justify-center px-4 pt-2"
+        >
+          <div className="flex items-center gap-3 bg-navy-800 border border-gold-500/30 text-white px-4 py-3 rounded-2xl shadow-xl shadow-navy-950/40 max-w-sm w-full">
+            <span className="text-xl flex-shrink-0">🔄</span>
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-sm">Tu as une orientation en cours</div>
+              <div className="text-navy-400 text-[11px]">Bac {resumeTrack} · Étape {resumeStep}/3</div>
+            </div>
+            <Link
+              to="/orientation"
+              className="flex-shrink-0 px-3 py-1.5 bg-gold-500 text-navy-900 rounded-xl font-bold text-xs hover:bg-gold-400 transition-colors"
+            >
+              Reprendre →
+            </Link>
+          </div>
+        </motion.div>
+      )}
 
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
       <section
@@ -485,6 +598,90 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── SOCIAL PROOF — Example Results ────────────────────────────────── */}
+      <section className="py-16 bg-white border-y border-gold-100/60">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <span className="text-gold-600 text-sm font-bold uppercase tracking-[0.15em]">Exemples de résultats</span>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-navy-800 mt-3 mb-2">
+              Ce que Slimane trouve pour toi
+            </h2>
+            <p className="text-navy-400 text-sm max-w-lg mx-auto">
+              Exemples illustratifs de recommandations générées selon différents profils Bac. Tes résultats seront personnalisés.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              {
+                profile: "Bac SM · 15/20 · Casablanca",
+                icon: "🧮",
+                color: "from-blue-500 to-blue-700",
+                matches: [
+                  { school: "EMI", pct: 91, tier: "Élite" },
+                  { school: "EHTP", pct: 87, tier: "Élite" },
+                  { school: "ENSIAS", pct: 83, tier: "Élite" },
+                ],
+              },
+              {
+                profile: "Bac SE · 13/20 · Rabat",
+                icon: "📊",
+                color: "from-amber-500 to-amber-700",
+                matches: [
+                  { school: "ENCG Rabat", pct: 88, tier: "Sélectif" },
+                  { school: "ISCAE", pct: 81, tier: "Premium" },
+                  { school: "INSEA", pct: 76, tier: "Sélectif" },
+                ],
+              },
+              {
+                profile: "Bac SVT · 16/20 · Fès",
+                icon: "🧬",
+                color: "from-emerald-500 to-emerald-700",
+                matches: [
+                  { school: "FMP Médecine", pct: 90, tier: "Élite" },
+                  { school: "FST Fès", pct: 79, tier: "Sélectif" },
+                  { school: "ENCG Fès", pct: 72, tier: "Standard" },
+                ],
+              },
+            ].map((example, i) => (
+              <motion.div
+                key={example.profile}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-navy-950 rounded-2xl overflow-hidden shadow-xl"
+              >
+                <div className={`bg-gradient-to-r ${example.color} px-4 py-3 flex items-center gap-2`}>
+                  <span className="text-xl">{example.icon}</span>
+                  <span className="text-white font-bold text-sm">{example.profile}</span>
+                </div>
+                <div className="p-4 space-y-2">
+                  {example.matches.map((m, mi) => (
+                    <div key={m.school} className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5">
+                      <span className="text-lg">{["🥇","🥈","🥉"][mi]}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-white font-bold text-sm truncate">{m.school}</div>
+                        <div className="text-navy-400 text-[10px]">{m.tier}</div>
+                      </div>
+                      <span className={`font-heading font-bold text-base flex-shrink-0 ${m.pct >= 85 ? "text-emerald-400" : "text-gold-400"}`}>{m.pct}%</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-4 pb-4">
+                  <Link
+                    to="/orientation"
+                    onClick={() => useFormStore.getState().reset()}
+                    className="block text-center py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold text-sm transition-colors"
+                  >
+                    Obtenir mes résultats →
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ─── COMPARATOR SPOTLIGHT ──────────────────────────────────────────── */}
       <ComparatorSpotlight />
 
@@ -691,6 +888,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ─── READINESS SCORE ────────────────────────────────────────────────── */}
+      <ReadinessScore />
 
       {/* ─── STICKY MOBILE CTA ─────────────────────────────────────────────── */}
       <StickyMobileCTA />
