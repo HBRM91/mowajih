@@ -5,7 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { useFormStore } from "../stores/formStore";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SCHOOLS, getTopSchoolsByTrack, TIER_LABELS, TIER_COLORS } from "../data/schools";
+import { SCHOOLS, TIER_LABELS, TIER_COLORS } from "../data/schools";
 import SchoolLogo from "../components/ui/SchoolLogo";
 import { API_URL } from "../lib/api";
 
@@ -26,14 +26,6 @@ const STATS = [
   { value: "100%", labelKey: "stats.free", icon: "✅" },
 ];
 
-const SCHOOL_TYPE_FILTERS = [
-  { key: "all", labelKey: "filter.all" },
-  { key: "engineering", labelKey: "filter.engineering" },
-  { key: "business", labelKey: "filter.business" },
-  { key: "medicine", labelKey: "filter.medicine" },
-  { key: "preparatory", labelKey: "filter.preparatory" },
-  { key: "university", labelKey: "filter.university" },
-];
 
 const FEATURED_SCHOOLS = SCHOOLS.filter((s) =>
   ["emi", "ehtp", "ensias", "inpt", "um6p", "iscae", "uir", "hem", "mundiapolis", "iav-hassan-ii", "al-akhawayn", "insea", "ena-rabat", "fm-rabat", "cpge-moulay-youssef", "emsi", "encg-casablanca"].includes(s.slug)
@@ -55,8 +47,6 @@ const HERO_SCHOOL_SLUGS: Record<string, string> = {
 export default function Home() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [activeTrack, setActiveTrack] = useState("SM");
-  const [activeFilter, setActiveFilter] = useState("all");
   const heroRef = useRef<HTMLElement>(null);
 
   const startWithTrack = (track: string) => {
@@ -67,11 +57,7 @@ export default function Home() {
     navigate("/orientation");
   };
 
-  const filteredSchools = activeFilter === "all"
-    ? FEATURED_SCHOOLS
-    : FEATURED_SCHOOLS.filter((s) => s.type === activeFilter);
-
-  const trackSchools = getTopSchoolsByTrack(activeTrack, 6);
+  const filteredSchools = FEATURED_SCHOOLS;
 
   return (
     <>
@@ -517,26 +503,9 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Filter tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
-            {SCHOOL_TYPE_FILTERS.map((f) => (
-              <button
-                key={f.key}
-                onClick={() => setActiveFilter(f.key)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-                  activeFilter === f.key
-                    ? "bg-gold-500 text-navy-900 shadow-lg shadow-gold-500/20"
-                    : "bg-white/8 text-navy-300 hover:bg-white/15 hover:text-white border border-white/10"
-                }`}
-              >
-                {t(f.labelKey)}
-              </button>
-            ))}
-          </div>
-
-          {/* Schools grid */}
+          {/* Schools grid — top 6 featured */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredSchools.slice(0, 9).map((school, i) => {
+            {filteredSchools.slice(0, 6).map((school, i) => {
               const tierColors = TIER_COLORS[school.tier];
               return (
                 <Link key={school.slug} to={`/ecoles/${school.slug}`}>
@@ -590,117 +559,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── BAC TRACK EXPLORER ─────────────────────────────────────────────── */}
-      <section className="py-24 bg-cream">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-14">
-            <span className="text-gold-600 text-sm font-bold uppercase tracking-[0.15em]">{t("tracks.label")}</span>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold text-navy-800 mt-3 mb-4">
-              {t("tracks.title")}
-            </h2>
-            <p className="text-navy-400 max-w-xl mx-auto">
-              {t("tracks.subtitle")}
-            </p>
-          </div>
-
-          {/* Track selector */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 mb-10">
-            {BAC_TRACKS.map((track) => (
-              <button
-                key={track.key}
-                onClick={() => setActiveTrack(track.key)}
-                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 font-semibold transition-all duration-200 text-sm ${
-                  activeTrack === track.key
-                    ? `bg-gradient-to-br ${track.color} text-white border-transparent shadow-lg`
-                    : "bg-white border-parchment text-navy-600 hover:border-gold-200 hover:bg-gold-50/50"
-                }`}
-              >
-                <span className="text-2xl">{track.icon}</span>
-                <span className="text-center leading-tight text-xs font-bold">{track.key}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Selected track info */}
-          <motion.div
-            key={activeTrack}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="mb-6 text-center">
-              <span className="text-gold-600 font-semibold">
-                {BAC_TRACKS.find((tr) => tr.key === activeTrack)?.icon} Bac{" "}
-                {activeTrack} — {t(`track.${activeTrack}`)}
-              </span>
-              <h3 className="font-heading text-2xl font-bold text-navy-800 mt-1">
-                {t("tracks.top")}
-              </h3>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {trackSchools.map((school, i) => {
-                const tierColors = TIER_COLORS[school.tier];
-                return (
-                  <Link key={school.slug} to={`/ecoles/${school.slug}`}>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.08 }}
-                      className={`relative bg-white rounded-2xl border p-5 hover:shadow-lg hover:border-gold-300 transition-all duration-300 group ${tierColors.border}`}
-                    >
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${tierColors.bg}`}>
-                          {school.icon}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-bold text-navy-800 text-sm leading-tight truncate group-hover:text-gold-700 transition-colors">{school.shortName}</div>
-                          <div className="text-xs text-navy-400 mt-0.5 flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            </svg>
-                            {school.city}
-                          </div>
-                        </div>
-                        <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border flex-shrink-0 ${tierColors.bg} ${tierColors.text} ${tierColors.border}`}>
-                          {TIER_LABELS[school.tier]}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-navy-400">
-                          {t("school.quick.min_grade")} : <strong className="text-navy-700">{school.minGrade}/20</strong>
-                        </span>
-                        <span className={`px-2 py-0.5 rounded-full ${school.access === "public" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
-                          {school.access === "public" ? t("access.public") : school.access === "semi-public" ? t("access.semi-public") : t("access.private")}
-                        </span>
-                      </div>
-                    </motion.div>
-                  </Link>
-                );
-              })}
-            </div>
-          </motion.div>
-
-          <div className="text-center mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to="/ecoles"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold hover:shadow-lg hover:shadow-gold-500/25 hover:scale-105 transition-all duration-300 touch-target shadow-md"
-            >
-              {t("tracks.cta.explore")}
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </Link>
-            <Link
-              to="/orientation"
-              onClick={() => { useFormStore.getState().reset(); }}
-              className="inline-flex items-center gap-2 px-8 py-4 border border-gold-300 text-gold-700 rounded-full font-bold hover:bg-gold-50 transition-all duration-300 touch-target"
-            >
-              {t("tracks.cta.recommendations")}
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* Bac Track Explorer removed — track quick-start is in hero */}
 
       {/* ─── CALENDRIER DES INSCRIPTIONS ────────────────────────────────────── */}
       <DeadlinesSection />

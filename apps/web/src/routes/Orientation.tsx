@@ -10,7 +10,6 @@ import StepProfile from "../components/orientation/StepProfile";
 import ProgressBar from "../components/orientation/ProgressBar";
 import { useState, useEffect } from "react";
 
-// Days until July 15, 2026 cursussup deadline
 function getDaysUntilDeadline(): number {
   const deadline = new Date("2026-07-15T23:59:00");
   const diff = deadline.getTime() - Date.now();
@@ -22,17 +21,15 @@ const ANALYSIS_MESSAGES = [
   "Parcours 100 établissements marocains...",
   "Calcul des scores de compatibilité...",
   "Application des critères d'admission...",
-  "Préparation de tes recommandations personnalisées...",
+  "Préparation de tes recommandations...",
 ];
 
 function AnalysisScreen({ track }: { track: string }) {
   const [msgIdx, setMsgIdx] = useState(0);
-  const [dotCount, setDotCount] = useState(0);
 
   useEffect(() => {
-    const msgId = setInterval(() => setMsgIdx((i) => (i + 1) % ANALYSIS_MESSAGES.length), 1400);
-    const dotId = setInterval(() => setDotCount((d) => (d + 1) % 4), 400);
-    return () => { clearInterval(msgId); clearInterval(dotId); };
+    const id = setInterval(() => setMsgIdx((i) => (i + 1) % ANALYSIS_MESSAGES.length), 1400);
+    return () => clearInterval(id);
   }, []);
 
   return (
@@ -42,8 +39,7 @@ function AnalysisScreen({ track }: { track: string }) {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 bg-navy-950 flex flex-col items-center justify-center text-white px-6"
     >
-      {/* Animated radar rings */}
-      <div className="relative w-36 h-36 mb-10 flex-shrink-0">
+      <div className="relative w-32 h-32 mb-8 flex-shrink-0">
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
@@ -59,17 +55,11 @@ function AnalysisScreen({ track }: { track: string }) {
             className="w-24 h-24 rounded-full border-2 border-gold-500/20 border-t-gold-500"
           />
         </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-4xl">🎓</span>
-        </div>
+        <div className="absolute inset-0 flex items-center justify-center text-4xl">🎓</div>
       </div>
 
-      <h2 className="font-heading text-2xl font-bold text-white mb-2 text-center">
-        Slimane analyse ton profil
-      </h2>
-      {track && (
-        <span className="text-gold-400 text-sm font-medium mb-6">Bac {track} · {ANALYSIS_MESSAGES.length} critères évalués</span>
-      )}
+      <h2 className="font-heading text-2xl font-bold mb-2 text-center">Slimane analyse ton profil</h2>
+      {track && <span className="text-gold-400 text-sm font-medium mb-6">Bac {track} · 5 critères évalués</span>}
 
       <div className="h-8 flex items-center">
         <AnimatePresence mode="wait">
@@ -78,15 +68,14 @@ function AnalysisScreen({ track }: { track: string }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.35 }}
+            transition={{ duration: 0.3 }}
             className="text-navy-300 text-sm text-center"
           >
-            {ANALYSIS_MESSAGES[msgIdx]}{"." .repeat(dotCount)}
+            {ANALYSIS_MESSAGES[msgIdx]}
           </motion.p>
         </AnimatePresence>
       </div>
 
-      {/* Progress pills */}
       <div className="mt-10 grid grid-cols-2 gap-3 w-full max-w-xs">
         {[
           { icon: "🏛️", label: "100 établissements" },
@@ -111,7 +100,6 @@ function AnalysisScreen({ track }: { track: string }) {
           </motion.div>
         ))}
       </div>
-
       <p className="mt-8 text-xs text-navy-500">Résultats générés par l'IA · 2–4 secondes</p>
     </motion.div>
   );
@@ -146,7 +134,6 @@ export default function Orientation() {
       consentPrivateSchools: form.consentPrivateSchools || undefined,
       language: i18n.language,
     };
-
     const result = await evaluate.mutateAsync(payload);
     navigate(`/results/${result.studentUuid}`, { state: result });
   };
@@ -154,64 +141,101 @@ export default function Orientation() {
   return (
     <>
       <Helmet>
-        <title>Questionnaire d'Orientation — Trouve ton école idéale | JAD2 TAWJIH</title>
-        <meta name="description" content="Réponds à 3 questions sur ta filière Bac, tes notes et ta ville — JAD2 TAWJIH te recommande tes meilleures écoles parmi 100+ établissements marocains. Gratuit, anonyme, résultats en 2 minutes." />
+        <title>Questionnaire d'Orientation — JAD2 TAWJIH</title>
+        <meta name="description" content="3 questions · 2 minutes · 100% gratuit. JAD2 TAWJIH te recommande tes meilleures écoles parmi 100+ établissements marocains." />
         <link rel="canonical" href="https://tawjih.jad2advisory.com/orientation" />
       </Helmet>
 
-      {/* Analysis loading screen — full screen overlay */}
       <AnimatePresence>
         {evaluate.isPending && <AnalysisScreen track={bacTrack} />}
       </AnimatePresence>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="max-w-xl mx-auto px-4 py-6"
-      >
-        {/* Urgency deadline banner */}
-        {daysLeft > 0 && daysLeft <= 30 && (
+      {/* Full-page dark background for focus */}
+      <div className="min-h-screen bg-gradient-to-br from-navy-900 via-navy-800 to-navy-950 pt-20 pb-16 px-4">
+        <div className="max-w-lg mx-auto">
+
+          {/* Urgency banner */}
+          {daysLeft > 0 && daysLeft <= 30 && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 flex items-center gap-3 bg-amber-500/15 border border-amber-400/30 rounded-2xl px-4 py-3"
+            >
+              <span className="text-lg flex-shrink-0">⏰</span>
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-bold text-amber-200">
+                  Plus que {daysLeft} jours — clôture cursussup.gov.ma
+                </span>
+                <span className="block text-[11px] text-amber-400/80 mt-0.5">
+                  ENSA, ENCG, ENSAM · inscriptions closes le 15 juillet 2026
+                </span>
+              </div>
+              <span className="text-2xl font-heading font-black text-amber-300 flex-shrink-0">{daysLeft}j</span>
+            </motion.div>
+          )}
+
+          {/* White card */}
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3"
+            transition={{ duration: 0.4 }}
+            className="bg-white rounded-3xl shadow-2xl shadow-navy-950/50 overflow-hidden"
           >
-            <span className="text-lg flex-shrink-0">⏰</span>
-            <div className="flex-1 min-w-0">
-              <span className="text-xs font-bold text-amber-800">
-                Plus que {daysLeft} jour{daysLeft > 1 ? "s" : ""} avant la clôture cursussup.gov.ma
-              </span>
-              <span className="block text-[10px] text-amber-600 mt-0.5">
-                ENSA, ENCG, ENSAM — inscriptions closes le 15 juillet 2026
-              </span>
+            {/* Progress bar header */}
+            <div className="border-b border-gray-100">
+              <ProgressBar step={step} />
             </div>
-            <span className="text-2xl font-heading font-black text-amber-700 flex-shrink-0">{daysLeft}j</span>
+
+            {/* Step content */}
+            <div className="px-6 py-6">
+              <AnimatePresence mode="wait">
+                {step === 1 && (
+                  <motion.div
+                    key="step1"
+                    initial={{ x: 40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -40, opacity: 0 }}
+                    transition={{ duration: 0.22 }}
+                  >
+                    <StepTrack />
+                  </motion.div>
+                )}
+                {step === 2 && (
+                  <motion.div
+                    key="step2"
+                    initial={{ x: 40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -40, opacity: 0 }}
+                    transition={{ duration: 0.22 }}
+                  >
+                    <StepGrades />
+                  </motion.div>
+                )}
+                {step === 3 && (
+                  <motion.div
+                    key="step3"
+                    initial={{ x: 40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -40, opacity: 0 }}
+                    transition={{ duration: 0.22 }}
+                  >
+                    <StepProfile onSubmit={handleSubmit} isLoading={evaluate.isPending} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
-        )}
 
-        <ProgressBar step={step} />
-
-        <div className="mt-6">
-          <AnimatePresence mode="wait">
-            {step === 1 && (
-              <motion.div key="step1" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }} transition={{ duration: 0.25 }}>
-                <StepTrack />
-              </motion.div>
-            )}
-            {step === 2 && (
-              <motion.div key="step2" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }} transition={{ duration: 0.25 }}>
-                <StepGrades />
-              </motion.div>
-            )}
-            {step === 3 && (
-              <motion.div key="step3" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }} transition={{ duration: 0.25 }}>
-                <StepProfile onSubmit={handleSubmit} isLoading={evaluate.isPending} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Trust footer */}
+          <p className="text-center text-white/30 text-xs mt-5 flex items-center justify-center gap-3">
+            <span>🛡️ Données anonymes</span>
+            <span className="text-white/15">·</span>
+            <span>Conforme CNDP</span>
+            <span className="text-white/15">·</span>
+            <span>Aucun compte requis</span>
+          </p>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }
