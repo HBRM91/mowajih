@@ -892,6 +892,9 @@ export default function Home() {
       {/* ─── READINESS SCORE ────────────────────────────────────────────────── */}
       <ReadinessScore />
 
+      {/* ─── PRÉP CONCOURS SECTION ─────────────────────────────────────────── */}
+      <PrepConcoursSection />
+
       {/* ─── STICKY MOBILE CTA ─────────────────────────────────────────────── */}
       <StickyMobileCTA />
 
@@ -939,6 +942,73 @@ export default function Home() {
       </section>
     </div>
     </>
+  );
+}
+
+// ─── PREP CONCOURS SECTION ──────────────────────────────────────────────────
+const PREP_EXAMS = [
+  { exam: "ensa", icon: "⚙️", label: "ENSA", color: "from-blue-600 to-blue-700", date: "~22 juil.", days: 32 },
+  { exam: "encg", icon: "📊", label: "ENCG/TAFEM", color: "from-emerald-600 to-emerald-700", date: "~21 juil.", days: 31 },
+  { exam: "fmp", icon: "🩺", label: "FMP Médecine", color: "from-rose-600 to-rose-700", date: "~8 août", days: 49 },
+  { exam: "ena", icon: "🏛️", label: "ENA Architecture", color: "from-amber-600 to-amber-700", date: "~26 juil.", days: 36 },
+] as const;
+
+function PrepConcoursSection() {
+  return (
+    <section className="py-16 bg-navy-950 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-10">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-500/15 border border-rose-500/30 rounded-full text-rose-300 text-xs font-bold mb-4">
+            <span className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-pulse" />
+            ⏰ Concours dans moins de 60 jours
+          </span>
+          <h2 className="font-heading text-3xl md:text-4xl font-bold text-white mb-3">
+            Prépare ton concours<br/>
+            <span className="bg-gradient-to-r from-gold-400 to-gold-300 bg-clip-text text-transparent">avec les vrais sujets 2025</span>
+          </h2>
+          <p className="text-navy-300 max-w-xl mx-auto text-sm">
+            Questions officielles · Explications détaillées · Simulation chronométrée · 100% gratuit
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {PREP_EXAMS.map((e, i) => (
+            <motion.div
+              key={e.exam}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }}
+            >
+              <Link
+                to="/prep"
+                className={`block p-4 bg-gradient-to-br ${e.color} rounded-2xl text-white hover:scale-105 transition-all duration-200 shadow-lg`}
+              >
+                <div className="text-3xl mb-2">{e.icon}</div>
+                <div className="font-heading font-bold text-base leading-tight">{e.label}</div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-white/70 text-[11px]">{e.date}</span>
+                  <span className="text-[10px] font-black bg-white/20 px-2 py-0.5 rounded-full">{e.days}j</span>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <Link
+            to="/prep"
+            className="inline-flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-gold-500 to-gold-400 text-navy-900 rounded-full font-bold text-sm hover:scale-105 transition-all duration-200 shadow-lg shadow-gold-500/20"
+          >
+            📝 Commencer la préparation
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
+          <p className="text-navy-500 text-xs mt-3">ENSA · ENA · ENCG/TAFEM · FMP Médecine</p>
+        </div>
+      </div>
+    </section>
   );
 }
 

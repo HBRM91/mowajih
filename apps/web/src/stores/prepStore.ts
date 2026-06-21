@@ -53,6 +53,7 @@ export const usePrepStore = create<PrepState>()(
         ensa: { ...DEFAULT_EXAM_PROGRESS },
         ena: { ...DEFAULT_EXAM_PROGRESS },
         encg: { ...DEFAULT_EXAM_PROGRESS },
+        fmp: { ...DEFAULT_EXAM_PROGRESS },
       },
 
       addResult: (exam, subject, correct, xpEarned) => {

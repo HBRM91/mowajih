@@ -1,4 +1,4 @@
-export type Exam = "ensa" | "ena" | "encg";
+export type Exam = "ensa" | "ena" | "encg" | "fmp";
 export type Level = "facile" | "moyen" | "difficile";
 
 export interface PrepQuestion {
@@ -13,6 +13,12 @@ export interface PrepQuestion {
   explanation: string;
   tip?: string;
   source?: string;
+}
+
+// ─── Formula rendering helper ───────────────────────────────────────────────
+// Renders chemical/math notation stored as Unicode + plain text
+export function renderFormula(text: string): string {
+  return text; // Already stored as clean Unicode — no conversion needed
 }
 
 export const EXAM_META: Record<Exam, {
@@ -86,6 +92,31 @@ export const EXAM_META: Record<Exam, {
       { key: "culture", label: "Culture générale", icon: "🌍" },
     ],
     levels: ["Apprenti", "Gestionnaire", "Manager", "Diplômé"],
+  },
+  fmp: {
+    label: "FMP / Médecine",
+    fullName: "Faculté de Médecine et de Pharmacie",
+    icon: "🩺",
+    color: "from-rose-600 to-rose-800",
+    bg: "bg-rose-50",
+    border: "border-rose-200",
+    duration: "3h30 (4 épreuves)",
+    format: "SVT + Physique + Chimie + Maths",
+    date: "~8 août 2026",
+    subjects: [
+      { key: "svt_energie", label: "Énergie cellulaire", icon: "⚡" },
+      { key: "svt_muscle", label: "Muscle & Contraction", icon: "💪" },
+      { key: "svt_genetique", label: "ADN & Génétique", icon: "🧬" },
+      { key: "chimie_redox", label: "Redox & Cinétique", icon: "⚗️" },
+      { key: "chimie_acide", label: "Acido-basique", icon: "🔬" },
+      { key: "chimie_organique", label: "Chimie organique", icon: "🧪" },
+      { key: "physique_ondes", label: "Ondes", icon: "〰️" },
+      { key: "physique_nuc", label: "Physique nucléaire", icon: "☢️" },
+      { key: "physique_elec", label: "Électricité", icon: "🔌" },
+      { key: "maths_analyse", label: "Analyse & Calcul", icon: "∫" },
+      { key: "maths_proba", label: "Probabilités", icon: "🎲" },
+    ],
+    levels: ["Candidat", "Médecin stagiaire", "Interne", "Reçu(e)"],
   },
 };
 
@@ -755,6 +786,718 @@ export const QUESTIONS: PrepQuestion[] = [
     correctIndex: 1,
     explanation: "Le TAFEM applique une pénalité de -0,25 point par mauvaise réponse. Ne répondez jamais au hasard — mieux vaut laisser vide si vous hésitez entre 3 ou 4 options.",
     tip: "Stratégie : répondre seulement si vous pouvez éliminer au moins 2 options."
+  },
+
+  // ─── FMP — BIOLOGIE SVT : ÉNERGIE CELLULAIRE ──────────────────────────────
+
+  {
+    id: "fmp-e-001", exam: "fmp", subject: "svt_energie", subjectLabel: "Énergie cellulaire",
+    level: "facile",
+    question: "La glycolyse se déroule dans l'hyaloplasme et produit par molécule de glucose :",
+    options: [
+      "4 ATP nets + 2 NADH + 2 pyruvates",
+      "2 ATP nets + 2 NADH + 2 pyruvates",
+      "2 ATP nets + 2 FADH₂ + 2 acétyl-CoA",
+      "6 ATP nets + 6 CO₂ + 6 H₂O"
+    ],
+    correctIndex: 1,
+    explanation: "La glycolyse dans l'hyaloplasme produit 4 ATP bruts − 2 ATP consommés = 2 ATP nets, plus 2 NADH et 2 pyruvates. La bande A contient la myosine, la bande I l'actine.",
+    tip: "4 ATP bruts − 2 ATP investis = 2 ATP nets. Localisation : hyaloplasme (pas la mitochondrie).",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-e-002", exam: "fmp", subject: "svt_energie", subjectLabel: "Énergie cellulaire",
+    level: "moyen",
+    question: "Le cycle de Krebs se déroule dans la matrice mitochondriale. Pour une molécule de glucose, il faut faire tourner le cycle :",
+    options: [
+      "1 tour → produit 1 ATP + 3 NADH + 1 FADH₂",
+      "2 tours → produit 2 ATP + 6 NADH + 2 FADH₂ + 4 CO₂",
+      "1 tour → produit 2 ATP + 6 NADH + 2 CO₂",
+      "3 tours → produit 3 ATP + 9 NADH + 3 FADH₂"
+    ],
+    correctIndex: 1,
+    explanation: "1 glucose → 2 pyruvates → 2 acétyl-CoA → 2 tours du cycle de Krebs. Bilan par tour : 1 ATP + 3 NADH + 1 FADH₂ + 2 CO₂. Bilan total pour le glucose : 2 ATP + 6 NADH + 2 FADH₂ + 4 CO₂.",
+    tip: "Piège classique : le bilan par tour ≠ bilan pour le glucose. Toujours multiplier par 2.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-e-003", exam: "fmp", subject: "svt_energie", subjectLabel: "Énergie cellulaire",
+    level: "moyen",
+    question: "Dans la chaîne respiratoire (membrane interne mitochondriale), l'oxygène joue le rôle de :",
+    options: [
+      "Premier donneur d'électrons, se transforme en eau",
+      "Accepteur final d'électrons, se transforme en eau (H₂O)",
+      "Catalyseur de la phosphorylation oxydative",
+      "Transporteur de protons H⁺ à travers la membrane"
+    ],
+    correctIndex: 1,
+    explanation: "L'oxygène est l'accepteur final d'électrons au niveau du complexe IV : ½O₂ + 2H⁺ + 2e⁻ → H₂O. C'est pourquoi la respiration aérobie est impossible sans O₂.",
+    tip: "O₂ = accepteur FINAL, pas donneur. Sans O₂, la chaîne s'arrête et toute la mitochondrie est bloquée.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-e-004", exam: "fmp", subject: "svt_energie", subjectLabel: "Énergie cellulaire",
+    level: "difficile",
+    question: "Lors de la fermentation lactique intense, la réaction pyruvate → lactate sert fondamentalement à :",
+    options: [
+      "Produire 2 ATP supplémentaires par rapport à la glycolyse",
+      "Régénérer le NAD⁺ pour permettre la poursuite de la glycolyse en anaérobie",
+      "Alimenter le cycle de Krebs en substrats carbonés",
+      "Transformer le pyruvate en acétyl-CoA pour la mitochondrie"
+    ],
+    correctIndex: 1,
+    explanation: "La fermentation lactique ne produit aucun ATP supplémentaire. Son unique rôle est de régénérer le NAD⁺ (consommé par la glycolyse) pour maintenir le flux glycolytique en l'absence d'O₂. Sans NAD⁺, la glycolyse s'arrête.",
+    tip: "Piège majeur du FMP : la fermentation ne génère PAS d'ATP. Elle recyclẽ uniquement le NAD⁺.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-e-005", exam: "fmp", subject: "svt_energie", subjectLabel: "Énergie cellulaire",
+    level: "difficile",
+    question: "Selon le curriculum marocain (1 NADH → 3 ATP ; 1 FADH₂ → 2 ATP), le bilan ATP total théorique de la respiration aérobie complète d'une molécule de glucose est :",
+    options: ["24 ATP", "32 ATP", "36 ATP", "38 ATP"],
+    correctIndex: 1,
+    explanation: "Glycolyse : 2 ATP + 2 NADH→6 ATP. Oxydation pyruvate : 2 NADH→6 ATP. Krebs : 2 ATP + 6 NADH→18 ATP + 2 FADH₂→4 ATP. Total brut = 38 ATP. Moins le coût de transport des NADH glycolytiques (−2 ATP) via la navette malate-aspartate → 36 ATP théoriques, mais le curriculum marocain retient 32 ATP (valeur standard avec coûts réels de la navette).",
+    tip: "Le Maroc retient 32 ATP. Les valeurs modernes (30-32) s'expliquent par les coûts de transport membranaire.",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — SVT : MUSCLE & CONTRACTION ────────────────────────────────────
+
+  {
+    id: "fmp-m-001", exam: "fmp", subject: "svt_muscle", subjectLabel: "Muscle & Contraction",
+    level: "facile",
+    question: "Dans un sarcomère au repos, la localisation correcte des protéines contractiles est :",
+    options: [
+      "Myosine dans la bande I, actine dans la bande A",
+      "Actine dans la bande I (filament mince), myosine dans la bande A (filament épais)",
+      "Actine et myosine toutes deux dans la bande H",
+      "Tropomyosine dans la bande A, troponine dans le disque Z"
+    ],
+    correctIndex: 1,
+    explanation: "Bande A (Anisotrope) = myosine (épaisse). Bande I (Isotrope) = actine (mince). Bande H = zone centrale de la bande A avec myosine seule. La tropomyosine et la troponine sont sur le filament d'actine (bande I).",
+    tip: "Moyen mnémotechnique : A pour Actomyosine, I pour actIne seule, H pour myosine seule (cœur de la bande A).",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-m-002", exam: "fmp", subject: "svt_muscle", subjectLabel: "Muscle & Contraction",
+    level: "moyen",
+    question: "Le calcium (Ca²⁺) libéré par le réticulum sarcoplasmique déclenche la contraction en se liant à :",
+    options: [
+      "La myosine, activant directement son ATPase",
+      "La troponine C → déplacement tropomyosine → exposition des sites actine",
+      "L'actine G, provoquant sa polymérisation en actine F",
+      "L'ATP, accélérant son hydrolyse en ADP + Pᵢ"
+    ],
+    correctIndex: 1,
+    explanation: "Séquence : potentiel d'action → tubules T → réticulum sarcoplasmique libère Ca²⁺. Le Ca²⁺ se lie à la troponine C → changement conformationnel → la tropomyosine se déplace → les sites de liaison de la myosine sur l'actine sont exposés → cycle de la cross-bridge.",
+    tip: "Ca²⁺ agit sur la troponine (pas directement l'actine). Sans Ca²⁺ = sites masqués = pas de contraction.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-m-003", exam: "fmp", subject: "svt_muscle", subjectLabel: "Muscle & Contraction",
+    level: "moyen",
+    question: "Lors d'un cycle de la cross-bridge (pontage actine-myosine), la consommation d'ATP est de :",
+    options: [
+      "0 ATP (l'énergie vient du Ca²⁺)",
+      "1 ATP par cycle : fixation sur tête myosine → détachement, puis hydrolyse → recul + power stroke",
+      "2 ATP : 1 pour le détachement, 1 pour le power stroke",
+      "1 ATP uniquement lors du power stroke"
+    ],
+    correctIndex: 1,
+    explanation: "Chaque cycle consomme exactement 1 ATP. L'ATP se fixe sur la tête myosine pour le détachement de l'actine, puis son hydrolyse (ADP + Pᵢ) permet le recul de la tête. La libération de Pᵢ déclenche le power stroke.",
+    tip: "1 ATP = 1 cycle complet. La créatine phosphate est une réserve qui régénère l'ATP, mais ne remplace pas l'ATP dans le cycle.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-m-004", exam: "fmp", subject: "svt_muscle", subjectLabel: "Muscle & Contraction",
+    level: "difficile",
+    question: "Les fibres musculaires de type IIb (utilisées lors d'un sprint) sont caractérisées par :",
+    options: [
+      "Richesse en mitochondries et myoglobine, métabolisme aérobie, résistance à la fatigue",
+      "Pauvreté en mitochondries, richesse en glycogène, glycolyse anaérobie dominante, fatigue rapide",
+      "Propriétés intermédiaires identiques aux fibres de type I",
+      "Utilisation exclusive de la fermentation alcoolique pour produire de l'ATP"
+    ],
+    correctIndex: 1,
+    explanation: "Fibres IIb ('blanches', glycolytiques rapides) : pauvres en mitochondries et myoglobine, riches en glycogène. Métabolisme : glycolyse anaérobie. Vitesse de contraction élevée mais fatigue rapide. À l'opposé, les fibres type I ('rouges') sont oxydatives et résistantes.",
+    tip: "Type I = rouge = oxydatif = endurance. Type IIb = blanc = glycolytique = sprint, force, fatigue rapide.",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — SVT : ADN & GÉNÉTIQUE ─────────────────────────────────────────
+
+  {
+    id: "fmp-g-001", exam: "fmp", subject: "svt_genetique", subjectLabel: "ADN & Génétique",
+    level: "moyen",
+    question: "La réplication de l'ADN chez les eucaryotes est :",
+    options: [
+      "Conservative : une molécule fille = ancienne double hélice + une nouvelle",
+      "Semi-conservative : chaque molécule fille = 1 brin parental + 1 brin neuf, synthèse en 5'→3'",
+      "Dispersive : les brins parentaux et nouveaux sont mélangés dans les deux molécules filles",
+      "Conservative et se déroule dans le cytoplasme sans enzyme"
+    ],
+    correctIndex: 1,
+    explanation: "L'expérience de Meselson-Stahl (1958) a prouvé la réplication semi-conservative. Chaque molécule fille conserve un brin parental. L'ADN polymérase synthétise toujours en sens 5'→3'. L'hélicase déroule, la primase synthétise l'amorce ARN.",
+    tip: "Semi-conservative = 1 ancien brin + 1 nouveau brin dans chaque molécule fille. Retenir l'expérience Meselson-Stahl.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-g-002", exam: "fmp", subject: "svt_genetique", subjectLabel: "ADN & Génétique",
+    level: "moyen",
+    question: "La maturation du pré-ARNm chez les eucaryotes comprend les 3 modifications suivantes :",
+    options: [
+      "Addition d'une coiffe 5', d'une queue poly-A 3', et épissage (retrait des introns)",
+      "Ajout d'une coiffe 3', d'une queue poly-T 5', et retrait des exons",
+      "Aucune modification : le pré-ARNm est directement fonctionnel",
+      "Duplication des exons et élimination des introns par l'ARN polymérase"
+    ],
+    correctIndex: 0,
+    explanation: "Le pré-ARNm subit 3 modifications dans le noyau : (1) coiffe méthylguanosine en 5' (protection + reconnaissance ribosomale) ; (2) queue poly-A en 3' (stabilité) ; (3) épissage par le spliceosome (retrait des introns non codants, jonction des exons codants). L'ARNm mature est exporté dans le cytoplasme.",
+    tip: "Introns = non codants (retirés). Exons = codants (conservés). Piège fréquent : inversion introns/exons.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-g-003", exam: "fmp", subject: "svt_genetique", subjectLabel: "ADN & Génétique",
+    level: "difficile",
+    question: "Le codon initiateur 5'-AUG-3' code pour la méthionine. L'anticodon de l'ARNt correspondant est :",
+    options: [
+      "5'-AUG-3' (identique au codon)",
+      "3'-UAC-5' (antiparallèle et complémentaire)",
+      "5'-UAG-3' (codon stop par erreur)",
+      "3'-TAC-5' (avec thymine au lieu d'uracile)"
+    ],
+    correctIndex: 1,
+    explanation: "L'anticodon est antiparallèle et complémentaire du codon. Si codon = 5'-AUG-3', alors anticodon = 3'-UAC-5'. Les ARNt contiennent de l'uracile (U) et non de la thymine (T). Les codons STOP (UAA, UAG, UGA) n'ont pas d'ARNt correspondant.",
+    tip: "Règle des appariements Watson-Crick : A-U, G-C. L'anticodon est TOUJOURS antiparallèle au codon.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-g-004", exam: "fmp", subject: "svt_genetique", subjectLabel: "ADN & Génétique",
+    level: "difficile",
+    question: "Une mutation par substitution change un codon sens en codon STOP. Il s'agit d'une mutation :",
+    options: [
+      "Faux-sens (missense) : un acide aminé est remplacé par un autre",
+      "Non-sens (nonsense) : arrêt prématuré de la traduction → protéine tronquée non fonctionnelle",
+      "Silencieuse : le code est dégénéré, le même acide aminé est codé",
+      "Par décalage du cadre de lecture (frameshift)"
+    ],
+    correctIndex: 1,
+    explanation: "Mutation nonsense = codon sens → codon STOP (UAA, UAG ou UGA). Le ribosome se détache prématurément → protéine tronquée généralement non fonctionnelle. Missense = acide aminé → autre acide aminé. Silent = même acide aminé (dégénérescence). Frameshift = insertion/délétion d'un nucléotide.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-g-005", exam: "fmp", subject: "svt_genetique", subjectLabel: "ADN & Génétique",
+    level: "difficile",
+    question: "Sur le brin retardé (lagging strand), la synthèse se fait par fragments d'Okazaki car :",
+    options: [
+      "L'ADN polymérase synthétise en 3'→5' sur ce brin uniquement",
+      "L'ADN polymérase synthétise toujours en 5'→3', mais le brin retardé est orienté dans le sens opposé à la fourche, imposant une synthèse fragmentée",
+      "Le brin retardé est synthétisé par l'ARN polymérase, plus lente",
+      "La ligase ne peut pas relier les fragments sur ce brin"
+    ],
+    correctIndex: 1,
+    explanation: "Toute ADN polymérase synthétise en 5'→3'. Le brin leading (matrice 3'→5') : la synthèse suit la fourche. Le brin lagging (matrice 5'→3') : la synthèse 5'→3' va à l'encontre de la fourche → fragments d'Okazaki (100-200 nt chez eucaryotes). L'ADN ligase relie les fragments.",
+    tip: "Les 2 brins sont synthétisés en 5'→3'. Ce qui change, c'est leur orientation par rapport à la fourche.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-g-006", exam: "fmp", subject: "svt_genetique", subjectLabel: "ADN & Génétique",
+    level: "moyen",
+    question: "Deux parents phénotypiquement sains ont un enfant atteint d'une maladie autosomique récessive. La probabilité que leur prochain enfant soit atteint est :",
+    options: ["0% (parents sains)", "25%", "50%", "100%"],
+    correctIndex: 1,
+    explanation: "Si deux parents sains ont un enfant aa (atteint), ils sont obligatoirement tous les deux Aa (hétérozygotes porteurs sains). Croisement Aa × Aa : 25% AA (sain), 50% Aa (sain porteur), 25% aa (atteint). Chaque grossesse est indépendante.",
+    tip: "Sain ≠ non-porteur. En transmission récessive, les porteurs Aa sont phénotypiquement sains.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-g-007", exam: "fmp", subject: "svt_genetique", subjectLabel: "ADN & Génétique",
+    level: "moyen",
+    question: "Une femme porteuse X^A X^a (maladie récessive liée à l'X) a un enfant avec un homme sain X^A Y. La probabilité qu'un fils soit atteint est :",
+    options: ["0%", "25%", "50%", "100%"],
+    correctIndex: 2,
+    explanation: "Le fils hérite toujours du Y paternel et de l'X maternel. La mère X^A X^a transmet X^A ou X^a avec probabilité 50% chacun. Si le fils reçoit X^a → il est atteint (pas de 2ème X pour compenser). Donc 50% des fils sont atteints.",
+    tip: "Le père ne transmet jamais son X à ses fils. La maladie X-liée passe de la mère porteuse à ses fils.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-g-008", exam: "fmp", subject: "svt_genetique", subjectLabel: "ADN & Génétique",
+    level: "difficile",
+    question: "Dans une population Hardy-Weinberg avec q (allèle récessif) = 0,1, la fréquence des porteurs sains (hétérozygotes) est :",
+    options: ["1% (q²)", "9% (q×p)", "18% (2pq)", "81% (p²)"],
+    correctIndex: 2,
+    explanation: "p = 1 − q = 0,9. Fréquence des hétérozygotes = 2pq = 2 × 0,9 × 0,1 = 0,18 = 18%. Fréquence homozygotes recessifs = q² = 0,01 = 1%. Fréquence homozygotes dominants = p² = 0,81 = 81%.",
+    tip: "Toujours vérifier p + q = 1. Hétérozygotes = 2pq, pas pq seul.",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — CHIMIE : REDOX & CINÉTIQUE ────────────────────────────────────
+
+  {
+    id: "fmp-c-001", exam: "fmp", subject: "chimie_redox", subjectLabel: "Redox & Cinétique",
+    level: "facile",
+    question: "La vitesse d'une réaction chimique augmente avec la température car :",
+    options: [
+      "Les molécules se déplacent plus lentement et ont moins de collisions",
+      "La proportion de molécules ayant une énergie supérieure à l'énergie d'activation Eₐ augmente (loi d'Arrhenius)",
+      "Le catalyseur modifie l'enthalpie de réaction ΔᵣH pour rendre la réaction plus exothermique",
+      "La concentration des réactifs augmente automatiquement avec T"
+    ],
+    correctIndex: 1,
+    explanation: "Loi d'Arrhenius : k = A·e^(−Eₐ/RT). À T élevé, plus de molécules ont E > Eₐ → plus de collisions efficaces → vitesse augmente. Le catalyseur abaisse Eₐ mais ne change pas ΔᵣH ni la position de l'équilibre.",
+    tip: "Catalyseur = abaisse Eₐ, accélère l'équilibre, ne change ni ΔᵣH ni K.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-c-002", exam: "fmp", subject: "chimie_redox", subjectLabel: "Redox & Cinétique",
+    level: "difficile",
+    question: "Pour équilibrer la demi-équation en milieu acide : MnO₄⁻ + ? H⁺ + ? e⁻ → Mn²⁺ + ? H₂O, les coefficients corrects sont :",
+    options: [
+      "4 H⁺ + 2 e⁻ → Mn²⁺ + 2 H₂O",
+      "8 H⁺ + 5 e⁻ → Mn²⁺ + 4 H₂O",
+      "6 H⁺ + 3 e⁻ → Mn²⁺ + 3 H₂O",
+      "2 H⁺ + 4 e⁻ → Mn²⁺ + H₂O"
+    ],
+    correctIndex: 1,
+    explanation: "Mn passe de +VII (MnO₄⁻) à +II (Mn²⁺) → gain de 5 e⁻. 4 atomes O → 4 H₂O. 8 H à droite → 8 H⁺ à gauche. Vérification charges : (−1) + 8(+1) + 5(−1) = +2 = Mn²⁺. ✓",
+    tip: "Méthode : (1) équilibrer les atomes autres que O et H ; (2) équilibrer O avec H₂O ; (3) équilibrer H avec H⁺ ; (4) équilibrer les charges avec e⁻.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-c-003", exam: "fmp", subject: "chimie_redox", subjectLabel: "Redox & Cinétique",
+    level: "difficile",
+    question: "Une pile Cu²⁺/Cu (E° = +0,34 V) et Zn²⁺/Zn (E° = −0,76 V). La f.e.m. et l'identification anode/cathode sont :",
+    options: [
+      "f.e.m. = −1,10 V ; zinc = cathode, cuivre = anode",
+      "f.e.m. = +1,10 V ; cuivre = cathode (réduction), zinc = anode (oxydation)",
+      "f.e.m. = +0,42 V ; cuivre = anode, zinc = cathode",
+      "Les électrons circulent de la cathode vers l'anode dans le fil métallique"
+    ],
+    correctIndex: 1,
+    explanation: "E°(Cu²⁺/Cu) > E°(Zn²⁺/Zn) → le cuivre se réduit (cathode, pôle +). Le zinc s'oxyde (anode, pôle −). f.e.m. = E°cathode − E°anode = 0,34 − (−0,76) = +1,10 V. Les électrons circulent dans le fil de l'anode (Zn) vers la cathode (Cu).",
+    tip: "En pile spontanée : cathode = réduction (pôle +) ; anode = oxydation (pôle −). Électrons : anode → cathode dans le fil.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-c-004", exam: "fmp", subject: "chimie_redox", subjectLabel: "Redox & Cinétique",
+    level: "moyen",
+    question: "Pour déposer 6,35 g de cuivre par électrolyse de CuSO₄ (M(Cu) = 63,5 g/mol, F = 96 500 C/mol), la quantité d'électricité nécessaire est :",
+    options: ["9 650 C", "19 300 C", "28 950 C", "48 250 C"],
+    correctIndex: 1,
+    explanation: "n(Cu) = 6,35/63,5 = 0,1 mol. Réaction : Cu²⁺ + 2e⁻ → Cu → 2 électrons par atome Cu. n(e⁻) = 2 × 0,1 = 0,2 mol. Q = n(e⁻) × F = 0,2 × 96 500 = 19 300 C.",
+    tip: "Piège fréquent : oublier que Cu²⁺ nécessite 2 e⁻. Toujours vérifier la valence de l'ion.",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — CHIMIE : ACIDO-BASIQUE ────────────────────────────────────────
+
+  {
+    id: "fmp-ca-001", exam: "fmp", subject: "chimie_acide", subjectLabel: "Acido-basique",
+    level: "moyen",
+    question: "Qᵣ = 0,74 et K = 0,5 pour la réaction N₂ + 3H₂ ⇌ 2NH₃. Le système va évoluer dans :",
+    options: [
+      "Le sens direct (formation de NH₃) car Qᵣ < K",
+      "Le sens inverse (décomposition de NH₃) car Qᵣ > K",
+      "Aucun sens, il est à l'équilibre car Qᵣ ≈ K",
+      "Le sens direct car la concentration de NH₃ est faible"
+    ],
+    correctIndex: 1,
+    explanation: "Qᵣ > K → le système a trop de produits → il évolue dans le sens inverse (décomposition de NH₃) pour se rapprocher de l'équilibre. Si Qᵣ < K : sens direct. Si Qᵣ = K : équilibre.",
+    tip: "Règle simple : Qᵣ < K → sens direct ; Qᵣ > K → sens inverse ; Qᵣ = K → équilibre.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ca-002", exam: "fmp", subject: "chimie_acide", subjectLabel: "Acido-basique",
+    level: "facile",
+    question: "Pour un acide faible AH de pKₐ = 4,8, le pH d'une solution où [AH] = [A⁻] est :",
+    options: ["pH = 7,0", "pH = 4,8", "pH = 9,2", "pH = 2,4"],
+    correctIndex: 1,
+    explanation: "Équation Henderson-Hasselbalch : pH = pKₐ + log([A⁻]/[AH]). Si [A⁻] = [AH] → log(1) = 0 → pH = pKₐ = 4,8. C'est le point de demi-équivalence d'un dosage acide faible/base forte.",
+    tip: "Demi-équivalence : pH = pKₐ. Point simple à mémoriser pour le concours.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ca-003", exam: "fmp", subject: "chimie_acide", subjectLabel: "Acido-basique",
+    level: "moyen",
+    question: "Lors du dosage d'un acide faible par une base forte, le pH à l'équivalence est :",
+    options: [
+      "Toujours égal à 7, quel que soit l'acide utilisé",
+      "Supérieur à 7 car la base conjuguée A⁻ réagit avec l'eau pour libérer OH⁻",
+      "Inférieur à 7 car l'acide faible n'est pas totalement neutralisé",
+      "Égal au pKₐ de l'acide faible"
+    ],
+    correctIndex: 1,
+    explanation: "À l'équivalence : toute l'espèce dominante est A⁻ (base faible). Réaction A⁻ + H₂O ⇌ AH + OH⁻ → production de OH⁻ → pH > 7. pH = 7 seulement pour acide fort + base forte.",
+    tip: "Acide faible + base forte → pH_éq > 7. Acide fort + base forte → pH_éq = 7. Acide fort + base faible → pH_éq < 7.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ca-004", exam: "fmp", subject: "chimie_acide", subjectLabel: "Acido-basique",
+    level: "difficile",
+    question: "Un tampon acétate [CH₃COOH] = [CH₃COO⁻] = 0,1 mol/L (pKₐ = 4,8). Après ajout de 0,01 mol de HCl à 1 L, le pH final est approximativement :",
+    options: ["pH = 1,0", "pH = 4,7", "pH = 4,8", "pH = 5,7"],
+    correctIndex: 1,
+    explanation: "HCl réagit avec CH₃COO⁻ → CH₃COOH. Après réaction : [CH₃COOH] = 0,11 mol/L, [CH₃COO⁻] = 0,09 mol/L. pH = 4,8 + log(0,09/0,11) = 4,8 + log(0,818) = 4,8 − 0,087 ≈ 4,7. Le tampon résiste bien à l'acidification.",
+    tip: "L'effet tampon = faible variation de pH. Sans tampon, pH d'HCl 0,01M ≈ 2,0.",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — CHIMIE ORGANIQUE ───────────────────────────────────────────────
+
+  {
+    id: "fmp-co-001", exam: "fmp", subject: "chimie_organique", subjectLabel: "Chimie organique",
+    level: "facile",
+    question: "L'estérification entre un acide carboxylique et un alcool est caractérisée par :",
+    options: [
+      "Réaction totale, rapide et exothermique ; rendement 100% possible",
+      "Réaction lente, limitée (τ_max ≈ 67% équimolaire) et athermique",
+      "Réaction instantanée nécessitant un catalyseur enzymatique",
+      "Réaction produisant un sel et de l'eau par neutralisation acido-basique"
+    ],
+    correctIndex: 1,
+    explanation: "L'estérification : RCOOH + R'OH ⇌ RCOOR' + H₂O. Elle est lente (nécessite H⁺ + Δ), limitée (équilibre K≈4 pour alcools primaires, τ_max ≈ 67% équimolaire), et athermique (ΔᵣH ≈ 0). Pour augmenter le rendement : excès d'un réactif ou élimination de l'eau.",
+    tip: "3 caractéristiques à retenir : LENTE + LIMITÉE + ATHERMIQUE. Opposé de la saponification.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-co-002", exam: "fmp", subject: "chimie_organique", subjectLabel: "Chimie organique",
+    level: "moyen",
+    question: "La différence fondamentale entre hydrolyse acide et saponification d'un ester est :",
+    options: [
+      "L'hydrolyse acide est totale et rapide ; la saponification est lente et limitée",
+      "La saponification (OH⁻ en excès) est totale et rapide ; l'hydrolyse acide est lente et limitée",
+      "Les deux sont totales et rapides, seul le catalyseur diffère",
+      "L'hydrolyse acide produit un sel + alcool ; la saponification produit un acide + alcool"
+    ],
+    correctIndex: 1,
+    explanation: "Hydrolyse acide : RCOOR' + H₂O ⇌ RCOOH + R'OH → équilibre, lente. Saponification : RCOOR' + OH⁻ → RCOO⁻ + R'OH → totale (les OH⁻ déplacent l'équilibre), rapide. La saponification produit le savon (sel d'acide gras).",
+    tip: "Saponification = totale car OH⁻ consomme le produit acide → déplacement d'équilibre irréversible.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-co-003", exam: "fmp", subject: "chimie_organique", subjectLabel: "Chimie organique",
+    level: "moyen",
+    question: "Pour distinguer le butanal (aldéhyde) de la butanone (cétone), on peut utiliser :",
+    options: [
+      "Les deux donnent un test positif à la liqueur de Fehling car ils ont un groupe carbonyle",
+      "Seul le butanal donne un test positif avec Fehling et Tollens ; la butanone donne un test négatif",
+      "La butanone est plus réactive que le butanal avec le réactif de Tollens",
+      "Les deux donnent un test négatif avec le réactif de Schiff"
+    ],
+    correctIndex: 1,
+    explanation: "Butanal (R-CHO, aldéhyde) : réducteur → Fehling (+) précipité rouge brique, Tollens (+) miroir d'argent, Schiff (+) rose. Butanone (R-CO-R', cétone) : non réductrice → Fehling (−), Tollens (−), Schiff (−). Les cétones ne possèdent pas d'H sur le carbone carbonyle.",
+    tip: "Aldéhyde = réducteur (Fehling+, Tollens+). Cétone = non réductrice (tous les tests négatifs).",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-co-004", exam: "fmp", subject: "chimie_organique", subjectLabel: "Chimie organique",
+    level: "difficile",
+    question: "Le nom IUPAC de CH₃−CH(CH₃)−CH₂−CH₂−OH est :",
+    options: ["2-méthylbutan-1-ol", "3-méthylbutan-1-ol", "2-méthylpentan-1-ol", "3-méthylbutan-4-ol"],
+    correctIndex: 1,
+    explanation: "Chaîne principale la plus longue contenant le groupe OH : 4 carbones (butan-1-ol). Numérotation depuis OH : C1(−OH), C2, C3(−CH₃), C4. Le groupement méthyle est en position 3. Nom : 3-méthylbutan-1-ol.",
+    tip: "Toujours numéroter pour donner l'indice le plus faible au groupe fonctionnel (OH). Vérifier que la chaîne principale est la plus longue.",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — PHYSIQUE : ONDES ───────────────────────────────────────────────
+
+  {
+    id: "fmp-o-001", exam: "fmp", subject: "physique_ondes", subjectLabel: "Ondes",
+    level: "facile",
+    question: "Une onde sinusoïdale se propage dans une corde avec f = 5 Hz et v = 20 m/s. Sa longueur d'onde λ est :",
+    options: ["100 m", "4 m", "0,25 m", "25 m"],
+    correctIndex: 1,
+    explanation: "Relation fondamentale : v = λ × f → λ = v/f = 20/5 = 4 m.",
+    tip: "λ = v/f. Ne pas confondre avec λ = v × f (erreur fréquente).",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-o-002", exam: "fmp", subject: "physique_ondes", subjectLabel: "Ondes",
+    level: "moyen",
+    question: "Dans l'expérience d'interférences de Young (a = 0,5 mm, D = 2 m, λ = 500 nm), l'interfrange i est :",
+    options: ["0,5 mm", "1,0 mm", "2,0 mm", "4,0 mm"],
+    correctIndex: 2,
+    explanation: "i = λD/a = (500×10⁻⁹ × 2) / (0,5×10⁻³) = 10⁻⁶ / 0,5×10⁻³ = 2×10⁻³ m = 2,0 mm.",
+    tip: "Vérifier les unités : λ en m, D en m, a en m → i en m. Convertir systématiquement.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-o-003", exam: "fmp", subject: "physique_ondes", subjectLabel: "Ondes",
+    level: "moyen",
+    question: "Concernant le spectre électromagnétique, quelle affirmation est correcte ?",
+    options: [
+      "Les rayons X ont une longueur d'onde supérieure à la lumière visible",
+      "Les ondes radio ont une fréquence inférieure à celle de la lumière visible et servent aux communications sans fil",
+      "Les UV ont une longueur d'onde supérieure à 700 nm",
+      "Les rayons gamma sont moins énergétiques que les UV car leur fréquence est plus faible"
+    ],
+    correctIndex: 1,
+    explanation: "Ordre décroissant de λ : Radio > Micro-ondes > IR > Visible (400-700 nm) > UV > X > γ. Les ondes radio ont la plus grande λ et donc la plus faible fréquence. Les rayons γ ont la plus grande fréquence/énergie. X et γ < 400 nm. UV < 400 nm.",
+    tip: "Moyen mnémotechnique : 'Radio MIcro Visible Ultra eX Gamma' (de grande λ à petite λ).",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-o-004", exam: "fmp", subject: "physique_ondes", subjectLabel: "Ondes",
+    level: "difficile",
+    question: "yₛ(t) = 2·sin(10πt) cm, v = 5 m/s. L'élongation du point M situé à x = 0,25 m de S à t = 0,1 s est :",
+    options: ["0 cm", "2 cm", "−2 cm", "1 cm"],
+    correctIndex: 1,
+    explanation: "Retard τ = x/v = 0,25/5 = 0,05 s. L'onde arrive en M avec un retard τ. yₘ(t) = yₛ(t − τ). À t = 0,1 s : yₘ(0,1) = 2·sin(10π × (0,1 − 0,05)) = 2·sin(10π × 0,05) = 2·sin(π/2) = 2·1 = 2 cm.",
+    tip: "Le point M reproduit le mouvement de S avec un retard τ = x/v. Equation : yₘ(t) = yₛ(t − τ).",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — PHYSIQUE NUCLÉAIRE ─────────────────────────────────────────────
+
+  {
+    id: "fmp-n-001", exam: "fmp", subject: "physique_nuc", subjectLabel: "Physique nucléaire",
+    level: "facile",
+    question: "Un radionucléide de t₁/₂ = 10 jours. La fraction de noyaux restants après 30 jours est :",
+    options: ["1/2", "1/4", "1/8", "1/16"],
+    correctIndex: 2,
+    explanation: "Nombre de demi-vies : n = 30/10 = 3. Fraction restante : N/N₀ = (1/2)³ = 1/8.",
+    tip: "Après n demi-vies : fraction = (1/2)ⁿ. Toujours calculer n = t/t₁/₂ d'abord.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-n-002", exam: "fmp", subject: "physique_nuc", subjectLabel: "Physique nucléaire",
+    level: "moyen",
+    question: "Lors d'une désintégration β⁻, le noyau fils a, par rapport au noyau père :",
+    options: [
+      "A diminue de 1, Z augmente de 1",
+      "A inchangé, Z augmente de 1 (un neutron → proton + électron + antineutrino)",
+      "A augmente de 1, Z inchangé",
+      "A diminue de 4, Z diminue de 2 (comme en α)"
+    ],
+    correctIndex: 1,
+    explanation: "β⁻ : ⁰₋₁e est émis. Bilan : ᴬ_Z X → ᴬ_(Z+1) Y + ⁰₋₁e + ν̄_e. Un neutron se transforme en proton + électron + antineutrino. A reste constant (même nombre de nucléons). Z augmente de 1.",
+    tip: "β⁻ : Z+1, A inchangé. β⁺ : Z−1, A inchangé. α : Z−2, A−4. γ : Z et A inchangés.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-n-003", exam: "fmp", subject: "physique_nuc", subjectLabel: "Physique nucléaire",
+    level: "moyen",
+    question: "L'énergie de liaison par nucléon (Eₗ/A) est maximale pour A ≈ 56 (fer). Cela signifie que :",
+    options: [
+      "Les noyaux très lourds comme l'uranium sont les plus stables",
+      "Les noyaux plus légers et plus lourds que le fer peuvent libérer de l'énergie par fusion ou fission respectivement",
+      "La fission et la fusion consomment toutes deux de l'énergie",
+      "L'uranium-235 a une Eₗ/A supérieure à celle du fer-56"
+    ],
+    correctIndex: 1,
+    explanation: "Courbe d'Aston : Eₗ/A maximale à A≈56 (Fe, ≈8,8 MeV/nucléon). Noyaux légers (H, He) → plus stables si fusionnés vers le fer → fusion libère énergie. Noyaux lourds (U) → plus stables si fissionnés vers le fer → fission libère énergie. U-235 : ≈7,6 MeV/nucléon < Fe.",
+    tip: "Le fer-56 est le noyau le plus stable. Toute réaction qui s'en rapproche (fusion vers le bas ou fission vers le bas) libère de l'énergie.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-n-004", exam: "fmp", subject: "physique_nuc", subjectLabel: "Physique nucléaire",
+    level: "difficile",
+    question: "La fusion nucléaire nécessite des températures de plusieurs millions de degrés car :",
+    options: [
+      "Elle divise un noyau lourd en deux plus légers, nécessitant beaucoup d'énergie",
+      "Il faut vaincre la répulsion électrostatique entre noyaux chargés positivement pour qu'ils soient assez proches pour l'interaction forte",
+      "Elle se produit à température ambiante dans les réacteurs actuels",
+      "Elle consomme de l'énergie car il faut briser les noyaux légers"
+    ],
+    correctIndex: 1,
+    explanation: "Fusion = assemblage de 2 noyaux légers. Mais deux noyaux positifs se repoussent (force de Coulomb). Il faut T > 10⁷ K pour que les noyaux aient assez d'énergie cinétique pour surmonter cette barrière et se rapprocher à la portée de la force forte (attraction). Les étoiles fonctionnent par fusion.",
+    tip: "Fusion ≠ Fission. Fusion = assemblage (noyaux légers). Fission = cassure (noyaux lourds). Les 2 libèrent de l'énergie.",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — PHYSIQUE : ÉLECTRICITÉ ─────────────────────────────────────────
+
+  {
+    id: "fmp-el-001", exam: "fmp", subject: "physique_elec", subjectLabel: "Électricité",
+    level: "facile",
+    question: "Un condensateur C = 10 µF chargé via R = 100 kΩ. La constante de temps τ du circuit RC est :",
+    options: ["10 s", "1 s", "0,1 s", "1000 s"],
+    correctIndex: 1,
+    explanation: "τ = R × C = 100×10³ Ω × 10×10⁻⁶ F = 10⁵ × 10⁻⁵ = 1 s. La charge complète est atteinte après ≈5τ = 5 s.",
+    tip: "Attention aux unités : kΩ → ×10³ Ω ; µF → ×10⁻⁶ F. Faire la conversion AVANT le calcul.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-el-002", exam: "fmp", subject: "physique_elec", subjectLabel: "Électricité",
+    level: "moyen",
+    question: "Dans un circuit RL série alimenté par E, après fermeture du circuit à t = 0, le courant i(t) évolue selon :",
+    options: [
+      "i(t) = E/R instantanément car la bobine se comporte comme un fil",
+      "i(t) = (E/R)(1 − e^(−t/τ)) avec τ = L/R, la bobine s'opposant aux variations de courant",
+      "i(t) = 0 à tout instant car la bobine bloque le courant continu",
+      "i(t) oscille sinusoïdalement autour de E/R"
+    ],
+    correctIndex: 1,
+    explanation: "La bobine s'oppose aux variations de courant (auto-induction : u_L = L·di/dt). À t=0 : i=0 (continuité du courant). En régime permanent : i = E/R (bobine = fil). Transition : i(t) = (E/R)(1−e^(−Rt/L)). τ = L/R.",
+    tip: "Bobine en DC permanent = court-circuit (résistance r négligée). Condensateur en DC permanent = circuit ouvert.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-el-003", exam: "fmp", subject: "physique_elec", subjectLabel: "Électricité",
+    level: "moyen",
+    question: "Les oscillations libres dans un circuit RLC dépendent de R. Si R < 2√(L/C), le régime est :",
+    options: [
+      "Toujours apériodique (pas d'oscillations)",
+      "Pseudo-périodique (oscillations amorties)",
+      "Critique (retour à l'équilibre le plus rapide sans oscillations)",
+      "Permanent sinusoïdal (pas d'amortissement)"
+    ],
+    correctIndex: 1,
+    explanation: "Discriminant de l'équation caractéristique : Δ = R²/L² − 4/LC. Si R < 2√(L/C) → Δ < 0 → racines complexes conjuguées → régime pseudo-périodique (oscillations amorties). Si R = 2√(L/C) → critique. Si R > 2√(L/C) → apériodique.",
+    tip: "Résistance critique R_c = 2√(L/C). En dessous : oscillations. Au-dessus : retour monotone à l'équilibre.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-el-004", exam: "fmp", subject: "physique_elec", subjectLabel: "Électricité",
+    level: "difficile",
+    question: "À la résonance d'intensité d'un circuit RLC série forcé, l'impédance Z et le courant I sont :",
+    options: [
+      "Z maximale → I minimale",
+      "Z = R (minimale) → I maximale = E/R ; fréquence : f₀ = 1/(2π√(LC))",
+      "Z = 0 → I infinie",
+      "La résonance d'intensité n'existe que si R > 2√(L/C)"
+    ],
+    correctIndex: 1,
+    explanation: "Z = √(R² + (Lω − 1/(Cω))²). À ω₀ = 1/√(LC) : Lω₀ = 1/(Cω₀) → termes réactifs s'annulent → Z = R (minimum). I_max = E/R. La tension aux bornes de L et C peut être très supérieure à E (effet de surtension, facteur Q).",
+    tip: "Résonance d'intensité : ω₀ = 1/√(LC), Z = R minimal, I maximal. La tension peut dépasser E si Q > 1.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-el-005", exam: "fmp", subject: "physique_elec", subjectLabel: "Électricité",
+    level: "difficile",
+    question: "Un condensateur C = 4 µF, U₀ = 100 V se décharge dans une bobine idéale L = 0,1 H (R = 0). L'énergie maximale stockée dans la bobine est :",
+    options: ["0 J", "0,02 J", "0,04 J", "20 J"],
+    correctIndex: 1,
+    explanation: "Bobine idéale (R = 0) → énergie totale conservée. E_C initiale = ½CU₀² = ½ × 4×10⁻⁶ × 100² = 2×10⁻² J = 0,02 J. Tout se transfère à la bobine : E_L max = E_C initiale = 0,02 J.",
+    tip: "Conservation de l'énergie dans LC idéal : E_C max = E_L max = ½LI²_max = ½CU²_max.",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — MATHÉMATIQUES : ANALYSE ───────────────────────────────────────
+
+  {
+    id: "fmp-ma-001", exam: "fmp", subject: "maths_analyse", subjectLabel: "Analyse & Calcul",
+    level: "facile",
+    question: "La valeur de lim(x→0) [sin(x)/x] est :",
+    options: ["0", "1", "+∞", "La limite n'existe pas"],
+    correctIndex: 1,
+    explanation: "lim(x→0) sin(x)/x = 1. C'est une limite fondamentale du calcul. Elle s'obtient par le théorème des gendarmes : cos(x) ≤ sin(x)/x ≤ 1 pour x ∈ (0, π/2).",
+    tip: "Limite fondamentale à retenir absolument. Aussi : lim(x→0) tan(x)/x = 1.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ma-002", exam: "fmp", subject: "maths_analyse", subjectLabel: "Analyse & Calcul",
+    level: "moyen",
+    question: "Soit f(x) = x·ln(x) sur ℝ⁺*. La valeur de f'(e) est :",
+    options: ["0", "1", "2", "e"],
+    correctIndex: 2,
+    explanation: "f'(x) = (x)'·ln(x) + x·(ln x)' = 1·ln(x) + x·(1/x) = ln(x) + 1. f'(e) = ln(e) + 1 = 1 + 1 = 2.",
+    tip: "Dérivée du produit : (uv)' = u'v + uv'. Ici u = x, v = ln(x), u' = 1, v' = 1/x.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ma-003", exam: "fmp", subject: "maths_analyse", subjectLabel: "Analyse & Calcul",
+    level: "moyen",
+    question: "L'asymptote oblique de f(x) = (2x² + 3x − 1)/(x − 1) en +∞ est :",
+    options: ["y = 2x + 5", "y = 2x + 1", "y = 2x − 1", "y = x + 2"],
+    correctIndex: 0,
+    explanation: "Division euclidienne : 2x² + 3x − 1 = (x − 1)(2x + 5) + 4. Donc f(x) = 2x + 5 + 4/(x−1). Comme 4/(x−1) → 0 quand x → +∞, l'asymptote oblique est y = 2x + 5.",
+    tip: "Méthode : diviser le numérateur par le dénominateur. Le quotient donne la droite asymptote, le reste/dénominateur tend vers 0.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ma-004", exam: "fmp", subject: "maths_analyse", subjectLabel: "Analyse & Calcul",
+    level: "difficile",
+    question: "Soit f(x) = x³ − 3x² + 2. Les coordonnées du point d'inflexion sont :",
+    options: ["(0, 2)", "(1, 0)", "(2, −2)", "(1, 2)"],
+    correctIndex: 1,
+    explanation: "f'(x) = 3x² − 6x. f''(x) = 6x − 6 = 6(x − 1). f''(x) = 0 pour x = 1. Changement de signe : f'' < 0 pour x < 1 (concave), f'' > 0 pour x > 1 (convexe) → point d'inflexion. f(1) = 1 − 3 + 2 = 0. Point d'inflexion : (1, 0).",
+    tip: "Point d'inflexion = f''(x₀) = 0 ET changement de signe de f''. Toujours vérifier le changement de signe.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ma-005", exam: "fmp", subject: "maths_analyse", subjectLabel: "Analyse & Calcul",
+    level: "difficile",
+    question: "L'équation e^(2x) − 3e^x + 2 = 0 admet combien de solutions réelles ?",
+    options: ["0", "1", "2", "3"],
+    correctIndex: 2,
+    explanation: "Posons X = e^x (X > 0). L'équation devient X² − 3X + 2 = 0. Δ = 9 − 8 = 1. X₁ = 1, X₂ = 2. e^x = 1 → x = 0. e^x = 2 → x = ln(2). Deux solutions réelles : {0, ln(2)}.",
+    tip: "Changement de variable X = e^x transforme une exponentielle en polynôme. Toujours vérifier que X > 0.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ma-006", exam: "fmp", subject: "maths_analyse", subjectLabel: "Analyse & Calcul",
+    level: "moyen",
+    question: "∫₀¹ x·eˣ dx vaut :",
+    options: ["1", "e − 1", "e", "0"],
+    correctIndex: 0,
+    explanation: "Intégration par parties : u = x, v' = eˣ → u' = 1, v = eˣ. ∫₀¹ x·eˣ dx = [x·eˣ]₀¹ − ∫₀¹ eˣ dx = (1·e − 0) − [eˣ]₀¹ = e − (e − 1) = 1.",
+    tip: "Intégration par parties : ∫u'v = uv − ∫uv'. Choisir u' facilement intégrable, v différentiable.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ma-007", exam: "fmp", subject: "maths_analyse", subjectLabel: "Analyse & Calcul",
+    level: "moyen",
+    question: "La solution de y' + 2y = 4 avec y(0) = 1 est :",
+    options: ["y = 2 − e^(−2x)", "y = 2 + e^(−2x)", "y = 2 − e^(2x)", "y = 1 + 2x"],
+    correctIndex: 0,
+    explanation: "Solution homogène : y_h = Ce^(−2x). Solution particulière : y_p = 4/2 = 2. Solution générale : y = Ce^(−2x) + 2. Condition initiale y(0) = 1 : C + 2 = 1 → C = −1. Solution : y = 2 − e^(−2x).",
+    tip: "Pour y' + ay = b : y_p = b/a. Déterminer C avec la condition initiale.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-ma-008", exam: "fmp", subject: "maths_analyse", subjectLabel: "Analyse & Calcul",
+    level: "difficile",
+    question: "La solution de y'' + 4y = 0 avec y(0) = 1 et y'(0) = 0 est :",
+    options: ["y = cos(2x)", "y = sin(2x)", "y = cos(2x) + sin(2x)", "y = e^(2x) + e^(−2x)"],
+    correctIndex: 0,
+    explanation: "Équation caractéristique : r² + 4 = 0 → r = ±2i. Solution générale : y = A·cos(2x) + B·sin(2x). y(0) = 1 → A = 1. y' = −2A·sin(2x) + 2B·cos(2x). y'(0) = 0 → 2B = 0 → B = 0. Solution : y = cos(2x).",
+    tip: "Pour r² + ω² = 0 : r = ±iω → y = A·cos(ωx) + B·sin(ωx). Deux constantes → deux conditions initiales nécessaires.",
+    source: "Concours FMP 2025"
+  },
+
+  // ─── FMP — MATHÉMATIQUES : PROBABILITÉS ─────────────────────────────────
+
+  {
+    id: "fmp-p-001", exam: "fmp", subject: "maths_proba", subjectLabel: "Probabilités",
+    level: "facile",
+    question: "Une classe de 20 élèves doit choisir 3 délégués. Le nombre de choix possibles est :",
+    options: ["A(20,3) = 6 840 (arrangements)", "C(20,3) = 1 140 (combinaisons)", "3! = 6", "20³ = 8 000"],
+    correctIndex: 1,
+    explanation: "Les délégués ont des rôles équivalents (ordre non important) → combinaison. C(20,3) = 20!/(3!×17!) = (20×19×18)/6 = 6840/6 = 1140.",
+    tip: "Ordre important → arrangement. Ordre non important → combinaison. Ici 'choisir 3 délégués' (pas de rôles distincts) → combinaison.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-p-002", exam: "fmp", subject: "maths_proba", subjectLabel: "Probabilités",
+    level: "moyen",
+    question: "60% vaccinés (P(maladie|vacciné) = 5%), 40% non vaccinés (P(maladie|non vacciné) = 30%). P(maladie) = ?",
+    options: ["35%", "15%", "17,5%", "7,5%"],
+    correctIndex: 1,
+    explanation: "Formule des probabilités totales : P(M) = P(M|V)×P(V) + P(M|V̄)×P(V̄) = 0,05×0,6 + 0,30×0,4 = 0,03 + 0,12 = 0,15 = 15%.",
+    tip: "Erreur fréquente : faire la moyenne simple (5%+30%)/2 = 17,5%. Toujours pondérer par les probabilités de chaque sous-groupe.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-p-003", exam: "fmp", subject: "maths_proba", subjectLabel: "Probabilités",
+    level: "difficile",
+    question: "On lance une pièce équilibrée 5 fois. La probabilité d'obtenir exactement 3 faces est :",
+    options: ["(1/2)³ = 1/8", "C(5,3) × (1/2)⁵ = 10/32 = 5/16", "3/5", "1/4"],
+    correctIndex: 1,
+    explanation: "X ~ B(5, 1/2). P(X = 3) = C(5,3) × (1/2)³ × (1/2)² = 10 × 1/32 = 10/32 = 5/16. Le facteur C(5,3) = 10 compte les façons d'obtenir 3 faces parmi 5 lancers.",
+    tip: "Piège majeur : oublier C(n,k). (1/2)³ = probabilité d'UNE séquence spécifique (ex: FFF​PP), pas de toutes les séquences avec 3 faces.",
+    source: "Concours FMP 2025"
+  },
+  {
+    id: "fmp-p-004", exam: "fmp", subject: "maths_proba", subjectLabel: "Probabilités",
+    level: "moyen",
+    question: "La valeur moyenne de f(x) = x² sur [0, 2] est :",
+    options: ["4/3", "8/3", "2", "4"],
+    correctIndex: 0,
+    explanation: "Valeur moyenne = (1/(b−a)) × ∫ₐᵇ f(x)dx = (1/2) × ∫₀² x² dx = (1/2) × [x³/3]₀² = (1/2) × (8/3) = 4/3.",
+    tip: "Formule valeur moyenne : μ = 1/(b−a) × ∫ₐᵇ f(x)dx. Ne pas oublier de diviser par (b−a).",
+    source: "Concours FMP 2025"
   },
 ];
 
