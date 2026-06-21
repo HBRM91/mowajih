@@ -24,6 +24,8 @@ const SchoolDetail = lazy(() => import("./routes/SchoolDetail"));
 const Compare = lazy(() => import("./routes/Compare"));
 const Contact = lazy(() => import("./routes/Contact"));
 const Favorites = lazy(() => import("./routes/Favorites"));
+const PrepLanding = lazy(() => import("./routes/PrepLanding"));
+const PrepSession = lazy(() => import("./routes/PrepSession"));
 
 function App() {
   return (
@@ -51,6 +53,8 @@ function App() {
               <Route path="/comparer" element={<Compare />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/favoris" element={<Favorites />} />
+              <Route path="/prep" element={<PrepLanding />} />
+              <Route path="/prep/:exam/session" element={<PrepSession />} />
             </Routes>
           </AnimatePresence>
         </Suspense>

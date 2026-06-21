@@ -80,6 +80,16 @@ export default function Navbar() {
                 <span className="text-sm">⚖</span>
                 {t("nav.compare")}
               </Link>
+              <Link
+                to="/prep"
+                className={`flex items-center gap-1 transition-colors duration-200 font-semibold ${
+                  pathname.startsWith("/prep")
+                    ? "text-gold-500"
+                    : isHome ? "text-white/90 hover:text-gold-300" : "text-navy-700 hover:text-gold-600"
+                }`}
+              >
+                📝 Prép Concours
+              </Link>
               <Link to="/contact" className={`transition-colors duration-200 ${linkColor}`}>
                 {t("nav.contact")}
               </Link>
@@ -192,6 +202,15 @@ export default function Navbar() {
                 <span className="w-4 h-4 text-gold-400 text-base flex items-center justify-center">⚖</span>
                 {t("nav.compare")}
                 <span className="ml-auto text-[10px] font-bold px-2 py-0.5 bg-gold-500/20 text-gold-300 rounded-full">{t("home.compare.badge")}</span>
+              </Link>
+              <Link
+                to="/prep"
+                className="flex items-center gap-3 py-3 px-4 text-white font-medium rounded-xl bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/15 transition"
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="text-base">📝</span>
+                Prép Concours
+                <span className="ml-auto text-[10px] font-bold px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded-full">ENSA · ENA · TAFEM</span>
               </Link>
               <Link
                 to="/contact"
